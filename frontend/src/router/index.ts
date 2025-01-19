@@ -1,21 +1,57 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: '/:campname',
+      children: [
+        {
+          path: '',
+          name: 'Guidebook',
+          component: () => import('@/views/GuidebookView.vue'),
+        },
+        {
+          path: 'schedule',
+          name: 'Schedule',
+          component: () => import('@/views/ScheduleView.vue'),
+        },
+        {
+          path: 'personal-notes',
+          name: 'PersonalNotes',
+          component: () => import('@/views/PersonalNotesView.vue'),
+        },
+        {
+          path: 'chat',
+          name: 'Chat',
+          component: () => import('@/views/ChatView.vue'),
+        },
+        {
+          path: 'info',
+          name: 'UserInformation',
+          component: () => import('@/views/UserInformationView.vue'),
+        },
+      ],
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/admin',
+      children: [
+        {
+          path: '',
+          name: 'AdminSettings',
+          component: () => import('@/views/admin/AdminSettings.vue'),
+        },
+        {
+          path: 'guidebook',
+          name: 'GuidebookEdit',
+          component: () => import('@/views/admin/AdminGuidebookEdit.vue'),
+        },
+        {
+          path: 'users',
+          name: 'UserInformationView',
+          component: () => import('@/views/admin/AdminInformationView.vue'),
+        },
+      ],
     },
   ],
 })
