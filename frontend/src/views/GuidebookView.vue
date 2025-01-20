@@ -1,9 +1,5 @@
-<script lang="ts">
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  GuidebookView
-</template>
+<template>GuidebookView</template>
 
-<style module>
-</style>
+<style module></style>

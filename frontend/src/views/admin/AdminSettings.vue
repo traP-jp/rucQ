@@ -1,9 +1,5 @@
-<script lang="ts">
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  AdminSettings
-</template>
+<template>AdminSettings</template>
 
-<style module>
-</style>
+<style module></style>
