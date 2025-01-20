@@ -6,6 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/traP-jp/rucQ/backend/handler"
 	"github.com/traP-jp/rucQ/backend/model"
 	"gorm.io/driver/mysql"
@@ -32,6 +33,10 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
+	// Swagger UIからAPIを利用するための設定
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8081"},
+	}))
 	handler.RegisterHandlers(e, handler.NewServer(db))
 	e.Logger.Fatal(e.Start("localhost:8080"))
 }
