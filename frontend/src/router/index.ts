@@ -31,25 +31,25 @@ const router = createRouter({
           name: 'UserInformation',
           component: () => import('@/views/UserInformationView.vue'),
         },
-      ],
-    },
-    {
-      path: '/admin',
-      children: [
         {
-          path: '',
-          name: 'AdminSettings',
-          component: () => import('@/views/admin/AdminSettings.vue'),
-        },
-        {
-          path: 'guidebook',
-          name: 'GuidebookEdit',
-          component: () => import('@/views/admin/AdminGuidebookEdit.vue'),
-        },
-        {
-          path: 'users',
-          name: 'UserInformationView',
-          component: () => import('@/views/admin/AdminInformationView.vue'),
+          path: '/admin',
+          children: [
+            {
+              path: '',
+              name: 'AdminSettings',
+              component: () => import('@/views/admin/AdminSettings.vue'),
+            },
+            {
+              path: 'guidebook',
+              name: 'GuidebookEdit',
+              component: () => import('@/views/admin/AdminGuidebookEdit.vue'),
+            },
+            {
+              path: 'users',
+              name: 'UserInformationView',
+              component: () => import('@/views/admin/AdminInformationView.vue'),
+            },
+          ],
         },
       ],
     },
