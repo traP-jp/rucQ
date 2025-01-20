@@ -1,0 +1,60 @@
+openapi: 3.0.3
+
+info:
+  title: rucQ API
+  version: 0.1.0
+  description: rucQ API
+
+paths:
+  /api/events:
+    get:
+      summary: イベントの一覧を取得
+      tags:
+        - Events
+      operationId: getEvents
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        time_start:
+          type: string
+          format: date-time
+        time_end:
+          type: string
+          format: date-time
+        camp_id:
+          type: integer
+        organizer_traq_id:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - location
+        - time_start
+        - time_end
+        - camp_id
+        - organizer_traq_id
+
+tags:
+  - name: Events
+    description: Event API
