@@ -13,10 +13,10 @@ func (s *Server) GetEvents(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, err)
 	}
 
-	response := make([]Event, len(events))
+	response := make([]GetEventsResponse, len(events))
 
 	for k, v := range events {
-		response[k] = Event{
+		response[k] = GetEventsResponse{
 			Id:              int(v.ID),
 			Name:            v.Name,
 			Location:        v.Location,

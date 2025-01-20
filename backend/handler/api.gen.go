@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Event defines model for Event.
-type Event struct {
+// GetEventsResponse defines model for GetEventsResponse.
+type GetEventsResponse struct {
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
 	Id              int       `json:"id"`

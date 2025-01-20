@@ -20,11 +20,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/GetEventsResponse'
 
 components:
   schemas:
-    Event:
+    GetEventsResponse:
       type: object
       properties:
         id:
