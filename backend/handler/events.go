@@ -7,5 +7,25 @@ import (
 )
 
 func (s *Server) GetEvents(e echo.Context) error {
-	return e.JSON(http.StatusOK, Event{})
+	events, err := s.repo.GetEvents()
+
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, err)
+	}
+
+	response := make([]Event, len(events))
+
+	for k, v := range events {
+		response[k] = Event{
+			Id:              int(v.ID),
+			Name:            v.Name,
+			Location:        v.Location,
+			TimeStart:       *v.TimeStart,
+			TimeEnd:         *v.TimeEnd,
+			CampId:          int(v.CampID),
+			OrganizerTraqId: v.OrganizerTraqID,
+		}
+	}
+
+	return e.JSON(http.StatusOK, response)
 }
