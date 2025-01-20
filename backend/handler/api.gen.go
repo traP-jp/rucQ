@@ -4,13 +4,16 @@
 package handler
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
 )
 
-// Event defines model for Event.
-type Event struct {
+// GetEventsResponse defines model for GetEventsResponse.
+type GetEventsResponse struct {
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
 	Id              int       `json:"id"`
@@ -21,11 +24,37 @@ type Event struct {
 	TimeStart       time.Time `json:"time_start"`
 }
 
+// PostEventRequest defines model for PostEventRequest.
+type PostEventRequest struct {
+	CampId        int       `json:"camp_id"`
+	CreateAsStaff bool      `json:"create_as_staff"`
+	Description   string    `json:"description"`
+	Location      string    `json:"location"`
+	Name          string    `json:"name"`
+	TimeEnd       time.Time `json:"time_end"`
+	TimeStart     time.Time `json:"time_start"`
+}
+
+// XForwardedUser defines model for X-Forwarded-User.
+type XForwardedUser = string
+
+// PostEventParams defines parameters for PostEvent.
+type PostEventParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
+// PostEventJSONRequestBody defines body for PostEvent for application/json ContentType.
+type PostEventJSONRequestBody = PostEventRequest
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// イベントの一覧を取得
 	// (GET /api/events)
 	GetEvents(ctx echo.Context) error
+	// イベントを作成
+	// (POST /api/events)
+	PostEvent(ctx echo.Context, params PostEventParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -39,6 +68,37 @@ func (w *ServerInterfaceWrapper) GetEvents(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetEvents(ctx)
+	return err
+}
+
+// PostEvent converts echo context to params.
+func (w *ServerInterfaceWrapper) PostEvent(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostEventParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostEvent(ctx, params)
 	return err
 }
 
@@ -71,5 +131,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/api/events", wrapper.GetEvents)
+	router.POST(baseURL+"/api/events", wrapper.PostEvent)
 
 }
