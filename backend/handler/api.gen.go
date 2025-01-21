@@ -44,6 +44,16 @@ type PostEventRequest struct {
 // XForwardedUser defines model for X-Forwarded-User.
 type XForwardedUser = string
 
+// BadRequest defines model for BadRequest.
+type BadRequest struct {
+	Message *string `json:"message,omitempty"`
+}
+
+// InternalServerError defines model for InternalServerError.
+type InternalServerError struct {
+	Message *string `json:"message,omitempty"`
+}
+
 // PostEventParams defines parameters for PostEvent.
 type PostEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）

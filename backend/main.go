@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/traP-jp/rucQ/backend/handler"
 	"github.com/traP-jp/rucQ/backend/model"
 	"gorm.io/driver/mysql"
@@ -15,6 +16,10 @@ import (
 
 func main() {
 	e := echo.New()
+
+	if l, ok := e.Logger.(*log.Logger); ok {
+		l.SetHeader("${level}")
+	}
 
 	godotenv.Load()
 
