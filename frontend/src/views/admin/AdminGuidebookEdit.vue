@@ -44,7 +44,12 @@ const insertMarkdown = (syntax: string) => {
 
   <div class="admin-container">
     <div class="toolbar">
-      <div class="last-updated">最終更新: 2023/09/01 19:30</div>
+      <!-- <div class="last-updated">最終更新: 2023/09/01 19:30</div> -->
+      <div class="editer-toolbar">
+        <img src="@/assets/penIcon.svg" alt="Pen Icon" />
+        <img src="@/assets/splitIcon.svg" alt="Split Icon" />
+        <img src="@/assets/eyeIcon.svg" alt="eye Icon" />
+      </div>
       <button class="save-button" @click="saveMarkdown">
         <img src="@/assets/saveIcon.svg" alt="Save Icon" />保存
       </button>
@@ -168,6 +173,16 @@ const insertMarkdown = (syntax: string) => {
   font-size: 0.9rem;
 }
 
+.editer-toolbar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  padding-left: 15px;
+  margin: 0;
+}
+
 /* 最終更新時刻 */
 .last-updated {
   font-size: 0.9rem;
@@ -192,7 +207,6 @@ const insertMarkdown = (syntax: string) => {
   border: none;
   padding: 0;
 }
-
 
 /* 以下　mdの表示設定　どこかにまとめてもいいかも */
 
