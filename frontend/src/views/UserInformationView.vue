@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import UserInformationText from '@/components/information/UserInformationText.vue'
+import { ref } from 'vue'
+import UserInformationItem from '@/components/UserInformationItem.vue'
+
+const editMode = ref(true)
 </script>
 
 <template>
@@ -9,9 +12,15 @@ import UserInformationText from '@/components/information/UserInformationText.vu
       <div :class="$style.nameContainer">ogu_kazemiya</div>
     </div>
     <div :class="$style.informationContainer">
-      <div :class="$style.divider">public</div>
-      <user-information-text />
-      <div :class="$style.divider">private</div>
+      <div :class="$style.informationSection">
+        <div :class="$style.divider">public</div>
+        <user-information-item :class="$style.information" :edit-mode="editMode" type="select" />
+      </div>
+      <div :class="$style.informationSection">
+        <div :class="$style.divider">private</div>
+        <user-information-item :class="$style.information" :edit-mode="editMode" type="number" />
+        <user-information-item :class="$style.information" :edit-mode="editMode" type="text" />
+      </div>
     </div>
   </div>
 </template>
@@ -48,12 +57,33 @@ import UserInformationText from '@/components/information/UserInformationText.vu
 .informationContainer {
   display: flex;
   flex-direction: column;
+}
+
+.informationSection {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 8px;
+  width: 100%;
+  padding: 8px 16px;
 }
 
 .divider {
-  font-size: 15px;
-  color: var(--color-ui-primary);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+  color: var(--color-ui-secondary);
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--color-ui-secondary);
+  margin: 0 8px;
+}
+
+.information {
+  width: 100%;
+  padding: 8px 16px;
 }
 </style>
