@@ -1,9 +1,5 @@
-<script lang="ts">
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  AdminGuidebookEdit
-</template>
+<template>AdminGuidebookEdit</template>
 
-<style module>
-</style>
+<style module></style>

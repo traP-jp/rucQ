@@ -1,9 +1,5 @@
-<script lang="ts">
-</script>
+<script setup lang="ts"></script>
 
-<template>
-  UserInformationView
-</template>
+<template>UserInformationView</template>
 
-<style module>
-</style>
+<style module></style>
