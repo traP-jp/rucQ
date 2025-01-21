@@ -11,7 +11,9 @@ func (s *Server) GetEvents(e echo.Context) error {
 	events, err := s.repo.GetEvents()
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, err)
+		e.Logger().Errorf("failed to get events: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
 	response := make([]GetEventResponse, len(events))
@@ -54,7 +56,9 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 	})
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, err)
+		e.Logger().Errorf("failed to create event: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusCreated, &GetEventResponse{
