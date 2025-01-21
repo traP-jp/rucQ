@@ -1,81 +1,24 @@
 <script setup lang="ts">
 import { getLayoutX } from '@/lib/event-layout'
-import type { Event, Plan } from '@/lib/event-layout'
+import { events, plans } from '@/lib/sample-data'
+import EventBlock from '@/components/EventBlock.vue'
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  const events: Event[] = [
-    {
-      ID: 1,
-      StartsAt: '2024-09-10T17:10:00.000000+09:00',
-      EndsAt: '2024-09-10T19:30:00.000000+09:00',
-    },
-    {
-      ID: 2,
-      StartsAt: '2024-09-10T21:00:00.000000+09:00',
-      EndsAt: '2024-09-10T22:00:00.000000+09:00',
-    },
-    {
-      ID: 3,
-      StartsAt: '2024-09-11T09:00:00.000000+09:00',
-      EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    },
-    {
-      ID: 4,
-      StartsAt: '2024-09-11T09:00:00.000000+09:00',
-      EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    },
-    {
-      ID: 5,
-      StartsAt: '2024-09-11T09:00:00.000000+09:00',
-      EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    },
-    {
-      ID: 6,
-      StartsAt: '2024-09-10T14:00:00.000000+09:00',
-      EndsAt: '2024-09-10T16:00:00.000000+09:00',
-    },
-    {
-      ID: 7,
-      StartsAt: '2024-09-10T15:30:00.000000+09:00',
-      EndsAt: '2024-09-10T16:30:00.000000+09:00',
-    },
-    {
-      ID: 8,
-      StartsAt: '2024-09-10T19:30:00.000000+09:00',
-      EndsAt: '2024-09-10T20:30:00.000000+09:00',
-    },
-    {
-      ID: 9,
-      StartsAt: '2024-09-10T22:00:00.000000+09:00',
-      EndsAt: '2024-09-10T23:30:00.000000+09:00',
-    },
-    {
-      ID: 10,
-      StartsAt: '2024-09-11T20:00:00.000000+09:00',
-      EndsAt: '2024-09-11T21:00:00.000000+09:00',
-    },
-    {
-      ID: 11,
-      StartsAt: '2024-09-11T20:00:00.000000+09:00',
-      EndsAt: '2024-09-11T23:00:00.000000+09:00',
-    },
-  ]
-  const plans: Plan[] = [
-    { ID: 1, At: '2024-09-10T10:30:00.000000+09:00' },
-    { ID: 2, At: '2024-09-10T12:30:00.000000+09:00' },
-    { ID: 3, At: '2024-09-10T17:00:00.000000+09:00' },
-    { ID: 4, At: '2024-09-11T01:00:00.000000+09:00' },
-    { ID: 5, At: '2024-09-11T08:00:00.000000+09:00' },
-    { ID: 6, At: '2024-09-11T18:00:00.000000+09:00' },
-  ]
-  console.log('Hello!')
   const arrange = getLayoutX(events, plans, '2024-09-10T08:00:00.000000+09:00')
   console.log(arrange)
-  // console.log('Hello!')
 })
 </script>
 
-<template>ScheduleView</template>
+<template>
+  <div :class="$style.container"></div>
+</template>
 
-<style module></style>
+<style module>
+.container {
+  margin: auto;
+  width: 400px;
+  height: 100vh;
+  border: 1px solid black;
+}
+</style>
