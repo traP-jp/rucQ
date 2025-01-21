@@ -25,6 +25,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GetEventResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: イベントを作成
       tags:
@@ -45,6 +47,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetEventResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/me:
     get:
       summary: 自分の情報を取得
@@ -60,6 +66,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   parameters:
@@ -70,6 +78,26 @@ components:
       required: true
       schema:
         type: string
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal server error
   schemas:
     GetEventResponse:
       type: object
