@@ -7,16 +7,17 @@ import { onMounted, ref } from 'vue'
 const groups = ref<BlockGroup[]>([])
 
 onMounted(() => {
-  groups.value = getLayout(events, plans, '2024-09-10T08:00:00.000000+09:00')
+  console.log(getLayout(events, plans, '2024-09-10T08:00:00.000000+09:00'))
+  // groups.value = getLayout(events, plans, '2024-09-10T08:00:00.000000+09:00')
 })
 </script>
 
 <template>
   <div :class="$style.container" v-if="groups.length > 0">
-    <div
+    <!-- <div
       v-for="group in groups"
       :key="group.StartRow"
-      :style="`display: grid; grid-template-columns: repeat(${group.Events.length}, 1fr); border: 1px solid white;`"
+      :style="`display: grid; grid-template-columns: repeat(${group.Events.length}, 1fr); border: 0px solid white;`"
     >
       <EventBlock
         v-for="event in group.Events"
@@ -24,7 +25,7 @@ onMounted(() => {
         :event="event"
         :style="`grid-row: ${event.StartRow} / ${event.EndRow}; grid-column: ${event.Column - 1}`"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
