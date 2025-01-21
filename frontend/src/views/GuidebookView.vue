@@ -102,6 +102,7 @@ const htmlContent = computed(() => marked(markdown.value))
 .guidebook-markdown h3 {
   color: #092c57;
   line-height: 1;
+  font-size: 1.2rem;
   margin-top: 24px;
   margin-bottom: 14px;
 }
@@ -115,7 +116,6 @@ const htmlContent = computed(() => marked(markdown.value))
 }
 
 .guidebook-markdown a:hover {
-  word-wrap: break-word;
   color: #0842e2;
 }
 
