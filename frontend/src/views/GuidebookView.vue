@@ -129,4 +129,11 @@ const htmlContent = computed(() => marked(markdown.value))
   position: fixed;
   width: 100%;
 }
+
+.guidebook-markdown strong{
+  background-color: none;
+  /* 文字を太字にする */
+  font-weight: bold;
+  padding: 2px;
+}
 </style>
