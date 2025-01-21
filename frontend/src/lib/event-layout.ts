@@ -35,7 +35,7 @@ export type BlockGroup = {
   Columns: number // このグループの横幅（整数値）
 }
 
-export const getLayoutX = (events: Event[], plans: Plan[], campStartsAt: string) => {
+export const getLayout = (events: Event[], plans: Plan[], campStartsAt: string) => {
   const timeStamps: { timeText: string; kind: number; id: number }[] = [
     { timeText: campStartsAt, kind: 0, id: 0 },
   ]
