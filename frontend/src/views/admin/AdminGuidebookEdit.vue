@@ -11,6 +11,7 @@ const markdown = ref(`# 2024年度 夏合宿
 ## 注意事項
 - **タオル、浴衣などのアメニティはありません。** 各自持参してください。
 `)
+const viewMode = ref('split')
 
 const previewHtml = computed(() => marked(markdown.value))
 
@@ -19,20 +20,14 @@ const saveMarkdown = () => {
   alert('保存しました！（バックエンド連携予定）')
 }
 
-// ツールバーのアクション
-const insertMarkdown = (syntax: string) => {
-  const textarea = document.querySelector<HTMLTextAreaElement>('.editor-area')
-  if (textarea) {
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const text = textarea.value
-    const before = text.substring(0, start)
-    const after = text.substring(end)
-    textarea.value = `${before}${syntax}${after}`
-    markdown.value = textarea.value // 更新
-    textarea.focus()
-    textarea.setSelectionRange(start + syntax.length, start + syntax.length)
-  }
+function showEditOnly() {
+  viewMode.value = 'edit'
+}
+function showSplit() {
+  viewMode.value = 'split'
+}
+function showPreviewOnly() {
+  viewMode.value = 'preview'
 }
 </script>
 
@@ -44,24 +39,28 @@ const insertMarkdown = (syntax: string) => {
 
   <div class="admin-container">
     <div class="toolbar">
-      <!-- <div class="last-updated">最終更新: 2023/09/01 19:30</div> -->
       <div class="editer-toolbar">
-        <img src="@/assets/penIcon.svg" alt="Pen Icon" />
-        <img src="@/assets/splitIcon.svg" alt="Split Icon" />
-        <img src="@/assets/eyeIcon.svg" alt="eye Icon" />
+        <img src="@/assets/penIcon.svg" alt="Pen Icon" @click="showEditOnly" />
+        <img src="@/assets/splitIcon.svg" alt="Split Icon" @click="showSplit" />
+        <img src="@/assets/eyeIcon.svg" alt="eye Icon" @click="showPreviewOnly" />
       </div>
       <button class="save-button" @click="saveMarkdown">
         <img src="@/assets/saveIcon.svg" alt="Save Icon" />保存
       </button>
     </div>
-    <!-- エディタとプレビュー -->
     <div class="editor-preview">
-      <textarea v-model="markdown" class="editor-area"></textarea>
-      <div class="center-bar" />
-      <div class="preview-section" v-html="previewHtml"></div>
+      <textarea
+        v-if="viewMode === 'edit' || viewMode === 'split'"
+        v-model="markdown"
+        class="editor-area"
+      ></textarea>
+      <div class="center-bar" v-if="viewMode === 'split'"></div>
+      <div
+        class="preview-section"
+        v-if="viewMode === 'preview' || viewMode === 'split'"
+        v-html="previewHtml"
+      ></div>
     </div>
-    <!-- 保存ボタン -->
-    <!-- フッターにボタンと最終更新時刻 -->
   </div>
 </template>
 
