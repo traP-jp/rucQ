@@ -14,7 +14,7 @@ const markdown = ref(`# 2024年度 夏合宿
 
 const previewHtml = computed(() => marked(markdown.value))
 
-// ダミー保存関数
+// ダミー保存関数　後で消す
 const saveMarkdown = () => {
   alert('保存しました！（バックエンド連携予定）')
 }
@@ -112,12 +112,13 @@ const insertMarkdown = (syntax: string) => {
 
 .center-bar {
   width: 5px;
-  background-color: #f8f8f8d1;
-  box-shadow: 3px 0px 5px -2px #000;
+  background-color:#f8f8f8;
+  box-shadow: 1px 0px 5px -2px #000;
+  z-index: 10;
 }
 
 .preview-section {
-  background-color: #f8f8f8d1 ;
+  background-color: #f8f8f8 ;
   color: #101620;
   line-height: 1.8;
   flex: 1;
@@ -198,6 +199,13 @@ const insertMarkdown = (syntax: string) => {
 
 .preview-section a:hover {
   color: #0842e2;
+}
+
+.preview-section strong{
+  background-color: none;
+  /* 文字を太字にする */
+  font-weight: bold;
+  padding: 2px;
 }
 
 /* 最終更新時刻 */
