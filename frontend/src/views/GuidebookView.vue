@@ -1,10 +1,8 @@
 <template>
   <header class="guidebook-header">Guidebook</header>
-  <div class="guidebook-container">
-    <main class="guidebook-main">
-      <div class="guidebook-markdown" v-html="htmlContent"></div>
-    </main>
-  </div>
+
+  <div class="guidebook-markdown" v-html="htmlContent"></div>
+
   <footer class="guidebook-footer">
     <p>© 2024 Summer Camp</p>
   </footer>
@@ -58,17 +56,6 @@ const htmlContent = computed(() => marked(markdown.value))
 </script>
 
 <style>
-.guidebook-container {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* 要素の幅と高さにパディングとボーダーを含める */
-  height: 100vh;
-  width: 100vw;
-  font-family: 'Roboto', sans-serif;
-  position: relative;
-  padding-bottom: 80px;
-}
-
 .guidebook-header {
   /* ヘッダー  あとでちゃんとしたのに変更する　仮*/
   background-color: #2c5282;
@@ -87,14 +74,6 @@ const htmlContent = computed(() => marked(markdown.value))
   z-index: 100;
 }
 
-.guidebook-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 70px;
-  padding-bottom: 70px;
-}
 
 .guidebook-markdown {
   padding: 30px;
@@ -103,6 +82,8 @@ const htmlContent = computed(() => marked(markdown.value))
   width: 100%;
   color: #101620;
   line-height: 1.8;
+  margin: 0 auto; /* 中央揃え */
+  padding: 70px 30px 70px 30px; /* 下にフッターの余白を追加 */
 }
 
 .guidebook-markdown h1 {
@@ -115,7 +96,6 @@ const htmlContent = computed(() => marked(markdown.value))
 .guidebook-markdown h2 {
   color: #092c57;
   border-bottom: 1px solid #f7ae5a;
-
   margin-top: 24px;
   margin-bottom: 16px;
 }
@@ -139,7 +119,7 @@ const htmlContent = computed(() => marked(markdown.value))
   color: #0842e2;
 }
 
-.guidebook-footer {
+.guidebook-footer { /* フッター あとでちゃんとしたのにする*/
   background-color: #2c5282;
   color: #f7fafc;
   text-align: center;
