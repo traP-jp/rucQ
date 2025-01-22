@@ -16,10 +16,10 @@ func (s *Server) GetEvents(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	response := make([]GetEventResponse, len(events))
+	response := make([]Event, len(events))
 
 	for k, v := range events {
-		response[k] = GetEventResponse{
+		response[k] = Event{
 			Id:              int(v.ID),
 			Name:            v.Name,
 			Location:        v.Location,
@@ -61,7 +61,7 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, &GetEventResponse{
+	return e.JSON(http.StatusCreated, &Event{
 		Id:              eventID,
 		Name:            req.Name,
 		Location:        req.Location,
@@ -70,4 +70,24 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 		CampId:          req.CampId,
 		OrganizerTraqId: organizerTraqID,
 	})
+}
+
+func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
+	return nil
+}
+
+func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
+	return nil
+}
+
+func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
+	return nil
+}
+
+func (s *Server) UnregisterEvent(e echo.Context, eventID EventId, params UnregisterEventParams) error {
+	return nil
+}
+
+func (s *Server) RegisterEvent(e echo.Context, eventID EventId, params RegisterEventParams) error {
+	return nil
 }
