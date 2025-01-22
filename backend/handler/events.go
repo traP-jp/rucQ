@@ -71,3 +71,23 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 		OrganizerTraqId: organizerTraqID,
 	})
 }
+
+func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
+	return nil
+}
+
+func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
+	return nil
+}
+
+func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
+	return nil
+}
+
+func (s *Server) UnregisterEvent(e echo.Context, eventID EventId, params UnregisterEventParams) error {
+	return nil
+}
+
+func (s *Server) RegisterEvent(e echo.Context, eventID EventId, params RegisterEventParams) error {
+	return nil
+}
