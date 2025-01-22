@@ -9,11 +9,6 @@ import { RouterView } from 'vue-router'
   </header>
 </template>
 
-<script>
-export default {
-  name: 'Header',
-};
-</script>
 
 <style scoped>
 .app-header {
@@ -23,6 +18,7 @@ export default {
   background-color: #333; /* ヘッダーの背景色 */
   color: white; /* 文字色 */
   padding: 10px 20px; /* 上下左右の余白 */
+  z-index: 100000; /* 他の要素より手前に表示 */
 }
 
 .app-title {
