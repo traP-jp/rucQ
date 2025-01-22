@@ -10,6 +10,97 @@ servers:
     description: 開発環境
 
 paths:
+  /api/camps:
+    get:
+      summary: 合宿の一覧を取得
+      tags:
+        - Camps
+      operationId: getCamps
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCampResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 合宿を作成
+      tags:
+        - Camps
+      operationId: postCamp
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCampRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/camps/{camp_id}:
+    get:
+      summary: 合宿の詳細を取得
+      tags:
+        - Camps
+      operationId: getCamp
+      parameters:
+        - $ref: '#/components/parameters/CampId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 合宿を更新
+      tags:
+        - Camps
+      operationId: putCamp
+      parameters:
+        - $ref: '#/components/parameters/CampId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCampRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/events:
     get:
       summary: イベントの一覧を取得
@@ -83,7 +174,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetEventResponse'
+              $ref: '#/components/schemas/PostEventRequest'
       responses:
         '200':
           description: OK
@@ -182,6 +273,13 @@ components:
       required: true
       schema:
         type: string
+    CampId:
+      name: camp_id
+      in: path
+      description: 合宿ID
+      required: true
+      schema:
+        type: integer
     EventId:
       name: event_id
       in: path
@@ -239,6 +337,41 @@ components:
                 type: string
                 example: Internal server error
   schemas:
+    GetCampResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_draft:
+          type: boolean
+        summary:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - is_draft
+        - summary
+        - description
+    PostCampRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        is_draft:
+          type: boolean
+        summary:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+        - is_draft
+        - summary
+        - description
     GetEventResponse:
       type: object
       properties:
@@ -308,6 +441,8 @@ components:
         - is_staff
 
 tags:
+  - name: Camps
+    description: Camp API
   - name: Events
     description: Event API
   - name: Users
