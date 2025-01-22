@@ -5,5 +5,8 @@ func GetAllModels() []any {
 	return []any{
 		&Event{},
 		&User{},
+		&Question{},
+		&Option{},
+		&Answer{},
 	}
 }
