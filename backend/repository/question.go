@@ -29,3 +29,11 @@ func (r *Repository) GetQuestionByID(id uint) (*model.Question, error) {
 
 	return &question, nil
 }
+
+func (r *Repository) DeleteQuestionByID(id uint) error {
+	if err := r.db.Delete(&model.Question{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

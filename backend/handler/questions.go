@@ -106,7 +106,15 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 }
 
 func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params DeleteQuestionParams) error {
-	return nil
+	// TODO: 合宿係かどうかを確認する
+
+	if err := s.repo.DeleteQuestionByID(uint(questionID)); err != nil {
+		e.Logger().Errorf("failed to delete question: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
 }
 
 func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
