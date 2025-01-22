@@ -2,6 +2,14 @@
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
 
+// あとでvuetifyにします
+import penIcon from '@/assets/penIcon.svg'
+import penIconActive from '@/assets/penIconActive.svg'
+import splitIcon from '@/assets/splitIcon.svg'
+import splitIconActive from '@/assets/splitIconActive.svg'
+import eyeIcon from '@/assets/eyeIcon.svg'
+import eyeIconActive from '@/assets/eyeIconActive.svg'
+
 const markdown = ref(`# 2024年度 夏合宿
 
 ## 概要
@@ -40,9 +48,24 @@ function showPreviewOnly() {
   <div class="admin-container">
     <div class="toolbar">
       <div class="editer-toolbar">
-        <img src="@/assets/penIcon.svg" alt="Pen Icon" @click="showEditOnly" />
-        <img src="@/assets/splitIcon.svg" alt="Split Icon" @click="showSplit" />
-        <img src="@/assets/eyeIcon.svg" alt="eye Icon" @click="showPreviewOnly" />
+        <img
+          :src="viewMode === 'edit' ? penIconActive : penIcon"
+          alt="Pen Icon"
+          @click="showEditOnly"
+           :class="{ 'active-background': viewMode === 'edit' }"
+        />
+        <img
+          :src="viewMode === 'split' ? splitIconActive : splitIcon"
+          alt="Split Icon"
+          @click="showSplit"
+           :class="{ 'active-background': viewMode === 'split' }"
+        />
+        <img
+          :src="viewMode === 'preview' ? eyeIconActive : eyeIcon"
+          alt="Eye Icon"
+          @click="showPreviewOnly"
+           :class="{ 'active-background': viewMode === 'preview' }"
+        />
       </div>
       <button class="save-button" @click="saveMarkdown">
         <img src="@/assets/saveIcon.svg" alt="Save Icon" />保存
@@ -174,11 +197,41 @@ function showPreviewOnly() {
 
 .editer-toolbar {
   display: flex;
-  gap: 10px;
+  gap: 2px;
   justify-content: center;
   align-items: center;
-  padding: 0;
-  padding-left: 15px;
+  padding: 0 15px;
+  margin: 0;
+}
+
+.editer-toolbar img {
+  cursor: pointer;
+  background-color: #a8acb1;
+  border: 0.2px solid #8e9094;
+  padding: 8px;
+  margin: 0;
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.editer-toolbar img.active-background {
+  background-color: #7a8289;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.editer-toolbar img.active-background:hover {
+  background-color: #7a8289;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.editer-toolbar img:hover {
+  background-color: #979ba0;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toolbar img {
+  cursor: pointer;
+  padding: 3px;
   margin: 0;
 }
 
