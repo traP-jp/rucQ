@@ -74,9 +74,9 @@ const htmlContent = computed(() => marked(markdown.value))
   z-index: 100;
 }
 
-
 .guidebook-markdown {
   padding: 30px;
+  background-color: #f7fafc; /* 背景色  あとで色はちゃんと設定する*/
   max-width: 1000px;
   height: 100%;
   width: 100%;
@@ -119,7 +119,8 @@ const htmlContent = computed(() => marked(markdown.value))
   color: #0842e2;
 }
 
-.guidebook-footer { /* フッター あとでちゃんとしたのにする*/
+.guidebook-footer {
+  /* フッター あとでちゃんとしたのにする*/
   background-color: #2c5282;
   color: #f7fafc;
   text-align: center;
@@ -128,5 +129,12 @@ const htmlContent = computed(() => marked(markdown.value))
   bottom: 0;
   position: fixed;
   width: 100%;
+}
+
+.guidebook-markdown strong {
+  background-color: none;
+  /* 文字を太字にする */
+  font-weight: bold;
+  padding: 2px;
 }
 </style>
