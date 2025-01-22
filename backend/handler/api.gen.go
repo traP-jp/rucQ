@@ -12,8 +12,8 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// GetEventsResponse defines model for GetEventsResponse.
-type GetEventsResponse struct {
+// GetEventResponse defines model for GetEventResponse.
+type GetEventResponse struct {
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
 	Id              int       `json:"id"`
@@ -22,6 +22,12 @@ type GetEventsResponse struct {
 	OrganizerTraqId string    `json:"organizer_traq_id"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
+}
+
+// GetUserResponse defines model for GetUserResponse.
+type GetUserResponse struct {
+	IsStaff bool   `json:"is_staff"`
+	TraqId  string `json:"traq_id"`
 }
 
 // PostEventRequest defines model for PostEventRequest.
@@ -38,8 +44,24 @@ type PostEventRequest struct {
 // XForwardedUser defines model for X-Forwarded-User.
 type XForwardedUser = string
 
+// BadRequest defines model for BadRequest.
+type BadRequest struct {
+	Message *string `json:"message,omitempty"`
+}
+
+// InternalServerError defines model for InternalServerError.
+type InternalServerError struct {
+	Message *string `json:"message,omitempty"`
+}
+
 // PostEventParams defines parameters for PostEvent.
 type PostEventParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
+// GetMeParams defines parameters for GetMe.
+type GetMeParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
@@ -55,6 +77,9 @@ type ServerInterface interface {
 	// イベントを作成
 	// (POST /api/events)
 	PostEvent(ctx echo.Context, params PostEventParams) error
+	// 自分の情報を取得
+	// (GET /api/me)
+	GetMe(ctx echo.Context, params GetMeParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -102,6 +127,37 @@ func (w *ServerInterfaceWrapper) PostEvent(ctx echo.Context) error {
 	return err
 }
 
+// GetMe converts echo context to params.
+func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMeParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetMe(ctx, params)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -132,5 +188,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/api/events", wrapper.GetEvents)
 	router.POST(baseURL+"/api/events", wrapper.PostEvent)
+	router.GET(baseURL+"/api/me", wrapper.GetMe)
 
 }
