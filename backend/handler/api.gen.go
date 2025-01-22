@@ -122,6 +122,9 @@ type ServerInterface interface {
 	// イベントを更新
 	// (PUT /api/events/{event_id})
 	PutEvent(ctx echo.Context, eventId EventId, params PutEventParams) error
+	// イベントの参加者一覧を取得
+	// (GET /api/events/{event_id}/participants)
+	GetParticipants(ctx echo.Context, eventId EventId) error
 	// イベントへの参加をキャンセル
 	// (DELETE /api/events/{event_id}/register)
 	UnregisterEvent(ctx echo.Context, eventId EventId, params UnregisterEventParams) error
@@ -229,6 +232,22 @@ func (w *ServerInterfaceWrapper) PutEvent(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PutEvent(ctx, eventId, params)
+	return err
+}
+
+// GetParticipants converts echo context to params.
+func (w *ServerInterfaceWrapper) GetParticipants(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "event_id" -------------
+	var eventId EventId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "event_id", ctx.Param("event_id"), &eventId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter event_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetParticipants(ctx, eventId)
 	return err
 }
 
@@ -371,6 +390,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/api/events", wrapper.PostEvent)
 	router.GET(baseURL+"/api/events/:event_id", wrapper.GetEvent)
 	router.PUT(baseURL+"/api/events/:event_id", wrapper.PutEvent)
+	router.GET(baseURL+"/api/events/:event_id/participants", wrapper.GetParticipants)
 	router.DELETE(baseURL+"/api/events/:event_id/register", wrapper.UnregisterEvent)
 	router.POST(baseURL+"/api/events/:event_id/register", wrapper.RegisterEvent)
 	router.GET(baseURL+"/api/me", wrapper.GetMe)

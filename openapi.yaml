@@ -134,6 +134,27 @@ paths:
           $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/events/{event_id}/participants:
+    get:
+      summary: イベントの参加者一覧を取得
+      tags:
+        - Events
+      operationId: getParticipants
+      parameters:
+        - $ref: '#/components/parameters/EventId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetUserResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/me:
     get:
       summary: 自分の情報を取得
