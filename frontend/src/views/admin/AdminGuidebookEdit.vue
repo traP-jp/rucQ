@@ -297,12 +297,24 @@ const handleBlur = () => {
   justify-content: center;
   text-align: center;
   align-items: center;
-  background: none;
-  color: #323145;
+  background-color: #b4b8bc;
+  border: 0.2px solid #8e9094;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #1c1c1e;
   cursor: pointer;
   font-size: 0.9rem;
-  border: none;
-  padding: 0;
+  padding-right: 5px;
+}
+
+.save-button:hover {
+  background-color: #929496;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-button:active {
+  background-color: #838587;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 
