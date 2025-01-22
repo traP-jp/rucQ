@@ -1,30 +1,18 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import { useDisplay } from 'vuetify'
+import SideBar from '@/components/layout/SideBar.vue'
+import MobileFooter from '@/components/layout/MobileFooter.vue'
+
+const { mobile } = useDisplay()
 </script>
 
 <template>
-  <header class="app-header">
-    <h1 class="app-title">rucQ</h1>
-  </header>
-  <RouterView />
+  <v-app>
+    <side-bar v-if=!mobile />
+    <v-main>
+      <router-view />
+    </v-main>
+    <mobile-footer v-if="mobile" />
+  </v-app>
 </template>
-
-
-<style scoped>
-.app-header {
-  display: flex;
-  justify-content: flex-start; /* 左寄せ */
-  align-items: center;
-  background-color: #333; /* ヘッダーの背景色 */
-  color: white; /* 文字色 */
-  padding: 10px 20px; /* 上下左右の余白 */
-  z-index: 100000; /* 他の要素より手前に表示 */
-}
-
-.app-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-}
-</style>
-
