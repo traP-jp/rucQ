@@ -33,6 +33,17 @@ type GetEventResponse struct {
 	TimeStart       time.Time `json:"time_start"`
 }
 
+// GetQuestionResponse defines model for GetQuestionResponse.
+type GetQuestionResponse struct {
+	Description string    `json:"description"`
+	Due         time.Time `json:"due"`
+	Id          int       `json:"id"`
+	IsOpen      bool      `json:"is_open"`
+	IsPublic    bool      `json:"is_public"`
+	Title       string    `json:"title"`
+	Type        string    `json:"type"`
+}
+
 // GetUserResponse defines model for GetUserResponse.
 type GetUserResponse struct {
 	IsStaff bool   `json:"is_staff"`
@@ -58,6 +69,16 @@ type PostEventRequest struct {
 	TimeStart     time.Time `json:"time_start"`
 }
 
+// PostQuestionRequest defines model for PostQuestionRequest.
+type PostQuestionRequest struct {
+	Description string    `json:"description"`
+	Due         time.Time `json:"due"`
+	IsOpen      bool      `json:"is_open"`
+	IsPublic    bool      `json:"is_public"`
+	Title       string    `json:"title"`
+	Type        string    `json:"type"`
+}
+
 // PostStaffRequest defines model for PostStaffRequest.
 type PostStaffRequest struct {
 	TraqId string `json:"traq_id"`
@@ -68,6 +89,9 @@ type CampId = int
 
 // EventId defines model for EventId.
 type EventId = int
+
+// QuestionId defines model for QuestionId.
+type QuestionId = int
 
 // XForwardedUser defines model for X-Forwarded-User.
 type XForwardedUser = string
@@ -139,6 +163,24 @@ type GetMeParams struct {
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
 
+// PostQuestionParams defines parameters for PostQuestion.
+type PostQuestionParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
+// DeleteQuestionParams defines parameters for DeleteQuestion.
+type DeleteQuestionParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
+// PutQuestionParams defines parameters for PutQuestion.
+type PutQuestionParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
 // DeleteStaffParams defines parameters for DeleteStaff.
 type DeleteStaffParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -162,6 +204,12 @@ type PostEventJSONRequestBody = PostEventRequest
 
 // PutEventJSONRequestBody defines body for PutEvent for application/json ContentType.
 type PutEventJSONRequestBody = PostEventRequest
+
+// PostQuestionJSONRequestBody defines body for PostQuestion for application/json ContentType.
+type PostQuestionJSONRequestBody = PostQuestionRequest
+
+// PutQuestionJSONRequestBody defines body for PutQuestion for application/json ContentType.
+type PutQuestionJSONRequestBody = PostQuestionRequest
 
 // PostStaffJSONRequestBody defines body for PostStaff for application/json ContentType.
 type PostStaffJSONRequestBody = PostStaffRequest
@@ -204,6 +252,21 @@ type ServerInterface interface {
 	// 自分の情報を取得
 	// (GET /api/me)
 	GetMe(ctx echo.Context, params GetMeParams) error
+	// 質問の一覧を取得
+	// (GET /api/questions)
+	GetQuestions(ctx echo.Context) error
+	// 質問を作成
+	// (POST /api/questions)
+	PostQuestion(ctx echo.Context, params PostQuestionParams) error
+	// 質問を削除
+	// (DELETE /api/questions/{question_id})
+	DeleteQuestion(ctx echo.Context, questionId QuestionId, params DeleteQuestionParams) error
+	// 質問の詳細を取得
+	// (GET /api/questions/{question_id})
+	GetQuestion(ctx echo.Context, questionId QuestionId) error
+	// 質問を更新
+	// (PUT /api/questions/{question_id})
+	PutQuestion(ctx echo.Context, questionId QuestionId, params PutQuestionParams) error
 	// 合宿係を削除
 	// (DELETE /api/staffs)
 	DeleteStaff(ctx echo.Context, params DeleteStaffParams) error
@@ -531,6 +594,138 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 	return err
 }
 
+// GetQuestions converts echo context to params.
+func (w *ServerInterfaceWrapper) GetQuestions(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetQuestions(ctx)
+	return err
+}
+
+// PostQuestion converts echo context to params.
+func (w *ServerInterfaceWrapper) PostQuestion(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostQuestionParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostQuestion(ctx, params)
+	return err
+}
+
+// DeleteQuestion converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteQuestion(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteQuestionParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteQuestion(ctx, questionId, params)
+	return err
+}
+
+// GetQuestion converts echo context to params.
+func (w *ServerInterfaceWrapper) GetQuestion(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetQuestion(ctx, questionId)
+	return err
+}
+
+// PutQuestion converts echo context to params.
+func (w *ServerInterfaceWrapper) PutQuestion(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutQuestionParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PutQuestion(ctx, questionId, params)
+	return err
+}
+
 // DeleteStaff converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteStaff(ctx echo.Context) error {
 	var err error
@@ -642,6 +837,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/events/:event_id/register", wrapper.UnregisterEvent)
 	router.POST(baseURL+"/api/events/:event_id/register", wrapper.RegisterEvent)
 	router.GET(baseURL+"/api/me", wrapper.GetMe)
+	router.GET(baseURL+"/api/questions", wrapper.GetQuestions)
+	router.POST(baseURL+"/api/questions", wrapper.PostQuestion)
+	router.DELETE(baseURL+"/api/questions/:question_id", wrapper.DeleteQuestion)
+	router.GET(baseURL+"/api/questions/:question_id", wrapper.GetQuestion)
+	router.PUT(baseURL+"/api/questions/:question_id", wrapper.PutQuestion)
 	router.DELETE(baseURL+"/api/staffs", wrapper.DeleteStaff)
 	router.GET(baseURL+"/api/staffs", wrapper.GetStaffs)
 	router.POST(baseURL+"/api/staffs", wrapper.PostStaff)

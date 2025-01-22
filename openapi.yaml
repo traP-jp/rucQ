@@ -263,6 +263,116 @@ paths:
                 $ref: '#/components/schemas/GetUserResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/questions:
+    get:
+      summary: 質問の一覧を取得
+      tags:
+        - Questions
+      operationId: getQuestions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetQuestionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 質問を作成
+      tags:
+        - Questions
+      operationId: postQuestion
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostQuestionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetQuestionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/questions/{question_id}:
+    get:
+      summary: 質問の詳細を取得
+      tags:
+        - Questions
+      operationId: getQuestion
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetQuestionResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 質問を更新
+      tags:
+        - Questions
+      operationId: putQuestion
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostQuestionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetQuestionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 質問を削除
+      tags:
+        - Questions
+      operationId: deleteQuestion
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -343,6 +453,13 @@ components:
       name: event_id
       in: path
       description: イベントID
+      required: true
+      schema:
+        type: integer
+    QuestionId:
+      name: question_id
+      in: path
+      description: 質問ID
       required: true
       schema:
         type: integer
@@ -498,6 +615,55 @@ components:
       required:
         - traq_id
         - is_staff
+    GetQuestionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        is_public:
+          type: boolean
+        due:
+          type: string
+          format: date-time
+        is_open:
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - type
+        - is_public
+        - due
+        - is_open
+    PostQuestionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        is_public:
+          type: boolean
+        due:
+          type: string
+          format: date-time
+        is_open:
+          type: boolean
+      required:
+        - title
+        - description
+        - type
+        - is_public
+        - due
+        - is_open
     PostStaffRequest:
       type: object
       properties:
@@ -513,5 +679,7 @@ tags:
     description: Event API
   - name: Users
     description: User API
+  - name: Questions
+    description: Question API
   - name: Staffs
     description: Staff API
