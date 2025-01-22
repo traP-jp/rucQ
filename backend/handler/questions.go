@@ -8,7 +8,39 @@ import (
 )
 
 func (s *Server) GetQuestions(e echo.Context) error {
-	return nil
+	questions, err := s.repo.GetQuestions()
+
+	if err != nil {
+		e.Logger().Errorf("failed to get questions: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	questionsResponse := make([]Question, len(questions))
+
+	for k, v := range questions {
+		options := make([]Option, len(v.Options))
+
+		for k, v := range v.Options {
+			options[k] = Option{
+				Id:   int(v.ID),
+				Body: v.Body,
+			}
+		}
+
+		questionsResponse[k] = Question{
+			Id:          int(v.ID),
+			Title:       v.Title,
+			Description: v.Description,
+			Type:        v.Type,
+			IsPublic:    v.IsPublic,
+			Due:         *v.Due,
+			IsOpen:      v.IsOpen,
+			Options:     &options,
+		}
+	}
+
+	return e.JSON(http.StatusOK, questionsResponse)
 }
 
 func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
@@ -88,7 +120,33 @@ func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params De
 }
 
 func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
-	return nil
+	question, err := s.repo.GetQuestionByID(uint(questionID))
+
+	if err != nil {
+		e.Logger().Errorf("failed to get question: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	options := make([]Option, len(question.Options))
+
+	for k, v := range question.Options {
+		options[k] = Option{
+			Id:   int(v.ID),
+			Body: v.Body,
+		}
+	}
+
+	return e.JSON(http.StatusOK, &Question{
+		Id:          int(question.ID),
+		Title:       question.Title,
+		Description: question.Description,
+		Type:        question.Type,
+		IsPublic:    question.IsPublic,
+		Due:         *question.Due,
+		IsOpen:      question.IsOpen,
+		Options:     &options,
+	})
 }
 
 func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQuestionParams) error {
