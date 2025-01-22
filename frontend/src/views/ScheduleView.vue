@@ -9,11 +9,15 @@ const groups = ref<BlockGroup[]>([])
 
 onMounted(() => {
   groups.value = getLayout(events, plans)
+  for (const group of groups.value) {
+    console.log(onlyPlans(group))
+  }
 })
 
 const onlyPlans = (group: BlockGroup) => {
   return group.Events.filter((event) => event.Column === 0).length === 0
-  // 1 行目に表示されるイベントが存在しない場合 true が返る
+  // 1 行目に表示されるイベントが存在しないか、そもそもイベントが存在しない場合 true が返る
+  // true の場合はプランの横幅を可変にし、最大長をもとの長さにする
 }
 </script>
 
@@ -25,32 +29,32 @@ const onlyPlans = (group: BlockGroup) => {
       :class="$style.blockgroup"
       :style="
         onlyPlans(group)
-          ? `grid-template-columns: 40px repeat(${group.Columns + 1}, 1fr);`
-          : `grid-template-columns: 40px repeat(${group.Columns + 1}, 1fr);`
+          ? `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
+          : `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
       "
     >
-      <h5
+      <div
+        v-for="timehead in group.TimeTable"
+        :key="timehead.Line"
+        :class="$style.timehead"
+        :style="`grid-row: ${timehead.Line * 2} / ${timehead.Line * 2 + 1}; grid-column: 1;`"
+      >
+        <h5>{{ getTimeStringNoPad(new Date(timehead.Time)) }}</h5>
+      </div>
+      <div
         v-for="plan in group.Plans"
         :key="plan.ID"
-        style="width: fit-content; border: 1px solid green; flex-grow: 0"
-        :style="`grid-row: ${plan.Row * 2} / ${plan.Row * 2 + 1}; grid-column: ${2};`"
+        :class="$style.plan"
+        :style="`grid-row: ${plan.Row * 2} / ${plan.Row * 2 + 1}; grid-column: 2;`"
       >
-        {{ plan.Text }}
-      </h5>
+        <h5>{{ plan.Text }}</h5>
+      </div>
       <EventBlock
         v-for="event in group.Events"
         :key="event.ID"
         :event="event"
         :style="`grid-row: ${event.Start * 2 + 1} / ${event.End * 2}; grid-column: ${event.Column + 2}`"
       />
-      <div
-        v-for="timehead in group.TimeTable"
-        :key="timehead.Line"
-        :class="$style.timehead"
-        :style="`grid-row: ${timehead.Line * 2} / ${timehead.Line * 2 + 1}; grid-column: ${1};`"
-      >
-        <h5>{{ getTimeStringNoPad(new Date(timehead.Time)) }}</h5>
-      </div>
     </div>
   </div>
 </template>
@@ -65,8 +69,13 @@ const onlyPlans = (group: BlockGroup) => {
 
 .blockgroup {
   display: grid;
-  border: 1px solid white;
-  margin-bottom: 20px;
+  grid-template-rows: minmax(1fr, 2fr);
+}
+
+.plan {
+  width: fit-content;
+  flex-grow: 0;
+  padding: 4px;
 }
 
 .timehead {
@@ -78,6 +87,5 @@ const onlyPlans = (group: BlockGroup) => {
   align-items: center;
   justify-content: center;
   height: 0px;
-  border: 1px solid yellow;
 }
 </style>

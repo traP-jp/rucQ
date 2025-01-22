@@ -165,9 +165,7 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
     eventsDic[event.ID].End = arrangeTimes.indexOf(epoch(event.EndsAt))
   }
 
-  const groups: BlockGroup[] = [
-    { Events: [], Plans: [], Start: 0, End: 0, Columns: 0, TimeTable: [] },
-  ]
+  const groups: BlockGroup[] = []
   const affiliation: number[] = [] // それぞれの時刻がどのグループに所属しているか
 
   // まず Start と End を埋めていく
@@ -176,12 +174,17 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
       arrange[i].before.length === 0 ||
       (arrange[i].before.length === 1 && arrange[i].before[0].isPlan)
     ) {
-      groups[groups.length - 1].End = i
-      groups.push({ Events: [], Plans: [], Start: i + 1, End: 0, Columns: 0, TimeTable: [] })
+      if (groups.length > 0) {
+        groups[groups.length - 1].End = i - 1
+      }
+      groups.push({ Events: [], Plans: [], Start: i, End: 0, Columns: 0, TimeTable: [] })
     }
     groups[groups.length - 1].TimeTable.push({ Line: i, Time: arrangeTimes[i] })
     affiliation.push(groups.length - 1)
   }
+  groups[groups.length - 1].End = groups[groups.length - 1].Start
+
+  console.log(affiliation)
 
   for (const idText in plansDic) {
     const id = Number(idText) // 強制的に string として列挙されるという謎の仕様
@@ -193,6 +196,11 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
     const id = Number(idText)
     const groupNum = affiliation[eventsDic[id].Start]
     groups[groupNum].Events.push(eventsDic[id])
+  }
+
+  for (let i = 0; i < groups.length; i++) {
+    const arr = arrange.slice(groups[i].Start, groups[i].End + 1)
+    groups[i].Columns = Math.max(...arr.map((t) => t.after.length), 1)
   }
 
   console.log(groups)

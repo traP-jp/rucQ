@@ -9,23 +9,22 @@ const props = defineProps<{
 <template>
   <div :class="$style.container">
     <div :class="$style.content">
-      <div style="padding-right: auto">
-        <h2 style="font-weight: 700">{{ props.event.Title }}</h2>
-        <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
-      </div>
+      <h3 style="font-weight: 700">{{ props.event.Title }}</h3>
+      <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
     </div>
   </div>
 </template>
 
 <style module>
 .container {
-  width: 100%;
   padding: 4px;
-  border: 1px solid blue;
+  flex-grow: 0;
 }
 
 .content {
-  background-color: rgb(185, 9, 9);
+  width: 100%;
+  height: 100%;
+  background-color: #0088ff;
   padding: 10px;
   border-radius: 10px;
 }
