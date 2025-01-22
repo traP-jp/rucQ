@@ -373,6 +373,80 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/answers:
+    post:
+      summary: 回答を作成
+      tags:
+        - Questions
+      operationId: postAnswer
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAnswerRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/answers/{answer_id}:
+    put:
+      summary: 回答を更新
+      tags:
+        - Questions
+      operationId: putAnswer
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAnswerRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 回答を削除
+      tags:
+        - Questions
+      operationId: deleteAnswer
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -460,6 +534,13 @@ components:
       name: question_id
       in: path
       description: 質問ID
+      required: true
+      schema:
+        type: integer
+    AnswerId:
+      name: answer_id
+      in: path
+      description: 回答ID
       required: true
       schema:
         type: integer
@@ -664,6 +745,32 @@ components:
         - is_public
         - due
         - is_open
+    Answer:
+      type: object
+      properties:
+        id:
+          type: string
+        question_id:
+          type: integer
+        user_traq_id:
+          type: string
+        content:
+          type: string
+          nullable: true
+      required:
+        - id
+        - question_id
+        - user_traq_id
+    PostAnswerRequest:
+      type: object
+      properties:
+        question_id:
+          type: integer
+        content:
+          type: string
+      required:
+        - question_id
+        - content
     PostStaffRequest:
       type: object
       properties:
