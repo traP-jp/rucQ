@@ -47,7 +47,6 @@ const value = computed(() => {
       <v-text-field
         v-model="textValue"
         :disabled="selectNo"
-        clearable
         label="アレルギー"
         hint="12/28まで アレルギー情報を入力してください"
         persistent-hint
@@ -61,7 +60,6 @@ const value = computed(() => {
     <div v-if="props.editMode && props.type === 'number'" :class="$style.numberEdit">
       <v-text-field
         v-model="numberValue"
-        clearable
         label="身長"
         hint="1/5まで 単位はcmです"
         persistent-hint
@@ -71,7 +69,6 @@ const value = computed(() => {
     <div v-if="props.editMode && props.type === 'select'" :class="$style.selectEdit">
       <v-select
         v-model="selectValue"
-        clearable
         label="スキー"
         :items="['する', 'しない']"
         hint="1/5まで する場合はレンタル調査にも回答してください"
