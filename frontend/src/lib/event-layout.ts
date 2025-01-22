@@ -132,7 +132,7 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
       column++ // 第 0 列を抽出して、プランが一つでも含まれていれば第 1 列に移る
     }
     const hasEvent = (arr: TimeStatus) => {
-      if (arr.after.length === column) {
+      while (arr.after.length <= column) {
         arr.after.push({ isPlan: false, id: null })
       }
       return Boolean(arr.after[column].id)
