@@ -1,4 +1,4 @@
-import type { Event, Plan, EventBlock, PlanBlock, BlockGroup, TimeHead } from '@/lib/event-layout'
+import type { Event, Plan } from '@/lib/event-layout'
 
 export const events: Event[] = [
   {
@@ -7,6 +7,7 @@ export const events: Event[] = [
     Place: 'BBQ場',
     StartsAt: '2024-09-10T17:10:00.000000+09:00',
     EndsAt: '2024-09-10T19:30:00.000000+09:00',
+    Color: '2444A4',
   },
   {
     ID: 2,
@@ -14,6 +15,7 @@ export const events: Event[] = [
     Place: '会議室',
     StartsAt: '2024-09-10T21:00:00.000000+09:00',
     EndsAt: '2024-09-10T22:00:00.000000+09:00',
+    Color: '2444A4',
   },
   {
     ID: 3,
@@ -21,6 +23,7 @@ export const events: Event[] = [
     Place: '富士急ハイランド',
     StartsAt: '2024-09-11T09:00:00.000000+09:00',
     EndsAt: '2024-09-11T16:45:00.000000+09:00',
+    Color: '9FB0E4',
   },
   {
     ID: 4,
@@ -28,6 +31,7 @@ export const events: Event[] = [
     Place: 'カチカチ山ロープウェイ',
     StartsAt: '2024-09-11T09:00:00.000000+09:00',
     EndsAt: '2024-09-11T16:45:00.000000+09:00',
+    Color: '2444A4',
   },
   {
     ID: 5,
@@ -35,6 +39,7 @@ export const events: Event[] = [
     Place: '青木ヶ原樹海',
     StartsAt: '2024-09-11T09:00:00.000000+09:00',
     EndsAt: '2024-09-11T16:45:00.000000+09:00',
+    Color: '9FB0E4',
   },
   {
     ID: 6,
@@ -42,6 +47,7 @@ export const events: Event[] = [
     Place: 'ハンドボールコート',
     StartsAt: '2024-09-10T14:00:00.000000+09:00',
     EndsAt: '2024-09-10T16:00:00.000000+09:00',
+    Color: '9DD8FF',
   },
   {
     ID: 7,
@@ -49,6 +55,7 @@ export const events: Event[] = [
     Place: '宴会場',
     StartsAt: '2024-09-10T15:30:00.000000+09:00',
     EndsAt: '2024-09-10T16:30:00.000000+09:00',
+    Color: '9DD8FF',
   },
   {
     ID: 8,
@@ -56,6 +63,7 @@ export const events: Event[] = [
     Place: 'BBQ場',
     StartsAt: '2024-09-10T19:30:00.000000+09:00',
     EndsAt: '2024-09-10T20:30:00.000000+09:00',
+    Color: 'FFD0C2',
   },
   {
     ID: 9,
@@ -63,6 +71,7 @@ export const events: Event[] = [
     Place: '会議室',
     StartsAt: '2024-09-10T22:00:00.000000+09:00',
     EndsAt: '2024-09-10T23:30:00.000000+09:00',
+    Color: 'CEED94',
   },
   {
     ID: 10,
@@ -70,6 +79,7 @@ export const events: Event[] = [
     Place: '食堂',
     StartsAt: '2024-09-11T20:00:00.000000+09:00',
     EndsAt: '2024-09-11T21:00:00.000000+09:00',
+    Color: 'FFDAA3',
   },
   {
     ID: 11,
@@ -77,6 +87,7 @@ export const events: Event[] = [
     Place: 'ミーティングルーム',
     StartsAt: '2024-09-11T20:00:00.000000+09:00',
     EndsAt: '2024-09-11T23:00:00.000000+09:00',
+    Color: 'FF9900',
   },
 ]
 
@@ -87,162 +98,4 @@ export const plans: Plan[] = [
   { ID: 4, At: '2024-09-11T01:00:00.000000+09:00', Text: '宴会場完全撤収' },
   { ID: 5, At: '2024-09-11T08:00:00.000000+09:00', Text: '朝食' },
   { ID: 6, At: '2024-09-11T18:00:00.000000+09:00', Text: '夕食' },
-]
-
-export const eventblocks: EventBlock[] = [
-  {
-    ID: 1,
-    Title: 'BBQ',
-    Place: 'BBQ場',
-    StartsAt: '2024-09-10T17:10:00.000000+09:00',
-    EndsAt: '2024-09-10T19:30:00.000000+09:00',
-    Start: 16,
-    End: 18,
-    Column: 1,
-  },
-  {
-    ID: 2,
-    Title: 'らん☆ぷろ',
-    Place: '会議室',
-    StartsAt: '2024-09-10T21:00:00.000000+09:00',
-    EndsAt: '2024-09-10T22:00:00.000000+09:00',
-    Start: 22,
-    End: 24,
-    Column: 1,
-  },
-  {
-    ID: 3,
-    Title: 'プランA',
-    Place: '富士急ハイランド',
-    StartsAt: '2024-09-11T09:00:00.000000+09:00',
-    EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    Start: 32,
-    End: 34,
-    Column: 1,
-  },
-  {
-    ID: 4,
-    Title: 'プランB',
-    Place: 'カチカチ山ロープウェイ',
-    StartsAt: '2024-09-11T09:00:00.000000+09:00',
-    EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    Start: 32,
-    End: 34,
-    Column: 2,
-  },
-  {
-    ID: 5,
-    Title: 'プランC',
-    Place: '青木ヶ原樹海',
-    StartsAt: '2024-09-11T09:00:00.000000+09:00',
-    EndsAt: '2024-09-11T16:45:00.000000+09:00',
-    Start: 32,
-    End: 34,
-    Column: 3,
-  },
-  {
-    ID: 6,
-    Title: '新体力テスト',
-    Place: 'ハンドボールコート',
-    StartsAt: '2024-09-10T14:00:00.000000+09:00',
-    EndsAt: '2024-09-10T16:00:00.000000+09:00',
-    Start: 6,
-    End: 10,
-    Column: 1,
-  },
-  {
-    ID: 7,
-    Title: '利き水',
-    Place: '宴会場',
-    StartsAt: '2024-09-10T15:30:00.000000+09:00',
-    EndsAt: '2024-09-10T16:30:00.000000+09:00',
-    Start: 8,
-    End: 12,
-    Column: 2,
-  },
-  {
-    ID: 8,
-    Title: '花火',
-    Place: 'BBQ場',
-    StartsAt: '2024-09-10T19:30:00.000000+09:00',
-    EndsAt: '2024-09-10T20:30:00.000000+09:00',
-    Start: 18,
-    End: 20,
-    Column: 1,
-  },
-  {
-    ID: 9,
-    Title: 'リアル脱出ゲーム',
-    Place: '会議室',
-    StartsAt: '2024-09-10T22:00:00.000000+09:00',
-    EndsAt: '2024-09-10T23:30:00.000000+09:00',
-    Start: 24,
-    End: 26,
-    Column: 1,
-  },
-  {
-    ID: 10,
-    Title: 'プレゼント交換会',
-    Place: '食堂',
-    StartsAt: '2024-09-11T20:00:00.000000+09:00',
-    EndsAt: '2024-09-11T21:00:00.000000+09:00',
-    Start: 38,
-    End: 40,
-    Column: 1,
-  },
-  {
-    ID: 11,
-    Title: 'ややデカ音会',
-    Place: 'ミーティングルーム',
-    StartsAt: '2024-09-11T20:00:00.000000+09:00',
-    EndsAt: '2024-09-11T23:00:00.000000+09:00',
-    Start: 38,
-    End: 42,
-    Column: 2,
-  },
-]
-
-export const planblocks: PlanBlock[] = [
-  { ID: 1, At: '2024-09-10T10:30:00.000000+09:00', Text: '足柄SAに到着、昼食休憩', Row: 1 },
-  { ID: 2, At: '2024-09-10T12:30:00.000000+09:00', Text: '三盛荘到着', Row: 3 },
-  { ID: 3, At: '2024-09-10T17:00:00.000000+09:00', Text: 'BBQ場へバス出発', Row: 13 },
-  { ID: 4, At: '2024-09-11T01:00:00.000000+09:00', Text: '宴会場完全撤収', Row: 27 },
-  { ID: 5, At: '2024-09-11T08:00:00.000000+09:00', Text: '朝食', Row: 29 },
-  { ID: 6, At: '2024-09-11T18:00:00.000000+09:00', Text: '夕食', Row: 35 },
-]
-
-const epoch = (timeString: string) => new Date(timeString).valueOf()
-
-export const timetable: TimeHead[] = [
-  { Time: epoch('2024-09-10T10:30:00.000000+09:00'), Line: 1 },
-  { Time: epoch('2024-09-10T12:30:00.000000+09:00'), Line: 3 },
-  { Time: epoch('2024-09-10T14:00:00.000000+09:00'), Line: 5 },
-  { Time: epoch('2024-09-10T15:30:00.000000+09:00'), Line: 7 },
-  { Time: epoch('2024-09-10T16:00:00.000000+09:00'), Line: 9 },
-  { Time: epoch('2024-09-10T17:00:00.000000+09:00'), Line: 11 },
-  { Time: epoch('2024-09-10T17:10:00.000000+09:00'), Line: 13 },
-  { Time: epoch('2024-09-10T19:30:00.000000+09:00'), Line: 15 },
-  { Time: epoch('2024-09-10T20:30:00.000000+09:00'), Line: 17 },
-  { Time: epoch('2024-09-10T21:00:00.000000+09:00'), Line: 19 },
-  { Time: epoch('2024-09-10T22:00:00.000000+09:00'), Line: 21 },
-  { Time: epoch('2024-09-10T23:30:00.000000+09:00'), Line: 23 },
-  { Time: epoch('2024-09-11T01:00:00.000000+09:00'), Line: 25 },
-  { Time: epoch('2024-09-11T08:00:00.000000+09:00'), Line: 27 },
-  { Time: epoch('2024-09-11T09:00:00.000000+09:00'), Line: 29 },
-  { Time: epoch('2024-09-11T16:45:00.000000+09:00'), Line: 31 },
-  { Time: epoch('2024-09-11T18:00:00.000000+09:00'), Line: 33 },
-  { Time: epoch('2024-09-11T20:00:00.000000+09:00'), Line: 35 },
-  { Time: epoch('2024-09-11T21:00:00.000000+09:00'), Line: 37 },
-  { Time: epoch('2024-09-11T23:00:00.000000+09:00'), Line: 39 },
-]
-
-export const blockgroups: BlockGroup[] = [
-  {
-    Events: eventblocks,
-    Plans: planblocks,
-    TimeTable: timetable,
-    Start: 1,
-    End: 4,
-    Columns: 3,
-  },
 ]

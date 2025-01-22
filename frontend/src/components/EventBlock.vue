@@ -8,7 +8,7 @@ const props = defineProps<{
 
 <template>
   <div :class="$style.container">
-    <div :class="$style.content">
+    <div :class="$style.content" :style="`background-color: #${event.Color}`">
       <h3 style="font-weight: 700">{{ props.event.Title }}</h3>
       <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
     </div>

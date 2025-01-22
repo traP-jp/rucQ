@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { getTimeStringNoPad } from '@/lib/date'
-import { getLayout, type BlockGroup } from '@/lib/event-layout'
+import { getTimeStringNoPad, getDayString } from '@/lib/date'
+import { getLayout, epoch, type BlockGroup } from '@/lib/event-layout'
 import { events, plans } from '@/lib/sample-data'
 import EventBlock from '@/components/EventBlock.vue'
 import { onMounted, ref } from 'vue'
 
-const groups = ref<BlockGroup[]>([])
+const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
 
 onMounted(() => {
-  groups.value = getLayout(events, plans)
-  for (const group of groups.value) {
-    console.log(onlyPlans(group))
+  days.value = []
+  const dayStrings: string[] = []
+  for (const group of getLayout(events, plans)) {
+    const date = new Date(group.TimeTable[0].Time)
+    const index = dayStrings.indexOf(getDayString(date))
+    if (index === -1) {
+      days.value.push({ dateString: getDayString(date), groups: [group] })
+      dayStrings.push(getDayString(date))
+    } else {
+      days.value[index].groups.push(group)
+    }
   }
 })
 
@@ -22,39 +30,61 @@ const onlyPlans = (group: BlockGroup) => {
 </script>
 
 <template>
-  <div :class="$style.container" v-if="groups.length > 0">
-    <div
-      v-for="group in groups"
-      :key="group.Start"
-      :class="$style.blockgroup"
-      :style="
-        onlyPlans(group)
-          ? `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
-          : `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
-      "
-    >
+  <div :class="$style.container" v-if="days.length > 0">
+    <div v-for="(day, index) in days" :key="day.dateString">
+      <h2 style="margin-bottom: 20px; font-weight: 700">
+        {{ `Day ${index} - ${day.dateString}` }}
+      </h2>
       <div
-        v-for="timehead in group.TimeTable"
-        :key="timehead.Line"
-        :class="$style.timehead"
-        :style="`grid-row: ${timehead.Line * 2} / ${timehead.Line * 2 + 1}; grid-column: 1;`"
+        v-for="group in day.groups"
+        :key="group.Start"
+        :class="$style.blockgroup"
+        :style="
+          onlyPlans(group)
+            ? `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
+            : `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
+        "
       >
-        <h5>{{ getTimeStringNoPad(new Date(timehead.Time)) }}</h5>
+        <div
+          v-for="timehead in group.TimeTable"
+          :key="timehead.Line"
+          :class="$style.timehead"
+          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 1} / ${(timehead.Line - group.Start) * 2 + 2}; grid-column: 1;`"
+        >
+          <h5>{{ getTimeStringNoPad(new Date(timehead.Time)) }}</h5>
+        </div>
+        <div
+          v-for="timehead in group.TimeTable"
+          :key="timehead.Line"
+          style="margin-bottom: 20px"
+          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 2} / ${(timehead.Line - group.Start) * 2 + 3}; grid-column: 1;`"
+        ></div>
+        <div
+          v-for="timehead in group.TimeTable"
+          :key="timehead.Line"
+          :class="$style.line"
+          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 2} / ${(timehead.Line - group.Start) * 2 + 3}; grid-column: 2 / 100;`"
+        >
+          <hr
+            v-if="!group.Plans.map((p) => epoch(p.At)).includes(timehead.Time)"
+            style="border: 0px; border-top: 1px dashed gray; margin-top: -0.5px"
+          />
+        </div>
+        <div
+          v-for="plan in group.Plans"
+          :key="plan.ID"
+          :class="$style.plan"
+          :style="`grid-row: ${(plan.Row - group.Start) * 2 + 1} / ${(plan.Row - group.Start) * 2 + 2}; grid-column: 2;`"
+        >
+          <h5>{{ plan.Text }}</h5>
+        </div>
+        <EventBlock
+          v-for="event in group.Events"
+          :key="event.ID"
+          :event="event"
+          :style="`grid-row: ${(event.Start - group.Start) * 2 + 2} / ${(event.End - group.Start) * 2 + 1}; grid-column: ${event.Column + 2}`"
+        />
       </div>
-      <div
-        v-for="plan in group.Plans"
-        :key="plan.ID"
-        :class="$style.plan"
-        :style="`grid-row: ${plan.Row * 2} / ${plan.Row * 2 + 1}; grid-column: 2;`"
-      >
-        <h5>{{ plan.Text }}</h5>
-      </div>
-      <EventBlock
-        v-for="event in group.Events"
-        :key="event.ID"
-        :event="event"
-        :style="`grid-row: ${event.Start * 2 + 1} / ${event.End * 2}; grid-column: ${event.Column + 2}`"
-      />
     </div>
   </div>
 </template>
@@ -73,9 +103,15 @@ const onlyPlans = (group: BlockGroup) => {
 }
 
 .plan {
-  width: fit-content;
   flex-grow: 0;
+  width: fit-content;
+  overflow: visible;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   padding: 4px;
+  height: 0px;
 }
 
 .timehead {
@@ -87,5 +123,12 @@ const onlyPlans = (group: BlockGroup) => {
   align-items: center;
   justify-content: center;
   height: 0px;
+}
+
+.line {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 </style>

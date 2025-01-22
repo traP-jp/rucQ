@@ -8,6 +8,7 @@ export type Event = {
   Place: string // イベントの開催場所
   StartsAt: string // ISO 標準の文字列
   EndsAt: string
+  Color: string // イベントブロックの色
 }
 
 // プラン（黒字で表示される合宿のしおり的なスケジュール）を表す型
@@ -41,7 +42,7 @@ export type BlockGroup = {
   TimeTable: TimeHead[] // グループに含まれる時刻
 }
 
-const epoch = (timeString: string) => new Date(timeString).valueOf()
+export const epoch = (timeString: string) => new Date(timeString).valueOf()
 // ISO 文字列が与えられたとき、その時刻について UNIX 元期からの経過ミリ秒数（切り捨て整数値）を返す関数
 
 export const getLayout = (events: Event[], plans: Plan[]) => {
