@@ -263,6 +263,65 @@ paths:
                 $ref: '#/components/schemas/GetUserResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/staffs:
+    get:
+      summary: 合宿係の一覧を取得
+      tags:
+        - Staffs
+      operationId: getStaffs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetUserResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 合宿係を追加
+      tags:
+        - Staffs
+      operationId: postStaff
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostStaffRequest'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 合宿係を削除
+      tags:
+        - Staffs
+      operationId: deleteStaff
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   parameters:
@@ -439,6 +498,13 @@ components:
       required:
         - traq_id
         - is_staff
+    PostStaffRequest:
+      type: object
+      properties:
+        traq_id:
+          type: string
+      required:
+        - traq_id
 
 tags:
   - name: Camps
@@ -447,3 +513,5 @@ tags:
     description: Event API
   - name: Users
     description: User API
+  - name: Staffs
+    description: Staff API
