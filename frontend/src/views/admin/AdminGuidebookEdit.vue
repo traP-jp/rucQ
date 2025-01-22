@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 
+
 // あとでvuetifyにします
 import penIcon from '@/assets/penIcon.svg'
 import penIconActive from '@/assets/penIconActive.svg'
@@ -33,7 +34,7 @@ const handleInputChange = () => {
   isSaved.value = false
 }
 
-// ルート離脱時に自動保存
+// ルート離脱時に自動保存 するかは未定
 onBeforeRouteLeave((to, from, next) => {
   if (!isSaved.value) {
     saveMarkdown()
@@ -61,7 +62,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 
-// ダミー保存関数　後で消す
+// ダミー保存関数　後でバックエンドと連携する
 const saveMarkdown = () => {
   alert('保存しました！（バックエンド連携予定）')
   isSaved.value = true
