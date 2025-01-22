@@ -170,12 +170,14 @@ function showPreviewOnly() {
   background: none;
   border-radius: 10px;
 }
-
-.editor-area::-webkit-scrollbar-thumb,
-.preview-section::-webkit-scrollbar-thumb {
+.preview-section::-webkit-scrollbar-thumb,
+.editor-area::-webkit-scrollbar-thumb{
   border-radius: 10px;
-  border: 2px solid #ffffff;
+  border: 2px solid #86858a;
+
 }
+
+
 
 .editor-area::-webkit-scrollbar-thumb:hover,
 .preview-section::-webkit-scrollbar-thumb:hover {
