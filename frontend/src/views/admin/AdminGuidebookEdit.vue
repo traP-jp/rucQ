@@ -3,7 +3,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 
-
 // あとでvuetifyにします
 import penIcon from '@/assets/penIcon.svg'
 import penIconActive from '@/assets/penIconActive.svg'
@@ -27,7 +26,17 @@ const previewHtml = computed(() => marked(markdown.value))
 
 const router = useRouter()
 
-const isSaved = ref(true); /* 保存されたかどうかのフラグ 　未保存で消えちゃった、にならないように*/
+const isSaved = ref(true) /* 保存されたかどうかのフラグ 　未保存で消えちゃった、にならないように*/
+
+const isMobile = ref(false)
+
+const handleResize = () => {
+  /*　画面幅によってviewModeを変更する　スマホモードの時にsplitいらない*/
+  isMobile.value = window.innerWidth <= 768
+  if (isMobile.value) {
+    viewMode.value = 'edit'
+  }
+}
 
 // 入力変更時に isSaved を false に設定する
 const handleInputChange = () => {
@@ -55,6 +64,8 @@ const handleBeforeUnload = (event) => {
 }
 
 onMounted(() => {
+  handleResize()
+  window.addEventListener('resize', handleResize)
   window.addEventListener('beforeunload', handleBeforeUnload)
 })
 
@@ -105,19 +116,20 @@ const handleBlur = () => {
           :src="viewMode === 'edit' ? penIconActive : penIcon"
           alt="Pen Icon"
           @click="showEditOnly"
-           :class="{ 'active-background': viewMode === 'edit' }"
+          :class="{ 'active-background': viewMode === 'edit' }"
         />
         <img
+          v-if="!isMobile"
           :src="viewMode === 'split' ? splitIconActive : splitIcon"
           alt="Split Icon"
           @click="showSplit"
-           :class="{ 'active-background': viewMode === 'split' }"
+          :class="{ 'active-background': viewMode === 'split' }"
         />
         <img
           :src="viewMode === 'preview' ? eyeIconActive : eyeIcon"
           alt="Eye Icon"
           @click="showPreviewOnly"
-           :class="{ 'active-background': viewMode === 'preview' }"
+          :class="{ 'active-background': viewMode === 'preview' }"
         />
       </div>
       <button class="save-button" @click="saveMarkdown">
@@ -226,13 +238,10 @@ const handleBlur = () => {
   border-radius: 10px;
 }
 .preview-section::-webkit-scrollbar-thumb,
-.editor-area::-webkit-scrollbar-thumb{
+.editor-area::-webkit-scrollbar-thumb {
   border-radius: 10px;
   border: 2px solid #86858a;
-
 }
-
-
 
 .editor-area::-webkit-scrollbar-thumb:hover,
 .preview-section::-webkit-scrollbar-thumb:hover {
@@ -268,7 +277,10 @@ const handleBlur = () => {
   padding: 8px;
   margin: 0;
   border-radius: 6px;
-  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition:
+    background-color 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .editer-toolbar img.active-background {
