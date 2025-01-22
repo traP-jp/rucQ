@@ -18,8 +18,8 @@ export type Plan = {
 }
 
 export type EventBlock = Event & {
-  StartRow: number // イベントブロックの始まりが第何行か
-  EndRow: number // イベントブロックの終わりが第何行か
+  Start: number // イベントブロックの始まりが第何行か
+  End: number // イベントブロックの終わりが第何行か
   Column: number // イベントブロックは第何列にいるか
 }
 
@@ -27,147 +27,175 @@ export type PlanBlock = Plan & {
   Row: number // 第何行に書かれているか
 }
 
+export type TimeHead = {
+  Line: number // 第何行の時刻表示か
+  Time: number // 時刻（UNIX 元期からの経過ミリ秒数）
+}
+
 export type BlockGroup = {
   Events: EventBlock[] // 含まれているイベント
   Plans: PlanBlock[] // 含まれているプラン
-  StartRow: number // 始まりが第何行か
-  EndRow: number // 終わりが第何行か
+  Start: number // 始まりが第何行か
+  End: number // 終わりが第何行か
   Columns: number // このグループの横幅（整数値）
+  TimeTable: TimeHead[] // グループに含まれる時刻
 }
 
 const epoch = (timeString: string) => new Date(timeString).valueOf()
 // ISO 文字列が与えられたとき、その時刻について UNIX 元期からの経過ミリ秒数（切り捨て整数値）を返す関数
 
-export const getLayout = (events: Event[], plans: Plan[], campStartsAt: string) => {
-  const timeStamps: { timeText: string; kind: number; id: number }[] = [
-    { timeText: campStartsAt, kind: 0, id: 0 },
-  ]
-  // timeText は日時を表す ISO 文字列、kind はスタンプの種類を表す数字
-  // スタンプの種類を表す数字は 0: その他, 1: イベントの終了, 2: プラン,  3: イベントの開始。これがそのまま処理の優先順位
-  // ID は正整数と約束するが、時系列に沿って昇順である必要も、連番である必要もない
-  // あとで ID を文字列の仕様に変更することもおそらくさほど難しくない
-
+export const getLayout = (events: Event[], plans: Plan[]) => {
+  plans.sort((a, b) => epoch(a.At) - epoch(b.At))
   const plansDic: { [id: number]: PlanBlock } = {} // あとで使う。ID は一意なので連想配列（辞書）を定義できる
   for (const plan of plans) {
     plansDic[plan.ID] = { ...plan, Row: 0 }
-    timeStamps.push({ timeText: plan.At, kind: 2, id: plan.ID })
   }
 
+  events.sort((a, b) => {
+    if (epoch(a.StartsAt) > epoch(b.StartsAt)) {
+      return 1
+    } else if (epoch(a.StartsAt) < epoch(b.StartsAt)) {
+      return -1
+    } else {
+      return epoch(a.EndsAt) - epoch(b.EndsAt)
+    }
+  })
   const eventsDic: { [id: number]: EventBlock } = {}
   for (const event of events) {
-    eventsDic[event.ID] = { ...event, StartRow: 0, EndRow: 0, Column: 0 }
-    timeStamps.push({ timeText: event.StartsAt, kind: 3, id: event.ID })
-    timeStamps.push({ timeText: event.EndsAt, kind: 1, id: event.ID })
+    eventsDic[event.ID] = { ...event, Start: 0, End: 0, Column: 0 }
   }
 
-  timeStamps.sort((a, b) => epoch(a.timeText) + 0.1 * a.kind - (epoch(b.timeText) + 0.1 * b.kind))
-  // 時刻の早い順にソート。同時ならば「イベントの終了」「プラン」「イベントの開始」の順
+  type TimeStatus = {
+    time: number // 日時（UNIX 元期からの経過ミリ秒数）
+    before: { isPlan: boolean; id: number | null }[] // その時刻に開始するイベント終了直後の状態と、その時刻ちょうどのプラン
+    after: { isPlan: boolean; id: number | null }[] // その時刻に開始するイベント開始直後の状態
+  }
 
-  console.log(timeStamps)
+  const arrange: TimeStatus[] = []
+  const arrangeTimes: number[] = [] // arrange に登録されている日時のみの配列
 
-  // ここまでで配列 timeStamp が完成
-  // timeStamp は各要素が「イベントの開始」「イベントの終了」「プラン」のいずれかに対応し、起こったことの情報を持つ
+  for (const plan of plans) {
+    arrange.push({
+      time: epoch(plan.At),
+      before: [{ isPlan: true, id: plan.ID }],
+      after: [],
+    })
+    arrangeTimes.push(epoch(plan.At))
+  }
 
-  const arrange: { time: number; blocks: { isPlan: boolean; id: number }[] }[] = [
-    { time: epoch(campStartsAt), blocks: [] },
-  ]
-  // time は 日時（UNIX 元期からの経過ミリ秒数）、blocks は左から順に並べられているブロック
-
-  for (const stamp of timeStamps) {
-    const latest = { ...arrange[arrange.length - 1] }
-    let index = 0 // 変数の定義のみ
-
-    // stamp = イベントの終了
-    if (stamp.kind === 1) {
-      index = latest.slice(2).indexOf(stamp.id)
-      latest[index + 2] = 0
-      while (latest.length > 2 && latest[latest.length - 1] === 0) {
-        latest.pop() // 末尾の 0（イベントがない）の列を削除して幅を縮小
-      }
-      if (epoch(stamp.timeText) > latest[0]) {
-        latest[0] = epoch(stamp.timeText) // 新しい時間の話だったなら
-        arrange.push(latest) // latest の時間を更新して arrange に追加
-      } else {
-        arrange[arrange.length - 1] = latest // arrange の最後番目を置き換える
-      }
-      eventsDic[stamp.id].EndRow = arrange.length - 1
+  for (const event of events) {
+    if (!arrangeTimes.includes(epoch(event.StartsAt))) {
+      arrange.push({
+        time: epoch(event.StartsAt),
+        before: [],
+        after: [],
+      })
+      arrangeTimes.push(epoch(event.StartsAt))
     }
-
-    // stamp = プラン
-    if (stamp.kind === 2) {
-      latest[1] = stamp.id
-      arrange.push(latest)
-      plansDic[stamp.id].Row = arrange.length - 1 // プランの位置を辞書に登録
-    }
-
-    // stamp = イベントの開始
-    if (stamp.kind === 3) {
-      // プランを必ず先頭（左端）に表示するために、まず場所取りをさせる
-      // どうやって？
-
-      index = latest.slice(2).indexOf(0)
-      if (index === -1) {
-        // latest の 3 番目以降のうち最初にある 0 の index が -1、すなわち 0 がない
-        latest.push(stamp.id)
-        eventsDic[stamp.id].Column = latest.length - 1
-      } else {
-        latest[index + 2] = stamp.id // index は最初の 2 つを含めない長さなので 2 を足す
-        eventsDic[stamp.id].Column = index + 2
-      }
-      if (epoch(stamp.timeText) > latest[0]) {
-        latest[0] = epoch(stamp.timeText)
-        arrange.push(latest)
-      } else {
-        arrange[arrange.length - 1] = latest
-      }
-      eventsDic[stamp.id].StartRow = arrange.length - 1
+    if (!arrangeTimes.includes(epoch(event.EndsAt))) {
+      arrange.push({
+        time: epoch(event.EndsAt),
+        before: [],
+        after: [],
+      })
+      arrangeTimes.push(epoch(event.EndsAt))
     }
   }
 
-  // ここまでで配列 arrange と 辞書 eventsDic. plansDic が完成
-  // arrange は各要素が区切り時間に対応し、プランと開催中のイベントの情報を持つ
-  // eventsDic, plansDic はそれぞれ各 ID のイベントの情報と表示方法の情報を持つ
+  arrange.sort((a, b) => a.time - b.time)
+  arrangeTimes.sort((a, b) => a - b)
+
+  // 以上で全てのプラン及び全てのタイムスタンプ（プラン、イベントの開始・終了）の情報を格納した配列 arrange が得られた
+  // ここから arrange において実際にイベントの配置を決める処理をする
+
+  for (const event of events) {
+    // 1. イベント全体が収まる列を探す
+    // 2. イベントを arrange に収める
+
+    // arrange からイベントが新たに入る部分（開催時刻 <= arr.time < 終了時刻）の行を抽出
+    const filtered = arrange.filter(
+      (arr) => epoch(event.StartsAt) <= arr.time && arr.time < epoch(event.EndsAt),
+    )
+
+    // イベント期間に真に含まれる arr の before[0] にプランが含まれるなら column > 0
+    // イベント期間に含まれる（先頭を含む）arr の after[0] から after[n] までにイベントが含まれるなら column > n
+
+    let column = 0 // イベントを挿入可能な列
+    const hasPlan = (arr: TimeStatus) => {
+      if (arr.before.length === 0) {
+        arr.before.push({ isPlan: false, id: null })
+      }
+      return arr.before[0].isPlan
+    }
+    if (filtered.slice(1).map(hasPlan).includes(true)) {
+      column++ // 第 0 列を抽出して、プランが一つでも含まれていれば第 1 列に移る
+    }
+    const hasEvent = (arr: TimeStatus) => {
+      if (arr.after.length === column) {
+        arr.after.push({ isPlan: false, id: null })
+      }
+      return Boolean(arr.after[column].id)
+    }
+    while (filtered.map(hasEvent).includes(true)) {
+      column++ // 第 n 列を抽出して、イベントが一つでも含まれていれば第 n + 1 列に移る
+    }
+
+    eventsDic[event.ID].Column = column
+
+    // 第 column 列にイベントを追加する
+    filtered[0].after[filtered[0].after.length - 1] = { isPlan: false, id: event.ID }
+    for (let i = 1; i < filtered.length; i++) {
+      filtered[i].before[filtered[i].before.length - 1] = { isPlan: false, id: event.ID }
+      filtered[i].after[filtered[i].after.length - 1] = { isPlan: false, id: event.ID }
+    }
+  }
 
   console.log(arrange)
-  console.log(eventsDic)
-  console.log(plansDic)
 
-  // // 最終的な表示は、縦に複数のグループが並んでいて、それぞれが固有の列数を持つ形式になる
-  // // グループ同士の境は「何もプランやタスクがない時間帯」、arrange の要素でいえば [(日時), 0] の状態
-  // // この境にあたる arrange 要素自体は直前のグループの末尾につく。その日時の直前まで開催されていたイベントがあるかも知れないので
+  // 以上で arrange に全てのプラントスタンプの位置と列の情報が入った
+  // この arrange を、before（次の時間からのイベントが始まる前）にイベントが入っていない要素を境に分割する
+  // それぞれのグループの位置や、グループに含まれるイベントやプラン、横幅などを BlockGroup 型にまとめて返り値とする
 
-  // const groups: BlockGroup[] = [{ Events: [], Plans: [], StartRow: 0, EndRow: 0, Columns: 0 }]
-  // const affiliation: number[] = [] // それぞれの時刻がどのグループに所属しているか
+  for (const plan of plans) {
+    plansDic[plan.ID].Row = arrangeTimes.indexOf(epoch(plan.At))
+  }
 
-  // // まず StartRow と EndRow を埋めていく
-  // for (let i = 0; i < arrange.length; i++) {
-  //   affiliation.push(groups.length - 1)
-  //   if (arrange[i].length === 2) {
-  //     groups[groups.length - 1].EndRow = i
-  //     groups.push({ Events: [], Plans: [], StartRow: i + 1, EndRow: 0, Columns: 0 })
-  //   }
-  // }
-  // groups[groups.length - 1].EndRow = groups[groups.length - 1].StartRow
+  for (const event of events) {
+    eventsDic[event.ID].Start = arrangeTimes.indexOf(epoch(event.StartsAt))
+    eventsDic[event.ID].End = arrangeTimes.indexOf(epoch(event.EndsAt))
+  }
 
-  // for (const idText in plansDic) {
-  //   const id = Number(idText) // 強制的に string として列挙されるという謎の仕様
-  //   const groupNum = affiliation[plansDic[id].Row] // id のプランがどのグループに属するか
-  //   groups[groupNum].Plans.push(plansDic[id])
-  // }
+  const groups: BlockGroup[] = [
+    { Events: [], Plans: [], Start: 0, End: 0, Columns: 0, TimeTable: [] },
+  ]
+  const affiliation: number[] = [] // それぞれの時刻がどのグループに所属しているか
 
-  // for (const idText in eventsDic) {
-  //   const id = Number(idText)
-  //   const groupNum = affiliation[eventsDic[id].StartRow]
-  //   groups[groupNum].Events.push(eventsDic[id])
-  // }
+  // まず Start と End を埋めていく
+  for (let i = 0; i < arrange.length; i++) {
+    if (
+      arrange[i].before.length === 0 ||
+      (arrange[i].before.length === 1 && arrange[i].before[0].isPlan)
+    ) {
+      groups[groups.length - 1].End = i
+      groups.push({ Events: [], Plans: [], Start: i + 1, End: 0, Columns: 0, TimeTable: [] })
+    }
+    groups[groups.length - 1].TimeTable.push({ Line: i, Time: arrangeTimes[i] })
+    affiliation.push(groups.length - 1)
+  }
 
-  // for (let i = 0; i < groups.length - 1; i++) {
-  //   const arr = arrange.slice(groups[i].StartRow, groups[i].EndRow + 1)
-  //   groups[i].Columns = Math.max(...arr.map((t) => t.length)) - 1
-  // }
-  // groups[0].Columns = 0
+  for (const idText in plansDic) {
+    const id = Number(idText) // 強制的に string として列挙されるという謎の仕様
+    const groupNum = affiliation[plansDic[id].Row] // id のプランがどのグループに属するか
+    groups[groupNum].Plans.push(plansDic[id])
+  }
 
-  // console.log(groups)
+  for (const idText in eventsDic) {
+    const id = Number(idText)
+    const groupNum = affiliation[eventsDic[id].Start]
+    groups[groupNum].Events.push(eventsDic[id])
+  }
 
-  // return groups
+  console.log(groups)
+
+  return groups
 }

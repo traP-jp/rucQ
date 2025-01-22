@@ -9,8 +9,10 @@ const props = defineProps<{
 <template>
   <div :class="$style.container">
     <div :class="$style.content">
-      <h2 style="font-weight: 700">{{ props.event.Title }}</h2>
-      <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
+      <div style="padding-right: auto">
+        <h2 style="font-weight: 700">{{ props.event.Title }}</h2>
+        <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +21,7 @@ const props = defineProps<{
 .container {
   width: 100%;
   padding: 4px;
+  border: 1px solid blue;
 }
 
 .content {
