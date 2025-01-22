@@ -44,17 +44,7 @@ func (s *Server) GetQuestions(e echo.Context) error {
 }
 
 func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
-
-	if err != nil {
-		e.Logger().Errorf("failed to get or create user: %v", err)
-
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
-	}
-
-	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "You are not allowed to create a question")
-	}
+	// TODO: 合宿係かどうかを確認する
 
 	var req PostQuestionJSONRequestBody
 
