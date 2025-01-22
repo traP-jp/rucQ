@@ -3,10 +3,10 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
- <RouterView />
   <header class="app-header">
     <h1 class="app-title">rucQ</h1>
   </header>
+  <RouterView />
 </template>
 
 
