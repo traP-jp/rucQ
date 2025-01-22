@@ -32,7 +32,7 @@ const router = createRouter({
           component: () => import('@/views/UserInformationView.vue'),
         },
         {
-          path: '/admin',
+          path: 'admin',
           children: [
             {
               path: '',
