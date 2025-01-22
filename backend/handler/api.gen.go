@@ -72,6 +72,7 @@ type PostQuestionRequest struct {
 	Due         time.Time `json:"due"`
 	IsOpen      bool      `json:"is_open"`
 	IsPublic    bool      `json:"is_public"`
+	Options     *[]string `json:"options"`
 	Title       string    `json:"title"`
 	Type        string    `json:"type"`
 }
@@ -88,8 +89,12 @@ type Question struct {
 	Id          int       `json:"id"`
 	IsOpen      bool      `json:"is_open"`
 	IsPublic    bool      `json:"is_public"`
-	Title       string    `json:"title"`
-	Type        string    `json:"type"`
+	Options     *[]struct {
+		Content string `json:"content"`
+		Id      string `json:"id"`
+	} `json:"options"`
+	Title string `json:"title"`
+	Type  string `json:"type"`
 }
 
 // User defines model for User.
