@@ -1,7 +1,7 @@
 <template>
   <header class="guidebook-header">Guidebook</header>
 
-  <div class="guidebook-markdown" v-html="htmlContent"></div>
+  <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
   <footer class="guidebook-footer">
     <p>© 2024 Summer Camp</p>
@@ -86,55 +86,5 @@ const htmlContent = computed(() => marked(markdown.value))
   padding: 70px 30px 70px 30px; /* 下にフッターの余白を追加 */
 }
 
-.guidebook-markdown h1 {
-  color: var(--color-secondary);
-  margin-bottom: 24px;
-  border-bottom: 1px solid #f7ae5a;
-  padding-bottom: 8px;
-}
 
-.guidebook-markdown h2 {
-  color: #092c57;
-  border-bottom: 1px solid #f7ae5a;
-  margin-top: 24px;
-  margin-bottom: 16px;
-}
-.guidebook-markdown h3 {
-  color: #092c57;
-  line-height: 1;
-  font-size: 1.2rem;
-  margin-top: 24px;
-  margin-bottom: 14px;
-}
-
-.guidebook-markdown a {
-  color: #164fed;
-  margin: 2px;
-  overflow-wrap: break-word;
-  padding: 0;
-  line-height: 0.1px;
-}
-
-.guidebook-markdown a:hover {
-  color: #0842e2;
-}
-
-.guidebook-footer {
-  /* フッター あとでちゃんとしたのにする*/
-  background-color: #2c5282;
-  color: #f7fafc;
-  text-align: center;
-  padding: 10px;
-  font-size: 0.9rem;
-  bottom: 0;
-  position: fixed;
-  width: 100%;
-}
-
-.guidebook-markdown strong {
-  background-color: none;
-  /* 文字を太字にする */
-  font-weight: bold;
-  padding: 2px;
-}
 </style>

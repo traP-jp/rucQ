@@ -146,7 +146,7 @@ const handleBlur = () => {
       ></textarea>
       <div class="center-bar" v-if="viewMode === 'split'"></div>
       <div
-        class="preview-section"
+        :class="['preview-section','markdown']"
         v-if="viewMode === 'preview' || viewMode === 'split'"
         v-html="previewHtml"
       ></div>
@@ -227,26 +227,7 @@ const handleBlur = () => {
   overflow-y: scroll;
 }
 
-/* スクロールバーのカスタマイズ  　どこかにおいてもいいかも*/
-.editor-area::-webkit-scrollbar,
-.preview-section::-webkit-scrollbar {
-  width: 3px;
-}
 
-.editor-area::-webkit-scrollbar-track .preview-section::-webkit-scrollbar-track {
-  background: none;
-  border-radius: 10px;
-}
-.preview-section::-webkit-scrollbar-thumb,
-.editor-area::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  border: 2px solid #86858a;
-}
-
-.editor-area::-webkit-scrollbar-thumb:hover,
-.preview-section::-webkit-scrollbar-thumb:hover {
-  background-color: #ccc;
-}
 
 .toolbar {
   /*ヘッダーと同じ色にしたい*/
@@ -304,11 +285,6 @@ const handleBlur = () => {
   margin: 0;
 }
 
-/* 最終更新時刻 */
-.last-updated {
-  font-size: 0.9rem;
-  color: #666;
-}
 
 /* 保存ボタン */
 .save-button {
@@ -329,45 +305,7 @@ const handleBlur = () => {
   padding: 0;
 }
 
-/* 以下　mdの表示設定　どこかにまとめてもいいかも */
 
-.preview-section h1 {
-  color: var(--color-secondary);
-  margin-bottom: 24px;
-  border-bottom: 1px solid #f7ae5a;
-  padding-bottom: 8px;
-}
 
-.preview-section h2 {
-  color: #092c57;
-  border-bottom: 1px solid #f7ae5a;
-  margin-top: 24px;
-  margin-bottom: 16px;
-}
-.preview-section h3 {
-  color: #092c57;
-  line-height: 1;
-  font-size: 1.2rem;
-  margin-top: 24px;
-  margin-bottom: 14px;
-}
 
-.preview-section a {
-  color: #164fed;
-  margin: 2px;
-  overflow-wrap: break-word;
-  padding: 0;
-  line-height: 0.1px;
-}
-
-.preview-section a:hover {
-  color: #0842e2;
-}
-
-.preview-section strong {
-  background-color: none;
-  /* 文字を太字にする */
-  font-weight: bold;
-  padding: 2px;
-}
 </style>
