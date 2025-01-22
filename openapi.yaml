@@ -24,7 +24,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GetCampResponse'
+                  $ref: '#/components/schemas/Camp'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -46,7 +46,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCampResponse'
+                $ref: '#/components/schemas/Camp'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -67,7 +67,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCampResponse'
+                $ref: '#/components/schemas/Camp'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -92,7 +92,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCampResponse'
+                $ref: '#/components/schemas/Camp'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -115,7 +115,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GetEventResponse'
+                  $ref: '#/components/schemas/Event'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -137,7 +137,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetEventResponse'
+                $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -156,7 +156,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetEventResponse'
+                $ref: '#/components/schemas/Event'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -181,7 +181,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetEventResponse'
+                $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -241,7 +241,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GetUserResponse'
+                  $ref: '#/components/schemas/User'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -260,7 +260,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetUserResponse'
+                $ref: '#/components/schemas/User'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/questions:
@@ -277,7 +277,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GetQuestionResponse'
+                  $ref: '#/components/schemas/Question'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -299,7 +299,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetQuestionResponse'
+                $ref: '#/components/schemas/Question'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -320,7 +320,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetQuestionResponse'
+                $ref: '#/components/schemas/Question'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -345,7 +345,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetQuestionResponse'
+                $ref: '#/components/schemas/Question'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -387,7 +387,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GetUserResponse'
+                  $ref: '#/components/schemas/User'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -513,7 +513,7 @@ components:
                 type: string
                 example: Internal server error
   schemas:
-    GetCampResponse:
+    Camp:
       type: object
       properties:
         id:
@@ -548,7 +548,7 @@ components:
         - is_draft
         - summary
         - description
-    GetEventResponse:
+    Event:
       type: object
       properties:
         id:
@@ -605,7 +605,7 @@ components:
         - time_end
         - camp_id
         - create_as_staff
-    GetUserResponse:
+    User:
       type: object
       properties:
         traq_id:
@@ -615,7 +615,7 @@ components:
       required:
         - traq_id
         - is_staff
-    GetQuestionResponse:
+    Question:
       type: object
       properties:
         id:

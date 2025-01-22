@@ -16,10 +16,10 @@ func (s *Server) GetEvents(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	response := make([]GetEventResponse, len(events))
+	response := make([]Event, len(events))
 
 	for k, v := range events {
-		response[k] = GetEventResponse{
+		response[k] = Event{
 			Id:              int(v.ID),
 			Name:            v.Name,
 			Location:        v.Location,
@@ -61,7 +61,7 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, &GetEventResponse{
+	return e.JSON(http.StatusCreated, &Event{
 		Id:              eventID,
 		Name:            req.Name,
 		Location:        req.Location,

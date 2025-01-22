@@ -15,7 +15,7 @@ func (s *Server) GetMe(e echo.Context, params GetMeParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, &GetUserResponse{
+	return e.JSON(http.StatusOK, &User{
 		TraqId:  user.TraqID,
 		IsStaff: user.IsStaff,
 	})

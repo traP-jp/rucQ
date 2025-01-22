@@ -12,8 +12,8 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// GetCampResponse defines model for GetCampResponse.
-type GetCampResponse struct {
+// Camp defines model for Camp.
+type Camp struct {
 	Description string `json:"description"`
 	Id          int    `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
@@ -21,8 +21,8 @@ type GetCampResponse struct {
 	Summary     string `json:"summary"`
 }
 
-// GetEventResponse defines model for GetEventResponse.
-type GetEventResponse struct {
+// Event defines model for Event.
+type Event struct {
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
 	Id              int       `json:"id"`
@@ -31,23 +31,6 @@ type GetEventResponse struct {
 	OrganizerTraqId string    `json:"organizer_traq_id"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
-}
-
-// GetQuestionResponse defines model for GetQuestionResponse.
-type GetQuestionResponse struct {
-	Description string    `json:"description"`
-	Due         time.Time `json:"due"`
-	Id          int       `json:"id"`
-	IsOpen      bool      `json:"is_open"`
-	IsPublic    bool      `json:"is_public"`
-	Title       string    `json:"title"`
-	Type        string    `json:"type"`
-}
-
-// GetUserResponse defines model for GetUserResponse.
-type GetUserResponse struct {
-	IsStaff bool   `json:"is_staff"`
-	TraqId  string `json:"traq_id"`
 }
 
 // PostCampRequest defines model for PostCampRequest.
@@ -82,6 +65,23 @@ type PostQuestionRequest struct {
 // PostStaffRequest defines model for PostStaffRequest.
 type PostStaffRequest struct {
 	TraqId string `json:"traq_id"`
+}
+
+// Question defines model for Question.
+type Question struct {
+	Description string    `json:"description"`
+	Due         time.Time `json:"due"`
+	Id          int       `json:"id"`
+	IsOpen      bool      `json:"is_open"`
+	IsPublic    bool      `json:"is_public"`
+	Title       string    `json:"title"`
+	Type        string    `json:"type"`
+}
+
+// User defines model for User.
+type User struct {
+	IsStaff bool   `json:"is_staff"`
+	TraqId  string `json:"traq_id"`
 }
 
 // CampId defines model for CampId.
