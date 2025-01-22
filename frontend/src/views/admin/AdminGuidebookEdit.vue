@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 
 // あとでvuetifyにします
 import penIcon from '@/assets/penIcon.svg'
@@ -23,9 +24,48 @@ const viewMode = ref('split')
 
 const previewHtml = computed(() => marked(markdown.value))
 
+const router = useRouter()
+
+const isSaved = ref(true); /* 保存されたかどうかのフラグ 　未保存で消えちゃった、にならないように*/
+
+// 入力変更時に isSaved を false に設定する
+const handleInputChange = () => {
+  isSaved.value = false
+}
+
+// ルート離脱時に自動保存
+onBeforeRouteLeave((to, from, next) => {
+  if (!isSaved.value) {
+    saveMarkdown()
+    next()
+  } else {
+    next()
+  }
+})
+
+// ウィンドウのリロードやタブを閉じる際に自動保存
+const handleBeforeUnload = (event) => {
+  if (!isSaved.value) {
+    saveMarkdown()
+    // 一部のブラウザでは以下の設定が必要　by gpt
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+})
+
 // ダミー保存関数　後で消す
 const saveMarkdown = () => {
   alert('保存しました！（バックエンド連携予定）')
+  isSaved.value = true
+  // navigator.sendBeacon　これを使うとアンロードされるときにリクエストの中断を避けれそう,少し問題もありそう
 }
 
 function showEditOnly() {
@@ -36,6 +76,18 @@ function showSplit() {
 }
 function showPreviewOnly() {
   viewMode.value = 'preview'
+}
+
+// 保存関数（blurイベント用）　カーソルが離れたら保存する
+const saveMarkdownAsync = async () => {
+  isSaved.value = true // あとで書く
+}
+
+// blurイベントハンドラー
+const handleBlur = () => {
+  if (!isSaved.value) {
+    saveMarkdownAsync()
+  }
 }
 </script>
 
@@ -68,7 +120,7 @@ function showPreviewOnly() {
         />
       </div>
       <button class="save-button" @click="saveMarkdown">
-        <img src="@/assets/saveIcon.svg" alt="Save Icon" />保存
+        <img src="@/assets/saveIcon.svg" alt="Save Icon" />{{ isSaved ? '保存済み' : '未保存' }}
       </button>
     </div>
     <div class="editor-preview">
@@ -76,6 +128,8 @@ function showPreviewOnly() {
         v-if="viewMode === 'edit' || viewMode === 'split'"
         v-model="markdown"
         class="editor-area"
+        @input="handleInputChange"
+        @blur="handleBlur"
       ></textarea>
       <div class="center-bar" v-if="viewMode === 'split'"></div>
       <div
