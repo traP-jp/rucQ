@@ -118,6 +118,9 @@ type EventId = int
 // QuestionId defines model for QuestionId.
 type QuestionId = int
 
+// StaffId defines model for StaffId.
+type StaffId = string
+
 // XForwardedUser defines model for X-Forwarded-User.
 type XForwardedUser = string
 
@@ -226,6 +229,9 @@ type PutQuestionParams struct {
 
 // DeleteStaffParams defines parameters for DeleteStaff.
 type DeleteStaffParams struct {
+	// StaffId 合宿係のtraQ ID
+	StaffId StaffId `form:"staff_id" json:"staff_id"`
+
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
@@ -897,6 +903,12 @@ func (w *ServerInterfaceWrapper) DeleteStaff(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params DeleteStaffParams
+	// ------------- Required query parameter "staff_id" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "staff_id", ctx.QueryParams(), &params.StaffId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter staff_id: %s", err))
+	}
 
 	headers := ctx.Request().Header
 	// ------------- Required header parameter "X-Forwarded-User" -------------

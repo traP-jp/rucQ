@@ -494,6 +494,7 @@ paths:
         - Staffs
       operationId: deleteStaff
       parameters:
+        - $ref: '#/components/parameters/StaffId'
         - $ref: '#/components/parameters/X-Forwarded-User'
       responses:
         '204':
@@ -544,6 +545,13 @@ components:
       required: true
       schema:
         type: integer
+    StaffId:
+      name: staff_id
+      in: query
+      description: 合宿係のtraQ ID
+      required: true
+      schema:
+        type: string
   responses:
     NoContent:
       description: No Content
