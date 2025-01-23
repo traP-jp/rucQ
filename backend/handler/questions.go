@@ -148,7 +148,65 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 }
 
 func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQuestionParams) error {
-	return nil
+	// TODO: 合宿係かどうかを確認する
+
+	var req PutQuestionJSONRequestBody
+
+	if err := e.Bind(&req); err != nil {
+		return e.JSON(http.StatusBadRequest, err)
+	}
+
+	var options []model.Option
+
+	if req.Options != nil {
+		options = make([]model.Option, len(*req.Options))
+
+		for k, v := range *req.Options {
+			options[k] = model.Option{
+				Body: v,
+			}
+		}
+	}
+
+	question, err := s.repo.UpdateQuestion(uint(questionID), &model.Question{
+		Title:       req.Title,
+		Description: req.Description,
+		Type:        req.Type,
+		IsPublic:    req.IsPublic,
+		Due:         &req.Due,
+		IsOpen:      req.IsOpen,
+		Options:     options,
+	})
+
+	if err != nil {
+		e.Logger().Errorf("failed to update question: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var optionsResponse []Option
+
+	if question.Options != nil {
+		optionsResponse = make([]Option, len(question.Options))
+
+		for k, v := range question.Options {
+			optionsResponse[k] = Option{
+				Id:   int(v.ID),
+				Body: v.Body,
+			}
+		}
+	}
+
+	return e.JSON(http.StatusOK, &Question{
+		Id:          int(question.ID),
+		Title:       req.Title,
+		Description: req.Description,
+		Type:        req.Type,
+		IsPublic:    req.IsPublic,
+		Due:         req.Due,
+		IsOpen:      req.IsOpen,
+		Options:     &optionsResponse,
+	})
 }
 
 func (s *Server) PostAnswer(e echo.Context, params PostAnswerParams) error {
