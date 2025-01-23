@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,8 +16,13 @@ func (s *Server) GetMe(e echo.Context, params GetMeParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, &User{
-		TraqId:  user.TraqID,
-		IsStaff: user.IsStaff,
-	})
+	var response User
+
+	if err := copier.Copy(&response, &user); err != nil {
+		e.Logger().Errorf("failed to copy user: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, &response)
 }
