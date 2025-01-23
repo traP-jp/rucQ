@@ -1,5 +1,5 @@
 <template>
-  <header class="guidebook-header">Guidebook</header>
+  <mobile-header v-if="mobile" title="Guidebook" />
 
   <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
@@ -11,6 +11,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
+import MobileHeader from '@/components/layout/MobileHeader.vue'
+import { useDisplay } from 'vuetify'
+
+const { mobile } = useDisplay()
 
 const markdown = ref(`
 # 2024年度 夏合宿

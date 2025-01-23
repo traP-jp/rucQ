@@ -1,8 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+//親コンポーネントからタイトルを受け取る
+const props = defineProps<{
+  title: string
+}>()
+</script>
 
 <template>
   <header class="app-header">
-    <h1 class="app-title">rucQ</h1>
+    <div class="left">
+      <h1 class="app-title">rucQ</h1>
+    </div>
+    <div class="center">
+      <h1 class="page-title">{{ props.title }}</h1>
+    </div>
   </header>
 </template>
 
@@ -18,9 +30,25 @@
   z-index: 100000; /* 他の要素より手前に表示 */
 }
 
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.center {
+  flex-grow: 1; /* 中央のタイトルが残りのスペースを占める */
+  text-align: center;
+}
+
 .app-title {
   font-size: 24px;
   font-weight: bold;
+  margin: 0;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: normal;
   margin: 0;
 }
 </style>

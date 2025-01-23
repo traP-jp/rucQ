@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { ref } from 'vue'
 import UserInformationItem from '@/components/UserInformationItem.vue'
+import { useDisplay } from 'vuetify'
 
 const editMode = ref(true)
+
+const { mobile } = useDisplay()
 </script>
 
 <template>
+  <mobile-header v-if="mobile" title="UserInformation" />
   <div :class="$style.container">
     <div :class="$style.profileContainer">
       <img :class="$style.userIcon" :src="'https://q.trap.jp/api/v3/public/icon/ogu_kazemiya'" />
