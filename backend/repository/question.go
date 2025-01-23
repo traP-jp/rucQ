@@ -5,12 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) CreateQuestion(question *model.Question) (*model.Question, error) {
+func (r *Repository) CreateQuestion(question *model.Question) error {
 	if err := r.db.Create(question).Error; err != nil {
-		return nil, err
+		return err
 	}
 
-	return question, nil
+	return nil
 }
 
 func (r *Repository) GetQuestions() ([]model.Question, error) {
