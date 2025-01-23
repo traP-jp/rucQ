@@ -718,6 +718,11 @@ components:
           type: string
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
         due:
@@ -747,6 +752,11 @@ components:
           type: string
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
         due:

@@ -12,6 +12,22 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
+// Defines values for PostQuestionRequestType.
+const (
+	PostQuestionRequestTypeFreeNumber PostQuestionRequestType = "free_number"
+	PostQuestionRequestTypeFreeText   PostQuestionRequestType = "free_text"
+	PostQuestionRequestTypeMultiple   PostQuestionRequestType = "multiple"
+	PostQuestionRequestTypeSingle     PostQuestionRequestType = "single"
+)
+
+// Defines values for QuestionType.
+const (
+	QuestionTypeFreeNumber QuestionType = "free_number"
+	QuestionTypeFreeText   QuestionType = "free_text"
+	QuestionTypeMultiple   QuestionType = "multiple"
+	QuestionTypeSingle     QuestionType = "single"
+)
+
 // Answer defines model for Answer.
 type Answer struct {
 	Content    *string `json:"content"`
@@ -69,14 +85,17 @@ type PostEventRequest struct {
 
 // PostQuestionRequest defines model for PostQuestionRequest.
 type PostQuestionRequest struct {
-	Description string    `json:"description"`
-	Due         time.Time `json:"due"`
-	IsOpen      bool      `json:"is_open"`
-	IsPublic    bool      `json:"is_public"`
-	Options     *[]string `json:"options"`
-	Title       string    `json:"title"`
-	Type        string    `json:"type"`
+	Description string                  `json:"description"`
+	Due         time.Time               `json:"due"`
+	IsOpen      bool                    `json:"is_open"`
+	IsPublic    bool                    `json:"is_public"`
+	Options     *[]string               `json:"options"`
+	Title       string                  `json:"title"`
+	Type        PostQuestionRequestType `json:"type"`
 }
+
+// PostQuestionRequestType defines model for PostQuestionRequest.Type.
+type PostQuestionRequestType string
 
 // PostStaffRequest defines model for PostStaffRequest.
 type PostStaffRequest struct {
@@ -85,15 +104,18 @@ type PostStaffRequest struct {
 
 // Question defines model for Question.
 type Question struct {
-	Description string    `json:"description"`
-	Due         time.Time `json:"due"`
-	Id          int       `json:"id"`
-	IsOpen      bool      `json:"is_open"`
-	IsPublic    bool      `json:"is_public"`
-	Options     *[]string `json:"options"`
-	Title       string    `json:"title"`
-	Type        string    `json:"type"`
+	Description string       `json:"description"`
+	Due         time.Time    `json:"due"`
+	Id          int          `json:"id"`
+	IsOpen      bool         `json:"is_open"`
+	IsPublic    bool         `json:"is_public"`
+	Options     *[]string    `json:"options"`
+	Title       string       `json:"title"`
+	Type        QuestionType `json:"type"`
 }
+
+// QuestionType defines model for Question.Type.
+type QuestionType string
 
 // User defines model for User.
 type User struct {
