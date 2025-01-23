@@ -29,7 +29,17 @@ func (s *Server) GetQuestions(e echo.Context) error {
 }
 
 func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
-	// TODO: 合宿係かどうかを確認する
+	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return e.JSON(http.StatusForbidden, "Forbidden")
+	}
 
 	var req PostQuestionJSONRequestBody
 
@@ -72,7 +82,17 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 }
 
 func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params DeleteQuestionParams) error {
-	// TODO: 合宿係かどうかを確認する
+	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return e.JSON(http.StatusForbidden, "Forbidden")
+	}
 
 	if err := s.repo.DeleteQuestionByID(uint(questionID)); err != nil {
 		e.Logger().Errorf("failed to delete question: %v", err)
@@ -104,7 +124,17 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 }
 
 func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQuestionParams) error {
-	// TODO: 合宿係かどうかを確認する
+	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return e.JSON(http.StatusForbidden, "Forbidden")
+	}
 
 	var req PutQuestionJSONRequestBody
 
