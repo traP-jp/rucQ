@@ -15,4 +15,5 @@ type Event struct {
 	TimeEnd         *time.Time
 	CampID          uint
 	OrganizerTraqID string
+	ByStaff         bool
 }

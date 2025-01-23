@@ -658,6 +658,8 @@ components:
           type: integer
         organizer_traq_id:
           type: string
+        by_staff:
+          type: boolean
       required:
         - id
         - name
@@ -667,6 +669,7 @@ components:
         - time_end
         - camp_id
         - organizer_traq_id
+        - by_staff
     PostEventRequest:
       type: object
       properties:
