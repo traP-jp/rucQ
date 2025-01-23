@@ -50,7 +50,7 @@ const router = createRouter({
               component: () => import('@/views/admin/AdminInformationView.vue'),
             },
             {
-              path: 'detail/:id',
+              path: 'users/detail/:id',
               name: 'DetailPage',
               component: () => import('@/views/admin/AdminInformationDetail.vue'),
             },
