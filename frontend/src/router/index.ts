@@ -53,7 +53,6 @@ const router = createRouter({
               path: 'detail/:id',
               name: 'DetailPage',
               component: () => import('@/views/admin/AdminInformationDetail.vue'),
-              props: true
             },
           ],
         },
