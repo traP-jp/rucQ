@@ -3,6 +3,7 @@ module github.com/traP-jp/rucQ/backend
 go 1.23.4
 
 require (
+	github.com/jinzhu/copier v0.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2

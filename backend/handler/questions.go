@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/traP-jp/rucQ/backend/model"
 )
@@ -16,28 +17,12 @@ func (s *Server) GetQuestions(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	questionsResponse := make([]Question, len(questions))
+	var questionsResponse []Question
 
-	for k, v := range questions {
-		options := make([]Option, len(v.Options))
+	if err := copier.Copy(&questionsResponse, &questions); err != nil {
+		e.Logger().Errorf("failed to copy questions: %v", err)
 
-		for k, v := range v.Options {
-			options[k] = Option{
-				Id:   int(v.ID),
-				Body: v.Body,
-			}
-		}
-
-		questionsResponse[k] = Question{
-			Id:          int(v.ID),
-			Title:       v.Title,
-			Description: v.Description,
-			Type:        v.Type,
-			IsPublic:    v.IsPublic,
-			Due:         *v.Due,
-			IsOpen:      v.IsOpen,
-			Options:     &options,
-		}
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, questionsResponse)
@@ -52,57 +37,38 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	var options []model.Option
+	var questionModel model.Question
+
+	if err := copier.Copy(&questionModel, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
 
 	if req.Options != nil {
-		options = make([]model.Option, len(*req.Options))
-
+		questionModel.Options = make([]model.Option, len(*req.Options))
 		for k, v := range *req.Options {
-			options[k] = model.Option{
+			questionModel.Options[k] = model.Option{
 				Body: v,
 			}
 		}
 	}
 
-	question, err := s.repo.CreateQuestion(&model.Question{
-		Title:       req.Title,
-		Description: req.Description,
-		Type:        req.Type,
-		IsPublic:    req.IsPublic,
-		Due:         &req.Due,
-		IsOpen:      req.IsOpen,
-		Options:     options,
-	})
-
-	if err != nil {
+	if err := s.repo.CreateQuestion(&questionModel); err != nil {
 		e.Logger().Errorf("failed to create question: %v", err)
 
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	var optionsResponse []Option
+	var questionResponse []Question
 
-	if question.Options != nil {
-		optionsResponse = make([]Option, len(question.Options))
+	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
 
-		for k, v := range question.Options {
-			optionsResponse[k] = Option{
-				Id:   int(v.ID),
-				Body: v.Body,
-			}
-		}
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, &Question{
-		Id:          int(question.ID),
-		Title:       req.Title,
-		Description: req.Description,
-		Type:        req.Type,
-		IsPublic:    req.IsPublic,
-		Due:         req.Due,
-		IsOpen:      req.IsOpen,
-		Options:     &optionsResponse,
-	})
+	return e.JSON(http.StatusCreated, &questionResponse)
 }
 
 func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params DeleteQuestionParams) error {
@@ -126,25 +92,15 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	options := make([]Option, len(question.Options))
+	var questionResponse Question
 
-	for k, v := range question.Options {
-		options[k] = Option{
-			Id:   int(v.ID),
-			Body: v.Body,
-		}
+	if err := copier.Copy(&questionResponse, &question); err != nil {
+		e.Logger().Errorf("failed to copy question: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, &Question{
-		Id:          int(question.ID),
-		Title:       question.Title,
-		Description: question.Description,
-		Type:        question.Type,
-		IsPublic:    question.IsPublic,
-		Due:         *question.Due,
-		IsOpen:      question.IsOpen,
-		Options:     &options,
-	})
+	return e.JSON(http.StatusOK, &questionResponse)
 }
 
 func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQuestionParams) error {
@@ -156,27 +112,25 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	var options []model.Option
+	var questionModel model.Question
+
+	if err := copier.Copy(&questionModel, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
 
 	if req.Options != nil {
-		options = make([]model.Option, len(*req.Options))
+		questionModel.Options = make([]model.Option, len(*req.Options))
 
 		for k, v := range *req.Options {
-			options[k] = model.Option{
+			questionModel.Options[k] = model.Option{
 				Body: v,
 			}
 		}
 	}
 
-	question, err := s.repo.UpdateQuestion(uint(questionID), &model.Question{
-		Title:       req.Title,
-		Description: req.Description,
-		Type:        req.Type,
-		IsPublic:    req.IsPublic,
-		Due:         &req.Due,
-		IsOpen:      req.IsOpen,
-		Options:     options,
-	})
+	question, err := s.repo.UpdateQuestion(uint(questionID), &questionModel)
 
 	if err != nil {
 		e.Logger().Errorf("failed to update question: %v", err)
@@ -184,29 +138,15 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	var optionsResponse []Option
+	var questionResponse Question
 
-	if question.Options != nil {
-		optionsResponse = make([]Option, len(question.Options))
+	if err := copier.Copy(&questionResponse, &question); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
 
-		for k, v := range question.Options {
-			optionsResponse[k] = Option{
-				Id:   int(v.ID),
-				Body: v.Body,
-			}
-		}
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, &Question{
-		Id:          int(question.ID),
-		Title:       req.Title,
-		Description: req.Description,
-		Type:        req.Type,
-		IsPublic:    req.IsPublic,
-		Due:         req.Due,
-		IsOpen:      req.IsOpen,
-		Options:     &optionsResponse,
-	})
+	return e.JSON(http.StatusOK, &questionResponse)
 }
 
 func (s *Server) PostAnswer(e echo.Context, params PostAnswerParams) error {
