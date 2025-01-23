@@ -6,7 +6,6 @@ func GetAllModels() []any {
 		&Event{},
 		&User{},
 		&Question{},
-		&Option{},
 		&Answer{},
 	}
 }

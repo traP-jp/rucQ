@@ -55,15 +55,6 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	if req.Options != nil {
-		questionModel.Options = make([]model.Option, len(*req.Options))
-		for k, v := range *req.Options {
-			questionModel.Options[k] = model.Option{
-				Body: v,
-			}
-		}
-	}
-
 	if err := s.repo.CreateQuestion(&questionModel); err != nil {
 		e.Logger().Errorf("failed to create question: %v", err)
 
@@ -150,19 +141,7 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	if req.Options != nil {
-		questionModel.Options = make([]model.Option, len(*req.Options))
-
-		for k, v := range *req.Options {
-			questionModel.Options[k] = model.Option{
-				Body: v,
-			}
-		}
-	}
-
-	question, err := s.repo.UpdateQuestion(uint(questionID), &questionModel)
-
-	if err != nil {
+	if err := s.repo.UpdateQuestion(uint(questionID), &questionModel); err != nil {
 		e.Logger().Errorf("failed to update question: %v", err)
 
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
@@ -170,11 +149,13 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 
 	var questionResponse Question
 
-	if err := copier.Copy(&questionResponse, &question); err != nil {
+	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
+
+	questionResponse.Id = questionID
 
 	return e.JSON(http.StatusOK, &questionResponse)
 }

@@ -42,12 +42,6 @@ type Event struct {
 	TimeStart       time.Time `json:"time_start"`
 }
 
-// Option defines model for Option.
-type Option struct {
-	Body string `json:"body"`
-	Id   int    `json:"id"`
-}
-
 // PostAnswerRequest defines model for PostAnswerRequest.
 type PostAnswerRequest struct {
 	Content    string `json:"content"`
@@ -96,7 +90,7 @@ type Question struct {
 	Id          int       `json:"id"`
 	IsOpen      bool      `json:"is_open"`
 	IsPublic    bool      `json:"is_public"`
-	Options     *[]Option `json:"options,omitempty"`
+	Options     *[]string `json:"options"`
 	Title       string    `json:"title"`
 	Type        string    `json:"type"`
 }
