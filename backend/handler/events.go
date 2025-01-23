@@ -30,7 +30,7 @@ func (s *Server) GetEvents(e echo.Context) error {
 		}
 	}
 
-	return e.JSON(http.StatusOK, &response)
+	return e.JSON(http.StatusOK, response)
 }
 
 func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {

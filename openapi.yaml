@@ -714,6 +714,10 @@ components:
           format: date-time
         is_open:
           type: boolean
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
       required:
         - id
         - title
@@ -722,6 +726,17 @@ components:
         - is_public
         - due
         - is_open
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+        body:
+          type: string
+      required:
+        - id
+        - body
+      nullable: true
     PostQuestionRequest:
       type: object
       properties:
@@ -738,6 +753,11 @@ components:
           format: date-time
         is_open:
           type: boolean
+        options:
+          type: array
+          items:
+            type: string
+          nullable: true
       required:
         - title
         - description
