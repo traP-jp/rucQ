@@ -728,7 +728,8 @@ components:
         options:
           type: array
           items:
-            $ref: '#/components/schemas/Option'
+            type: string
+          nullable: true
       required:
         - id
         - title
@@ -737,17 +738,6 @@ components:
         - is_public
         - due
         - is_open
-    Option:
-      type: object
-      properties:
-        id:
-          type: integer
-        body:
-          type: string
-      required:
-        - id
-        - body
-      nullable: true
     PostQuestionRequest:
       type: object
       properties:

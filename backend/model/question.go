@@ -14,13 +14,7 @@ type Question struct {
 	IsPublic    bool
 	Due         *time.Time
 	IsOpen      bool
-	Options     []Option
-}
-
-type Option struct {
-	gorm.Model
-	QuestionID uint
-	Body       string
+	Options     []string `gorm:"serializer:json"`
 }
 
 type Answer struct {
