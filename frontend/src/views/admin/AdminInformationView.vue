@@ -1,101 +1,127 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-const events = ref([
-  { id: 1, name: 'Event 1', deadline: '2023-12-01' },
-  { id: 2, name: 'Event 2', deadline: '2023-12-05' },
-  { id: 3, name: 'Event 3', deadline: '2023-12-10' },
-  { id: 4, name: 'Event 4', deadline: '2023-12-10' },
-  { id: 5, name: 'Event 5', deadline: '2023-12-10' },
-  { id: 6, name: 'Event 6', deadline: '2023-12-10' },
-  { id: 7, name: 'Event 7', deadline: '2023-12-10' },
-  { id: 8, name: 'Event 8', deadline: '2023-12-10' },
-])
-</script>
-
 <template>
-  <div :class="$style.header">user Data</div>
+  <div :class="$style.header">User Data</div>
 
   <div :class="$style.allAnketo">
-    <h1>イベント一覧</h1>
-    <table :class="$style.eventTable">
+    <div :class="$style.anketoTitle">項目一覧</div>
+    <table :class="$style.anketoTable">
       <thead>
-        <tr>
-          <th>質問名</th>
-          <th>回答期限</th>
+        <tr :class="$style.tableHeader">
+          <td :class="$style.typeColumn">内容</td>
+          <td :class="$style.nameColumn">期限</td>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="event in events" :key="event.id">
-          <td>{{ event.name }}</td>
-          <td>{{ event.deadline }}</td>
+        <tr v-for="item in items" :key="item.id">
+          <td :class="$style.nameCell">{{ item.name }}</td>
+          <td :class="$style.deadline">{{ item.deadline }}</td>
         </tr>
       </tbody>
     </table>
+
+    <!-- アクションボタン -->
+    <div :class="$style.actions">
+      <button @click="addItem">項目追加</button>
+    </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+const items = ref([
+  { id: 1, type: 'event', name: 'スキーに行きますか', deadline: '2023-12-01' },
+  { id: 2, type: 'event', name: 'スキーで何を借りますか', deadline: '2023-12-15' },
+  { id: 3, type: 'event', name: '何か質問', deadline: '期限切れ' },
+  { id: 4, type: 'room', name: '部屋割りについて', capacity: 20 },
+  { id: 4, type: 'room', name: '予算について', capacity: 20 },
+  { id: 4, type: 'room', name: 'お風呂の時間について', capacity: 20 },
+  // ...他の項目
+])
+
+const expiredEventsCount = computed(() => {
+  return items.value.filter((item) => item.type === 'event' && item.deadline === '期限切れ').length
+})
+
+const addItem = () => {
+  // 項目追加のロジック
+}
+</script>
+
 <style module>
 .header {
-  background-color: #ced3d9;
-  color: black;
+  background-color: #4a90e2;
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  padding: 20px;
 }
 
 .allAnketo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 80vh;
-  margin: 30px;
-  background-color: #dbdee1;
-  color: black;
-  border-radius: 10px;
+  margin: 30px auto;
+  padding: 20px;
+  width: 90%;
+  background-color: #f3f1f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.eventTable {
+.anketoTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.anketoTable {
   width: 100%;
-  max-width: 600px;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 20px;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border-spacing: 10px;
 }
 
-.eventTable th, .eventTable td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
+.tableHeader {
+  border: 3px solid #948d8d !important;
+  z-index: 2;
+  background-color: #eaf3fa;
+  font-size: 17px;
 }
 
-.eventTable th {
-  background-color: #f5f5f5;
+.typeColumn,
+.nameColumn {
+  font-weight: bold;
+  color: #333 !important;
+  padding: 12px;
+  border-bottom: none;
 }
 
-.eventTable tr:nth-child(even) {
-  background-color: #f9f9f9;
+.deadline,
+.nameCell {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  font-size: larger;
 }
 
-.eventTable th:first-child {
-  border-top-left-radius: 10px;
+.nameCell {
+  cursor: pointer;
 }
 
-.eventTable th:last-child {
-  border-top-right-radius: 10px;
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
-.eventTable td:first-child {
-  border-bottom-left-radius: 10px;
+.actions button {
+  padding: 10px 25px;
+  background-color: #2a9d8f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.eventTable td:last-child {
-  border-bottom-right-radius: 10px;
-}
-
-.eventTable th:nth-child(2), .eventTable td:nth-child(2) {
-  width: 150px; /* 回答期限の列の幅を狭くする */
+.actions button:hover {
+  background-color: #21867a;
 }
 </style>

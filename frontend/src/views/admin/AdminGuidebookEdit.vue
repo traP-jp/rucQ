@@ -53,8 +53,8 @@ onBeforeRouteLeave((to, from, next) => {
   }
 })
 
-// ウィンドウのリロードやタブを閉じる際に自動保存
-const handleBeforeUnload = (event) => {
+// ウィンドウのリロードやタブを閉じる際に自動保存 するかは未定
+const handleBeforeUnload = (event: BeforeUnloadEvent) => {
   if (!isSaved.value) {
     saveMarkdown()
     // 一部のブラウザでは以下の設定が必要　by gpt
