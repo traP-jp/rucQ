@@ -46,7 +46,20 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 	organizerTraqID := params.XForwardedUser
 
 	if req.CreateAsStaff {
-		// TODO: 権限を確認し、合宿係ならorganizerTraqIDをtraPにする
+		user, err := s.repo.GetOrCreateUser(organizerTraqID)
+
+		if err != nil {
+			e.Logger().Errorf("failed to get or create user: %v", err)
+
+			return e.JSON(http.StatusInternalServerError, "Internal server error")
+		}
+
+		if !user.IsStaff {
+			return e.JSON(http.StatusForbidden, "Forbidden")
+		}
+
+		organizerTraqID = "traP"
+		eventModel.ByStaff = true
 	}
 
 	eventModel.OrganizerTraqID = organizerTraqID

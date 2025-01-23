@@ -31,6 +31,7 @@ type Camp struct {
 
 // Event defines model for Event.
 type Event struct {
+	ByStaff         bool      `json:"by_staff"`
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
 	Id              int       `json:"id"`
