@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/traP-jp/rucQ/backend/model"
 )
@@ -16,18 +17,12 @@ func (s *Server) GetEvents(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	response := make([]Event, len(events))
+	var response []Event
 
-	for k, v := range events {
-		response[k] = Event{
-			Id:              int(v.ID),
-			Name:            v.Name,
-			Location:        v.Location,
-			TimeStart:       *v.TimeStart,
-			TimeEnd:         *v.TimeEnd,
-			CampId:          int(v.CampID),
-			OrganizerTraqId: v.OrganizerTraqID,
-		}
+	if err := copier.Copy(&response, &events); err != nil {
+		e.Logger().Errorf("failed to copy events: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, response)
@@ -40,36 +35,37 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
+	var eventModel model.Event
+
+	if err := copier.Copy(&eventModel, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
 	organizerTraqID := params.XForwardedUser
 
 	if req.CreateAsStaff {
 		// TODO: 権限を確認し、合宿係ならorganizerTraqIDをtraPにする
 	}
 
-	eventID, err := s.repo.CreateEvent(&model.Event{
-		Name:            req.Name,
-		Location:        req.Location,
-		TimeStart:       &req.TimeStart,
-		TimeEnd:         &req.TimeEnd,
-		CampID:          uint(req.CampId),
-		OrganizerTraqID: organizerTraqID,
-	})
+	eventModel.OrganizerTraqID = organizerTraqID
 
-	if err != nil {
+	if err := s.repo.CreateEvent(&eventModel); err != nil {
 		e.Logger().Errorf("failed to create event: %v", err)
 
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, &Event{
-		Id:              eventID,
-		Name:            req.Name,
-		Location:        req.Location,
-		TimeStart:       req.TimeStart,
-		TimeEnd:         req.TimeEnd,
-		CampId:          req.CampId,
-		OrganizerTraqId: organizerTraqID,
-	})
+	var eventResponse Event
+
+	if err := copier.Copy(&eventResponse, &eventModel); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusCreated, &eventResponse)
 }
 
 func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
