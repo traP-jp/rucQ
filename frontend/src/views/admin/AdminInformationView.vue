@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td :class="$style.nameCell">{{ item.name }}</td>
+          <td :class="$style.nameCell" @click="goToDetail(item.id)">{{ item.name }}</td>
           <td :class="$style.deadline">{{ item.deadline }}</td>
         </tr>
       </tbody>
@@ -27,6 +27,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToDetail = (id: number) => {// クリック時に詳細ページに移動
+  router.push({ name: 'DetailPage', params: { id } })
+}
+
 
 const items = ref([
   { id: 1, type: 'event', name: 'スキーに行きますか', deadline: '2023-12-01' },
@@ -86,7 +94,7 @@ const addItem = () => {
   font-size: 17px;
 }
 
-.typeColumn,
+.typeColumn,/*内容　期限*/
 .nameColumn {
   font-weight: bold;
   color: #333 !important;
@@ -99,10 +107,15 @@ const addItem = () => {
   padding: 10px 15px;
   border-bottom: 1px solid #ddd;
   font-size: larger;
+  color: #333333;
 }
 
 .nameCell {
   cursor: pointer;
+}
+
+.nameCell:hover {
+  color: #000000
 }
 
 .actions {
