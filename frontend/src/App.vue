@@ -10,7 +10,7 @@ const { mobile } = useDisplay()
 
 <template>
   <v-app>
-    <side-bar v-if=!mobile />
+    <side-bar v-if="!mobile" />
     <mobile-header v-if="mobile" />
     <v-main>
       <router-view />
