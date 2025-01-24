@@ -3,36 +3,45 @@
     <div class="headQuestionHeader">
       <div class="headQuestionTitle">
         {{ questionHeader.title }}
-        <button class="EditIconContainer" @click="openDialog">
+        <button class="EditIconContainer" @click="openHeaderDialog">
           <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
-          <v-dialog v-model="dialog" activator="parent">
-            <v-sheet class="dialog-sheet">
-              <h2>アンケートを編集</h2>
-              <v-textarea
-                label="アンケートタイトル"
-                v-model="editedTitle"
-                variant="outlined"
-                rows="1"
-                auto-grow
-                class="text-field"
-              />
-              <v-textarea
-                label="アンケート説明"
-                v-model="editedDescription"
-                variant="outlined"
-                rows="3"
-                auto-grow
-                class="text-field"
-              />
-              <div class="dialogButtonContainer">
-                <v-btn color="primary" @click="save">保存</v-btn>
-                <v-btn color="primary" variant="tonal" class="closeButton" @click="closeDialog"
-                  >キャンセル</v-btn
-                >
-              </div>
-            </v-sheet>
-          </v-dialog>
         </button>
+
+        <v-dialog v-model="dialog" scrollable activator="parent">
+          <v-sheet class="dialog-sheet">
+            <h2>アンケートを編集</h2>
+            <v-textarea
+              label="アンケートタイトル"
+              v-model="editedTitle"
+              variant="outlined"
+              rows="1"
+              auto-grow
+              class="text-field"
+            />
+            <v-textarea
+              label="アンケート説明"
+              v-model="editedDescription"
+              variant="outlined"
+              rows="3"
+              auto-grow
+              class="text-field"
+            />
+            <v-textarea
+              label="回答期限"
+              v-model="editedDeadline"
+              variant="outlined"
+              rows="1"
+              auto-grow
+              class="text-field"
+            />
+            <div class="dialogButtonContainer">
+              <v-btn color="primary" @click="headerSave">保存</v-btn>
+              <v-btn color="primary" variant="tonal" class="closeButton" @click="closeHeaderDialog"
+                >キャンセル</v-btn
+              >
+            </div>
+          </v-sheet>
+        </v-dialog>
       </div>
       <div class="headQuestionDescription">{{ questionHeader.description }}</div>
       <div class="headQuestionDeadline">回答期限: {{ questionHeader.deadline }}</div>
@@ -48,22 +57,56 @@
                 <!-- <v-icon class="copyIcon">mdi-content-copy </v-icon> -->
                 全体をコピー
               </div>
-              <button class="EditIconContainer">
+              <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
                 <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
-                <v-dialog v-model="questionDialogs[question.id]" activator="parent">
-                  <v-sheet>
-                    <v-sheet class="dialog-sheet">
-                      <h2>Dialog</h2>
-
-                      <p class="my-4">Please confirm information!</p>
-
-                      <v-btn color="primary" block @click="questionDialogs[question.id] = false"
-                        >Close</v-btn
-                      >
-                    </v-sheet>
-                  </v-sheet>
-                </v-dialog>
               </button>
+              <v-dialog v-model="questionDialogs[question.id]" scrollable activator="parent">
+                <v-sheet class="dialog-sheet">
+                  <h2>質問を編集</h2>
+                  <v-textarea
+                    label="質問タイトル"
+                    v-model="editedTitle"
+                    variant="outlined"
+                    rows="1"
+                    auto-grow
+                    class="text-field"
+                  />
+                  <v-textarea
+                    label="質問説明"
+                    v-model="editedDescription"
+                    variant="outlined"
+                    rows="3"
+                    auto-grow
+                    class="text-field"
+                  />
+                  <h2>選択肢</h2>
+                  <div
+                    v-for="(option, index) in question.options"
+                    :key="index"
+                    class="editQuestionOption"
+                  >
+                    <v-textarea
+                      label="選択肢"
+                      v-model="editedOptions[index]"
+                      variant="outlined"
+                      rows="1"
+                      auto-grow
+                      class="text-field"
+                    />
+                  </div>
+                  <v-btn @click="editedOptions.push('')">選択肢を追加</v-btn>
+                  <div class="dialogButtonContainer">
+                    <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
+                    <v-btn
+                      color="primary"
+                      variant="tonal"
+                      class="closeButton"
+                      @click="childQuestionclose(question.id)"
+                      >キャンセル</v-btn
+                    >
+                  </div>
+                </v-sheet>
+              </v-dialog>
             </div>
           </div>
           <div class="questionDescription">
@@ -107,24 +150,56 @@ onMounted(() => {
 // 編集用の一時変数
 const editedTitle = ref('')
 const editedDescription = ref('')
+const editedDeadline = ref('')
+const editedOptions = ref<string[]>([])
 
 // ダイアログを開くときに一時変数に現在の値をセット
-const openDialog = () => {
+const openHeaderDialog = () => {
   editedTitle.value = questionHeader.value.title
   editedDescription.value = questionHeader.value.description
-  dialog.value = true
+  editedDeadline.value = questionHeader.value.deadline
+}
+
+const openDialog = (id: number) => {
+  editedTitle.value = questions.value[id].title
+  editedDescription.value = questions.value[id].description
+}
+
+const openQuestionDialog = (id: number) => {
+  editedTitle.value = questions.value[id].title
+  editedDescription.value = questions.value[id].description
+  editedOptions.value = [...questions.value[id].options]
 }
 
 // ダイアログを閉じる際に一時変数をリセット
-const closeDialog = () => {
+const closeHeaderDialog = () => {
   dialog.value = false
 }
 
+const childQuestionclose = (id: number) => {
+  questionDialogs.value[id] = false
+}
+
 // 保存ボタンをクリックしたときの処理
-const save = () => {
+const headerSave = () => {
   questionHeader.value.title = editedTitle.value
   questionHeader.value.description = editedDescription.value
+
+  // 2024-12-01のような形式かどうかの確認
+  if (editedDeadline.value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    questionHeader.value.deadline = editedDeadline.value
+  } else {
+    alert('日付の形式が正しくありません (yyyy-mm-dd)')
+    return
+  }
   dialog.value = false
+}
+
+const childQuestionSave = (id: number) => {
+  questions.value[id].title = editedTitle.value
+  questions.value[id].description = editedDescription.value
+  questions.value[id].options = editedOptions.value
+  questionDialogs.value[id] = false
 }
 
 const questionHeader = ref({
@@ -149,7 +224,7 @@ const questionDialogs = ref<Record<number, boolean>>({})
 const questions = ref<Question[]>([
   // まだ決まってないので一旦適当なダミーデータ、後でAPIから取得する。その時にここ頑張る
   {
-    id: 1,
+    id: 0,
     title: 'スキー/スノボをしますか？',
     description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
     type: 'radio',
@@ -223,7 +298,7 @@ const questions = ref<Question[]>([
     ],
   },
   {
-    id: 2,
+    id: 1,
     title: 'スキー/スノボの用具をレンタルしますか？',
     description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
     type: 'radio',
@@ -232,7 +307,7 @@ const questions = ref<Question[]>([
     respondents: ['佐藤', '鈴木'],
   },
   {
-    id: 3,
+    id: 2,
     title: 'スキー/スノボの用具をレンタルする場合、サイズを教えてください。',
     description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
     type: 'text',
@@ -241,7 +316,7 @@ const questions = ref<Question[]>([
     respondents: ['高橋', '伊藤'],
   },
   {
-    id: 4,
+    id: 3,
     title: 'レンタルするもの',
     description: 'レンタルするものを選択してください',
     type: 'checkbox',
@@ -367,22 +442,40 @@ const questions = ref<Question[]>([
 .dialog-sheet {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   width: 50%;
   min-width: 300px;
-  position: relative;
   margin: auto;
+  max-height: 80vh;
+}
+
+.v-dialog__content {
+  overflow: visible; /* 必要に応じて調整 */
+}
+
+.dialog-sheet h2 {
+  margin-bottom: 25px;
+  padding-top:10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .dialogButtonContainer {
   display: flex;
   justify-content: center;
-  align-items: right;
   margin-left: auto;
   margin-right: 20px;
   gap: 20px;
   margin-bottom: 20px;
+}
+
+.editQuestionOption {
+  /*個々の質問の選択肢*/
+  width: 80%;
+  display: flex;
+  align-items: center;
 }
 
 .allCopyButton {
@@ -401,9 +494,8 @@ const questions = ref<Question[]>([
   cursor: pointer;
 }
 
-
 .text-field {
-  resize: none; 
+  resize: none;
   width: 80%;
 }
 
