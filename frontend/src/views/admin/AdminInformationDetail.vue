@@ -81,7 +81,7 @@
                   />
                   <h2>選択肢</h2>
                   <div
-                    v-for="(option, index) in question.options"
+                    v-for="(option, index) in editedOptions"
                     :key="index"
                     class="editQuestionOption"
                   >
@@ -132,6 +132,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isEqualsGreaterThanToken } from 'typescript'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
