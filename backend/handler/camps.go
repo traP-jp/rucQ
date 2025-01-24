@@ -57,7 +57,23 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 }
 
 func (s *Server) GetCamp(e echo.Context, campID CampId) error {
-	return nil
+	camp, err := s.repo.GetCampByID(campID)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Camp
+
+	if err := copier.Copy(&response, camp); err != nil {
+		e.Logger().Errorf("failed to copy camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
 }
 
 func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) error {

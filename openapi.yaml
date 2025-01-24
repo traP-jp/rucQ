@@ -523,7 +523,7 @@ components:
       description: 合宿ID
       required: true
       schema:
-        type: integer
+        type: string
     EventId:
       name: event_id
       in: path

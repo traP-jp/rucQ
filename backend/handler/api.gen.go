@@ -118,7 +118,7 @@ type User struct {
 type AnswerId = int
 
 // CampId defines model for CampId.
-type CampId = int
+type CampId = string
 
 // EventId defines model for EventId.
 type EventId = int

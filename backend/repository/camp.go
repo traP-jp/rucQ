@@ -9,3 +9,13 @@ func (r *Repository) CreateCamp(camp *model.Camp) error {
 
 	return nil
 }
+
+func (r *Repository) GetCampByID(id string) (*model.Camp, error) {
+	var camp model.Camp
+
+	if err := r.db.Model(&model.Camp{ID: id}).First(&camp).Error; err != nil {
+		return nil, err
+	}
+
+	return &camp, nil
+}

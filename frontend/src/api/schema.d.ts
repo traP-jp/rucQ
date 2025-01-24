@@ -363,7 +363,7 @@ export interface components {
         /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
         "X-Forwarded-User": string;
         /** @description 合宿ID */
-        CampId: number;
+        CampId: string;
         /** @description イベントID */
         EventId: number;
         /** @description 質問ID */
