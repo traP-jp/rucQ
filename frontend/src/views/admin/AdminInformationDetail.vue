@@ -7,7 +7,7 @@
           <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
         </button>
 
-        <v-dialog v-model="dialog" scrollable >
+        <v-dialog v-model="dialog" scrollable>
           <v-sheet class="dialog-sheet">
             <h2>アンケートを編集</h2>
             <v-textarea
@@ -52,11 +52,12 @@
         <div class="question">
           <div class="questionTitle">
             {{ question.title }}
-
-            <div class="allCopyButton">全体をコピー</div>
-            <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
-              <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
-            </button>
+            <div class="buttons">
+              <div class="allCopyButton">全体をコピー</div>
+              <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
+                <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+              </button>
+            </div>
             <v-dialog v-model="questionDialogs[question.id]" scrollable>
               <v-sheet class="dialog-sheet">
                 <h2>質問を編集</h2>
