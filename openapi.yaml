@@ -494,6 +494,7 @@ paths:
         - Staffs
       operationId: deleteStaff
       parameters:
+        - $ref: '#/components/parameters/StaffId'
         - $ref: '#/components/parameters/X-Forwarded-User'
       responses:
         '204':
@@ -544,6 +545,13 @@ components:
       required: true
       schema:
         type: integer
+    StaffId:
+      name: staff_id
+      in: query
+      description: 合宿係のtraQ ID
+      required: true
+      schema:
+        type: string
   responses:
     NoContent:
       description: No Content
@@ -650,6 +658,8 @@ components:
           type: integer
         organizer_traq_id:
           type: string
+        by_staff:
+          type: boolean
       required:
         - id
         - name
@@ -659,6 +669,7 @@ components:
         - time_end
         - camp_id
         - organizer_traq_id
+        - by_staff
     PostEventRequest:
       type: object
       properties:
@@ -707,6 +718,11 @@ components:
           type: string
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
         due:
@@ -714,6 +730,11 @@ components:
           format: date-time
         is_open:
           type: boolean
+        options:
+          type: array
+          items:
+            type: string
+          nullable: true
       required:
         - id
         - title
@@ -731,6 +752,11 @@ components:
           type: string
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
         due:
@@ -738,6 +764,11 @@ components:
           format: date-time
         is_open:
           type: boolean
+        options:
+          type: array
+          items:
+            type: string
+          nullable: true
       required:
         - title
         - description

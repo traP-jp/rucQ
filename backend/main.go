@@ -38,9 +38,11 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	// Swagger UIからAPIを利用するための設定
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:8081"},
+		AllowOrigins: []string{
+			"http://localhost:5173", // フロントエンド
+			"http://localhost:8081", // Swagger UI
+		},
 	}))
 	handler.RegisterHandlers(e, handler.NewServer(db))
 	e.Logger.Fatal(e.Start("localhost:8080"))

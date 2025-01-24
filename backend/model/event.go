@@ -11,8 +11,9 @@ type Event struct {
 	Name            string
 	Description     string
 	Location        string
-	TimeStart       *time.Time
-	TimeEnd         *time.Time
+	TimeStart       time.Time
+	TimeEnd         time.Time
 	CampID          uint
 	OrganizerTraqID string
+	ByStaff         bool
 }
