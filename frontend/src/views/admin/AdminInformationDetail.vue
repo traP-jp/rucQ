@@ -3,7 +3,20 @@
     <div class="headQuestionHeader">
       <div class="headQuestionTitle">
         {{ questionHeader.title }}
-        <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+        <button class="EditIconContainer">
+          <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+          <v-dialog v-model="dialog" activator="parent">
+            <v-sheet>
+              <v-sheet class="my-2 mx-5">
+                <h2>Dialog</h2>
+
+                <p class="my-4">Please confirm information!</p>
+
+                <v-btn color="primary" block @click="dialog = false">Close</v-btn>
+              </v-sheet>
+            </v-sheet>
+          </v-dialog>
+        </button>
       </div>
       <div class="headQuestionDescription">{{ questionHeader.description }}</div>
       <div class="headQuestionDeadline">回答期限: {{ questionHeader.deadline }}</div>
@@ -16,10 +29,25 @@
             {{ question.title }}
             <div class="buttons">
               <div class="allCopyButton">
-              <!-- <v-icon class="copyIcon">mdi-content-copy </v-icon> -->
-              全体をコピー 
-            </div>
-            <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+                <!-- <v-icon class="copyIcon">mdi-content-copy </v-icon> -->
+                全体をコピー
+              </div>
+              <button class="EditIconContainer">
+                <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+                <v-dialog v-model="questionDialogs[question.id]" activator="parent">
+                  <v-sheet>
+                    <v-sheet class="my-2 mx-5">
+                      <h2>Dialog</h2>
+
+                      <p class="my-4">Please confirm information!</p>
+
+                      <v-btn color="primary" block @click="questionDialogs[question.id] = false"
+                        >Close</v-btn
+                      >
+                    </v-sheet>
+                  </v-sheet>
+                </v-dialog>
+              </button>
             </div>
           </div>
           <div class="questionDescription">
@@ -27,12 +55,14 @@
           </div>
 
           <div v-for="option in question.options" :key="option">
-           <div class="questionOption"> {{ option }} 
-            <v-icon class="copyIcon">mdi-content-copy </v-icon>
-           </div>
+            <div class="questionOption">
+              {{ option }}
+
+              <v-icon class="copyIcon">mdi-content-copy </v-icon>
+            </div>
             <div class="questionRespondents">
               <span v-for="respondent in question.respondents" :key="respondent">
-              <div class="member">  {{ respondent }} </div>
+                <div class="member">{{ respondent }}</div>
               </span>
             </div>
           </div>
@@ -43,7 +73,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const dialog = ref(false)
+// パスパラメータを取得
+const eventID = router.currentRoute.value.params.id
+
+// 質問ごとにダイアログを管理するため初期化
+onMounted(() => {
+  questions.value.forEach(q => {
+    questionDialogs.value[q.id] = false
+  })
+})
 
 const questionHeader = ref({
   title: '2024年度春合宿 レンタル調査',
@@ -61,8 +104,11 @@ type Question = {
   answerCount: number
   respondents: string[]
 }
+// それぞれの編集ボタンに対応するダイアログの表示状態を管理
+const questionDialogs = ref<Record<number, boolean>>({})
 
-const questions = ref<Question[]>([// まだ決まってないので一旦適当なダミーデータ、後でAPIから取得する。その時にここ頑張る
+const questions = ref<Question[]>([
+  // まだ決まってないので一旦適当なダミーデータ、後でAPIから取得する。その時にここ頑張る
   {
     id: 1,
     title: 'スキー/スノボをしますか？',
@@ -70,7 +116,72 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
     type: 'radio',
     options: ['スキー', 'スノボ', 'しない'],
     answerCount: 12,
-    respondents: ['山田', '田中', '鈴木', '佐藤', '高橋', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山口' , '松本', '井上', '木村','山田', '田中', '鈴木', '佐藤', '高橋', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山口' , '松本', '井上', '木村','山田', '田中', '鈴木', '佐藤', '高橋', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山口' , '松本', '井上', '木村','山田', '田中', '鈴木', '佐藤', '高橋', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山口' , '松本', '井上', '木村'],
+    respondents: [
+      '山田',
+      '田中',
+      '鈴木',
+      '佐藤',
+      '高橋',
+      '伊藤',
+      '渡辺',
+      '山本',
+      '中村',
+      '小林',
+      '加藤',
+      '吉田',
+      '山口',
+      '松本',
+      '井上',
+      '木村',
+      '山田',
+      '田中',
+      '鈴木',
+      '佐藤',
+      '高橋',
+      '伊藤',
+      '渡辺',
+      '山本',
+      '中村',
+      '小林',
+      '加藤',
+      '吉田',
+      '山口',
+      '松本',
+      '井上',
+      '木村',
+      '山田',
+      '田中',
+      '鈴木',
+      '佐藤',
+      '高橋',
+      '伊藤',
+      '渡辺',
+      '山本',
+      '中村',
+      '小林',
+      '加藤',
+      '吉田',
+      '山口',
+      '松本',
+      '井上',
+      '木村',
+      '山田',
+      '田中',
+      '鈴木',
+      '佐藤',
+      '高橋',
+      '伊藤',
+      '渡辺',
+      '山本',
+      '中村',
+      '小林',
+      '加藤',
+      '吉田',
+      '山口',
+      '松本',
+      '井上',
+      '木村',
+    ],
   },
   {
     id: 2,
@@ -103,8 +214,6 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
 </script>
 
 <style scoped>
-
-
 .container {
   display: flex;
   flex-direction: column;
@@ -168,28 +277,28 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
 }
 
 .questionTitle {
-  font-size: 22px; 
+  font-size: 22px;
   font-weight: bold;
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 
 .questionOption {
-  font-size: 16px; 
+  font-size: 16px;
   margin-top: 6px;
-  color: #555555; 
+  color: #555555;
 
   display: flex;
   align-items: center;
 }
 
 .questionDescription {
-  font-size: 16px; 
+  font-size: 16px;
   margin-top: 6px;
-  padding-bottom: 10px; 
-  color: #555555; 
+  padding-bottom: 10px;
+  color: #555555;
   border-bottom: 1px solid #e0e0e0;
-  display:flex;
+  display: flex;
 }
 
 .questionRespondents {
@@ -205,8 +314,8 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
   background-color: #faece7;
   border-radius: 5px;
   padding: 1px;
-  padding-right:3px;
-  padding-left:3px;
+  padding-right: 3px;
+  padding-left: 3px;
   margin-right: 5px;
   margin-bottom: 5px;
   font-size: 12px;
@@ -216,11 +325,11 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
   background-color: #32da03;
   color: #ffffff;
   font-size: 20px;
-  text-align:right;
-  position:relative;
-  margin-left:auto;
+  text-align: right;
+  position: relative;
+  margin-left: auto;
   font-size: 14px;
-  margin-right:10px;
+  margin-right: 10px;
   border-radius: 5px;
   padding-left: 5px;
   padding-right: 5px;
@@ -235,12 +344,11 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
   margin-left: auto;
 }
 
-
 /*クリック時のアニメーションは後でやる*/
 .copyIcon {
   color: #ff9800;
   font-size: 16px;
-  margin-left: auto; 
+  margin-left: auto;
   text-align: right;
   justify-content: center;
   cursor: pointer;
@@ -252,6 +360,11 @@ const questions = ref<Question[]>([// まだ決まってないので一旦適当
   margin-left: auto;
   text-align: right;
   justify-content: center;
+  cursor: pointer;
+}
+
+.EditIconContainer {
+  margin-left: auto;
   cursor: pointer;
 }
 </style>
