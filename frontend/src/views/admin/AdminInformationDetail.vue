@@ -3,17 +3,33 @@
     <div class="headQuestionHeader">
       <div class="headQuestionTitle">
         {{ questionHeader.title }}
-        <button class="EditIconContainer">
+        <button class="EditIconContainer" @click="openDialog">
           <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
           <v-dialog v-model="dialog" activator="parent">
-            <v-sheet>
-              <v-sheet class="my-2 mx-5">
-                <h2>Dialog</h2>
-
-                <p class="my-4">Please confirm information!</p>
-
-                <v-btn color="primary" block @click="dialog = false">Close</v-btn>
-              </v-sheet>
+            <v-sheet class="dialog-sheet">
+              <h2>アンケートを編集</h2>
+              <v-textarea
+                label="アンケートタイトル"
+                v-model="editedTitle"
+                variant="outlined"
+                rows="1"
+                auto-grow
+                class="text-field"
+              />
+              <v-textarea
+                label="アンケート説明"
+                v-model="editedDescription"
+                variant="outlined"
+                rows="3"
+                auto-grow
+                class="text-field"
+              />
+              <div class="dialogButtonContainer">
+                <v-btn color="primary" @click="save">保存</v-btn>
+                <v-btn color="primary" variant="tonal" class="closeButton" @click="closeDialog"
+                  >キャンセル</v-btn
+                >
+              </div>
             </v-sheet>
           </v-dialog>
         </button>
@@ -36,7 +52,7 @@
                 <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
                 <v-dialog v-model="questionDialogs[question.id]" activator="parent">
                   <v-sheet>
-                    <v-sheet class="my-2 mx-5">
+                    <v-sheet class="dialog-sheet">
                       <h2>Dialog</h2>
 
                       <p class="my-4">Please confirm information!</p>
@@ -83,10 +99,33 @@ const eventID = router.currentRoute.value.params.id
 
 // 質問ごとにダイアログを管理するため初期化
 onMounted(() => {
-  questions.value.forEach(q => {
+  questions.value.forEach((q) => {
     questionDialogs.value[q.id] = false
   })
 })
+
+// 編集用の一時変数
+const editedTitle = ref('')
+const editedDescription = ref('')
+
+// ダイアログを開くときに一時変数に現在の値をセット
+const openDialog = () => {
+  editedTitle.value = questionHeader.value.title
+  editedDescription.value = questionHeader.value.description
+  dialog.value = true
+}
+
+// ダイアログを閉じる際に一時変数をリセット
+const closeDialog = () => {
+  dialog.value = false
+}
+
+// 保存ボタンをクリックしたときの処理
+const save = () => {
+  questionHeader.value.title = editedTitle.value
+  questionHeader.value.description = editedDescription.value
+  dialog.value = false
+}
 
 const questionHeader = ref({
   title: '2024年度春合宿 レンタル調査',
@@ -284,6 +323,7 @@ const questions = ref<Question[]>([
 }
 
 .questionOption {
+  /*個々の質問の選択肢*/
   font-size: 16px;
   margin-top: 6px;
   color: #555555;
@@ -293,6 +333,7 @@ const questions = ref<Question[]>([
 }
 
 .questionDescription {
+  /*個々の質問の説明*/
   font-size: 16px;
   margin-top: 6px;
   padding-bottom: 10px;
@@ -302,6 +343,7 @@ const questions = ref<Question[]>([
 }
 
 .questionRespondents {
+  /*回答者の名前の枠*/
   font-size: 14px;
   color: #636363;
   margin-top: 10px;
@@ -311,6 +353,7 @@ const questions = ref<Question[]>([
 }
 
 .member {
+  /*回答者の名前*/
   background-color: #faece7;
   border-radius: 5px;
   padding: 1px;
@@ -321,7 +364,29 @@ const questions = ref<Question[]>([
   font-size: 12px;
 }
 
+.dialog-sheet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  min-width: 300px;
+  position: relative;
+  margin: auto;
+}
+
+.dialogButtonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: right;
+  margin-left: auto;
+  margin-right: 20px;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 .allCopyButton {
+  /*全体をコピーするボタン*/
   background-color: #32da03;
   color: #ffffff;
   font-size: 20px;
@@ -334,6 +399,12 @@ const questions = ref<Question[]>([
   padding-left: 5px;
   padding-right: 5px;
   cursor: pointer;
+}
+
+
+.text-field {
+  resize: none; 
+  width: 80%;
 }
 
 .buttons {
