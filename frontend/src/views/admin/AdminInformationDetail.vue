@@ -7,7 +7,7 @@
           <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
         </button>
 
-        <v-dialog v-model="dialog" scrollable activator="parent">
+        <v-dialog v-model="dialog" scrollable >
           <v-sheet class="dialog-sheet">
             <h2>アンケートを編集</h2>
             <v-textarea
@@ -52,62 +52,58 @@
         <div class="question">
           <div class="questionTitle">
             {{ question.title }}
-            <div class="buttons">
-              <div class="allCopyButton">
-                <!-- <v-icon class="copyIcon">mdi-content-copy </v-icon> -->
-                全体をコピー
-              </div>
-              <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
-                <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
-              </button>
-              <v-dialog v-model="questionDialogs[question.id]" scrollable activator="parent">
-                <v-sheet class="dialog-sheet">
-                  <h2>質問を編集</h2>
+
+            <div class="allCopyButton">全体をコピー</div>
+            <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
+              <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
+            </button>
+            <v-dialog v-model="questionDialogs[question.id]" scrollable>
+              <v-sheet class="dialog-sheet">
+                <h2>質問を編集</h2>
+                <v-textarea
+                  label="質問タイトル"
+                  v-model="editedTitle"
+                  variant="outlined"
+                  rows="1"
+                  auto-grow
+                  class="text-field"
+                />
+                <v-textarea
+                  label="質問説明"
+                  v-model="editedDescription"
+                  variant="outlined"
+                  rows="3"
+                  auto-grow
+                  class="text-field"
+                />
+                <h2>選択肢</h2>
+                <div
+                  v-for="(option, index) in editedOptions"
+                  :key="index"
+                  class="editQuestionOption"
+                >
                   <v-textarea
-                    label="質問タイトル"
-                    v-model="editedTitle"
+                    label="選択肢"
+                    v-model="editedOptions[index]"
                     variant="outlined"
                     rows="1"
                     auto-grow
                     class="text-field"
                   />
-                  <v-textarea
-                    label="質問説明"
-                    v-model="editedDescription"
-                    variant="outlined"
-                    rows="3"
-                    auto-grow
-                    class="text-field"
-                  />
-                  <h2>選択肢</h2>
-                  <div
-                    v-for="(option, index) in editedOptions"
-                    :key="index"
-                    class="editQuestionOption"
+                </div>
+                <v-btn @click="editedOptions.push('')">選択肢を追加</v-btn>
+                <div class="dialogButtonContainer">
+                  <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
+                  <v-btn
+                    color="primary"
+                    variant="tonal"
+                    class="closeButton"
+                    @click="childQuestionclose(question.id)"
+                    >キャンセル</v-btn
                   >
-                    <v-textarea
-                      label="選択肢"
-                      v-model="editedOptions[index]"
-                      variant="outlined"
-                      rows="1"
-                      auto-grow
-                      class="text-field"
-                    />
-                  </div>
-                  <v-btn @click="editedOptions.push('')">選択肢を追加</v-btn>
-                  <div class="dialogButtonContainer">
-                    <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
-                    <v-btn
-                      color="primary"
-                      variant="tonal"
-                      class="closeButton"
-                      @click="childQuestionclose(question.id)"
-                      >キャンセル</v-btn
-                    >
-                  </div>
-                </v-sheet>
-              </v-dialog>
-            </div>
+                </div>
+              </v-sheet>
+            </v-dialog>
           </div>
           <div class="questionDescription">
             {{ question.description }}
@@ -159,6 +155,7 @@ const openHeaderDialog = () => {
   editedTitle.value = questionHeader.value.title
   editedDescription.value = questionHeader.value.description
   editedDeadline.value = questionHeader.value.deadline
+  dialog.value = true
 }
 
 const openDialog = (id: number) => {
@@ -170,6 +167,7 @@ const openQuestionDialog = (id: number) => {
   editedTitle.value = questions.value[id].title
   editedDescription.value = questions.value[id].description
   editedOptions.value = [...questions.value[id].options]
+  questionDialogs.value[id] = true
 }
 
 // ダイアログを閉じる際に一時変数をリセット
@@ -456,7 +454,7 @@ const questions = ref<Question[]>([
 
 .dialog-sheet h2 {
   margin-bottom: 25px;
-  padding-top:10px;
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
