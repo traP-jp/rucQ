@@ -229,12 +229,6 @@ export interface components {
             is_draft: boolean;
             description: string;
         };
-        PostCampRequest: {
-            id: string;
-            name: string;
-            is_draft: boolean;
-            description: string;
-        };
         Event: {
             id: number;
             name: string;
@@ -418,7 +412,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PostCampRequest"];
+                "application/json": components["schemas"]["Camp"];
             };
         };
         responses: {
@@ -476,7 +470,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PostCampRequest"];
+                "application/json": components["schemas"]["Camp"];
             };
         };
         responses: {

@@ -63,14 +63,6 @@ type PostAnswerRequest struct {
 	QuestionId int    `json:"question_id"`
 }
 
-// PostCampRequest defines model for PostCampRequest.
-type PostCampRequest struct {
-	Description string `json:"description"`
-	Id          string `json:"id"`
-	IsDraft     bool   `json:"is_draft"`
-	Name        string `json:"name"`
-}
-
 // PostEventRequest defines model for PostEventRequest.
 type PostEventRequest struct {
 	CampId        int       `json:"camp_id"`
@@ -265,10 +257,10 @@ type PostAnswerJSONRequestBody = PostAnswerRequest
 type PutAnswerJSONRequestBody = PostAnswerRequest
 
 // PostCampJSONRequestBody defines body for PostCamp for application/json ContentType.
-type PostCampJSONRequestBody = PostCampRequest
+type PostCampJSONRequestBody = Camp
 
 // PutCampJSONRequestBody defines body for PutCamp for application/json ContentType.
-type PutCampJSONRequestBody = PostCampRequest
+type PutCampJSONRequestBody = Camp
 
 // PostEventJSONRequestBody defines body for PostEvent for application/json ContentType.
 type PostEventJSONRequestBody = PostEventRequest

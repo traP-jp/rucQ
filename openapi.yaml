@@ -39,7 +39,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostCampRequest'
+              $ref: '#/components/schemas/Camp'
       responses:
         '201':
           description: Created
@@ -85,7 +85,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostCampRequest'
+              $ref: '#/components/schemas/Camp'
       responses:
         '200':
           description: OK
@@ -603,22 +603,6 @@ components:
                 example: Internal server error
   schemas:
     Camp:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        is_draft:
-          type: boolean
-        description:
-          type: string
-      required:
-        - id
-        - name
-        - is_draft
-        - description
-    PostCampRequest:
       type: object
       properties:
         id:
