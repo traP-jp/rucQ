@@ -9,7 +9,23 @@ import (
 )
 
 func (s *Server) GetCamps(e echo.Context) error {
-	return nil
+	camps, err := s.repo.GetCamps()
+
+	if err != nil {
+		e.Logger().Errorf("failed to get camps: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response []Camp
+
+	if err := copier.Copy(&response, &camps); err != nil {
+		e.Logger().Errorf("failed to copy camps: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
 }
 
 func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {

@@ -10,6 +10,16 @@ func (r *Repository) CreateCamp(camp *model.Camp) error {
 	return nil
 }
 
+func (r *Repository) GetCamps() ([]model.Camp, error) {
+	var camps []model.Camp
+
+	if err := r.db.Find(&camps).Error; err != nil {
+		return nil, err
+	}
+
+	return camps, nil
+}
+
 func (r *Repository) GetCampByID(id string) (*model.Camp, error) {
 	var camp model.Camp
 
