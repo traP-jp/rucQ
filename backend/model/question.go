@@ -12,7 +12,7 @@ type Question struct {
 	Description string
 	Type        string
 	IsPublic    bool
-	Due         *time.Time
+	Due         time.Time
 	IsOpen      bool
 	Options     []string `gorm:"serializer:json"`
 }
