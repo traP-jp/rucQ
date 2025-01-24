@@ -224,12 +224,13 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Camp: {
-            id: number;
+            id: string;
             name: string;
             is_draft: boolean;
             description: string;
         };
         PostCampRequest: {
+            id: string;
             name: string;
             is_draft: boolean;
             description: string;

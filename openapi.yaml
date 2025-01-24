@@ -606,7 +606,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
         is_draft:
@@ -621,6 +621,8 @@ components:
     PostCampRequest:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
         is_draft:
@@ -628,6 +630,7 @@ components:
         description:
           type: string
       required:
+        - id
         - name
         - is_draft
         - description

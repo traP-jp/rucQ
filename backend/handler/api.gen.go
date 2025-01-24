@@ -39,7 +39,7 @@ type Answer struct {
 // Camp defines model for Camp.
 type Camp struct {
 	Description string `json:"description"`
-	Id          int    `json:"id"`
+	Id          string `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
 }
@@ -66,6 +66,7 @@ type PostAnswerRequest struct {
 // PostCampRequest defines model for PostCampRequest.
 type PostCampRequest struct {
 	Description string `json:"description"`
+	Id          string `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
 }
