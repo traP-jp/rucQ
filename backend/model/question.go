@@ -14,7 +14,7 @@ type Question struct {
 	IsPublic    bool
 	Due         time.Time
 	IsOpen      bool
-	Options     []string `gorm:"serializer:json"`
+	Options     *[]string `gorm:"serializer:json"`
 }
 
 type Answer struct {
