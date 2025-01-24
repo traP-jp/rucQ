@@ -18,17 +18,28 @@ const items = [
     value: 'まんじゅう',
   },
 ]
+
+const toggleEditMode = () => {
+  if (editMode.value) {
+    editMode.value = false
+    // 編集内容を保存する
+  } else {
+    editMode.value = true
+  }
+}
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <div class="d-flex align-center justify-space-between pa-0">
-      <div class="d-flex align-end">
+  <v-card class="d-flex flex-column ga-4 pa-4">
+    <div class="d-flex flex-column">
+      <div class="d-flex align-center justify-space-between">
         <v-card-title class="py-0">基本情報</v-card-title>
-
-        <v-card-subtitle class="pa-0">12/27まで</v-card-subtitle>
+        <v-btn icon variant="plain" size="small" @click="toggleEditMode">
+          <v-icon v-if="editMode">mdi-content-save</v-icon>
+          <v-icon v-else>mdi-pencil</v-icon>
+        </v-btn>
       </div>
-      <v-btn icon="mdi:pencil" variant="plain" size="small" @click="editMode = !editMode" />
+      <v-card-subtitle>12/27まで</v-card-subtitle>
     </div>
     <v-data-table
       v-if="!editMode"
