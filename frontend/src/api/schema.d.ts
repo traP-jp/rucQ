@@ -227,13 +227,11 @@ export interface components {
             id: number;
             name: string;
             is_draft: boolean;
-            summary: string;
             description: string;
         };
         PostCampRequest: {
             name: string;
             is_draft: boolean;
-            summary: string;
             description: string;
         };
         Event: {
@@ -268,21 +266,19 @@ export interface components {
             id: number;
             title: string;
             description: string;
-            type: string;
+            /** @enum {string} */
+            type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             /** Format: date-time */
             due: string;
             is_open: boolean;
-            options?: components["schemas"]["Option"][];
+            options?: string[] | null;
         };
-        Option: {
-            id: number;
-            body: string;
-        } | null;
         PostQuestionRequest: {
             title: string;
             description: string;
-            type: string;
+            /** @enum {string} */
+            type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             /** Format: date-time */
             due: string;

@@ -611,15 +611,12 @@ components:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
         - id
         - name
         - is_draft
-        - summary
         - description
     PostCampRequest:
       type: object
@@ -628,14 +625,11 @@ components:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
         - name
         - is_draft
-        - summary
         - description
     Event:
       type: object

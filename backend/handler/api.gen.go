@@ -42,7 +42,6 @@ type Camp struct {
 	Id          int    `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // Event defines model for Event.
@@ -69,7 +68,6 @@ type PostCampRequest struct {
 	Description string `json:"description"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // PostEventRequest defines model for PostEventRequest.
