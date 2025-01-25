@@ -26,6 +26,7 @@ watch(
 
 <style module>
 .container {
+  position: relative;
   height: 100%;
 }
 
