@@ -380,6 +380,9 @@ type ServerInterface interface {
 	// 合宿を作成
 	// (POST /api/camps)
 	PostCamp(ctx echo.Context, params PostCampParams) error
+	// デフォルトの合宿を取得
+	// (GET /api/camps/default)
+	GetDefaultCamp(ctx echo.Context) error
 	// 合宿の詳細を取得
 	// (GET /api/camps/{camp_id})
 	GetCamp(ctx echo.Context, campId CampId) error
@@ -603,6 +606,15 @@ func (w *ServerInterfaceWrapper) PostCamp(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PostCamp(ctx, params)
+	return err
+}
+
+// GetDefaultCamp converts echo context to params.
+func (w *ServerInterfaceWrapper) GetDefaultCamp(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetDefaultCamp(ctx)
 	return err
 }
 
@@ -1297,6 +1309,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/answers/:answer_id", wrapper.PutAnswer)
 	router.GET(baseURL+"/api/camps", wrapper.GetCamps)
 	router.POST(baseURL+"/api/camps", wrapper.PostCamp)
+	router.GET(baseURL+"/api/camps/default", wrapper.GetDefaultCamp)
 	router.GET(baseURL+"/api/camps/:camp_id", wrapper.GetCamp)
 	router.PUT(baseURL+"/api/camps/:camp_id", wrapper.PutCamp)
 	router.GET(baseURL+"/api/events", wrapper.GetEvents)
