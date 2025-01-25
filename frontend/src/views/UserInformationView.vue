@@ -22,14 +22,14 @@ const questionGroups: QuestionGroup[] = [
           {
             id: 353,
             question_id: 244,
-            content: 'する'
+            content: 'する',
           },
           {
             id: 354,
             question_id: 244,
-            content: 'しない'
-          }
-        ]
+            content: 'しない',
+          },
+        ],
       },
       {
         id: 245,
@@ -49,8 +49,8 @@ const questionGroups: QuestionGroup[] = [
         is_public: false,
         is_open: true,
       },
-    ]
-  }
+    ],
+  },
 ]
 </script>
 

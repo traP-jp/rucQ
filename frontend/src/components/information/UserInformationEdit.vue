@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type QuestionItem = Question & { content: string | string[], displayContent: string }
+type QuestionItem = Question & { content: string | string[]; displayContent: string }
 
 const props = defineProps<{ questionItem: QuestionItem }>()
 const answer = defineModel<string | string[]>()
@@ -29,7 +29,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
 
   <v-select
     v-if="questionItem.type === 'single'"
-    v-model="(answer as string)"
+    v-model="answer as string"
     :disabled="!questionItem.is_open"
     :label="questionItem.title"
     :items="selectionItems"
@@ -39,7 +39,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
 
   <v-select
     v-if="questionItem.type === 'multiple'"
-    v-model="(answer as string[])"
+    v-model="answer as string[]"
     :disabled="!questionItem.is_open"
     :label="questionItem.title"
     :items="selectionItems"

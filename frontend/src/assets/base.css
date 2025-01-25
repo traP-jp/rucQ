@@ -1,20 +1,20 @@
 :root {
   --color-black: #000000;
   --color-darkgray: #444444;
-  --color-lightgray: #AAAAAA;
+  --color-lightgray: #aaaaaa;
   --color-white: #f6f6f6;
   --color-exwhite: #ffffff;
 
-  --color-orange: #FF7300;
-  --color-orange-pale: #FFE2B2;
+  --color-orange: #ff7300;
+  --color-orange-pale: #ffe2b2;
   --color-green: #178000;
-  --color-green-pale: #CCFFC1;
-  --color-red: #FF4D00;
-  --color-red-pale: #FFC9B2;
-  --color-blue: #008CFF;
-  --color-blue-pale: #9DD8FF;
-  --color-navy: #2444A4;
-  --color-navy-pale: #AFC3FF; 
+  --color-green-pale: #ccffc1;
+  --color-red: #ff4d00;
+  --color-red-pale: #ffc9b2;
+  --color-blue: #008cff;
+  --color-blue-pale: #9dd8ff;
+  --color-navy: #2444a4;
+  --color-navy-pale: #afc3ff;
 
   --color-text: var(--color-black);
   --color-background: var(--color-white);
@@ -50,15 +50,17 @@ body {
     color 0.5s,
     background-color 0.5s;
   line-height: 1.6;
-  font-family: 'M PLUS 1p', "Avenir Next", sans-serif;
+  font-family: 'M PLUS 1p', 'Avenir Next', sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-button, router-link, input, textarea {
+button,
+router-link,
+input,
+textarea {
   background: none;
   border: none;
   outline: none;
