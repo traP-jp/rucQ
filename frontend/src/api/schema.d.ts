@@ -217,6 +217,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/answers/{question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 自分の回答を取得 */
+        get: operations["getMyAnswer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/answers": {
         parameters: {
             query?: never;
@@ -377,7 +394,7 @@ export interface components {
             content: string;
         };
         Answer: {
-            id: string;
+            id: number;
             question_id: number;
             user_traq_id: string;
             content?: string | null;
@@ -1037,6 +1054,33 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getMyAnswer: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
             500: components["responses"]["InternalServerError"];
         };
     };

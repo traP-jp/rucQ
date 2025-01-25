@@ -11,11 +11,5 @@ type Question struct {
 	IsPublic        bool
 	IsOpen          bool
 	Options         []Option
-}
-
-type Answer struct {
-	gorm.Model
-	QuestionID uint
-	UserID     uint
-	Body       *string
+	Answers         []Answer
 }
