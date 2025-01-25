@@ -21,6 +21,21 @@
     <!-- アクションボタン -->
     <div :class="$style.actions">
       <button @click="addItem">項目追加</button>
+      <v-dialog v-model="dialog" max-width="290">
+        <v-sheet>
+          <v-card>
+            <v-card-title>項目追加</v-card-title>
+            <v-card-text>
+              <v-text-field label="内容" v-model="newItem.name"></v-text-field>
+              <v-text-field label="期限" v-model="newItem.deadline"></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="dialog = false">キャンセル</v-btn>
+              <v-btn @click="addItem">追加</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-sheet>
+      </v-dialog>
     </div>
   </div>
 </template>
@@ -30,11 +45,13 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const dialog = ref(false)
+const newItem = ref({ name: '', deadline: '' })
 
-const goToDetail = (id: number) => {// クリック時に詳細ページに移動
+const goToDetail = (id: number) => {
+  // クリック時に詳細ページに移動
   router.push({ name: 'DetailPage', params: { id } })
 }
-
 
 const items = ref([
   { id: 1, type: 'event', name: 'スキーに行きますか', deadline: '2023-12-01' },
@@ -51,7 +68,7 @@ const expiredEventsCount = computed(() => {
 })
 
 const addItem = () => {
-  // 項目追加のロジック
+  dialog.value = true
 }
 </script>
 
@@ -115,7 +132,7 @@ const addItem = () => {
 }
 
 .nameCell:hover {
-  color: #000000
+  color: #000000;
 }
 
 .actions {

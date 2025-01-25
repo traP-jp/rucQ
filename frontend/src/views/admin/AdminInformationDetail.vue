@@ -488,7 +488,8 @@ const questions = ref<Question[]>([
   margin-left: auto;
   font-size: 14px;
   margin-right: 10px;
-  border-radius: 5px;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding-left: 5px;
   padding-right: 5px;
   cursor: pointer;
