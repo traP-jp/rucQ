@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { components } from '@/api/schema'
-import UserInformationEdit from './UserInformationEdit.vue'
-
-defineProps<{ questionGroup: components["schemas"]["QuestionGroup"] }>()
+import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 
 const editMode = ref(false)
 
@@ -35,12 +32,12 @@ const editMode = ref(false)
       </li>
     </ul> -->
 
-    <v-form v-else>
+    <v-form v-else class="d-flex flex-column ga-2">
       <user-information-edit
         v-for="question in questionGroup.questions" :key="question.id"
         :question="question"
       />
+      <v-btn type="submit">保存</v-btn>
     </v-form>
-    <v-btn>保存</v-btn>
   </v-card>
 </template>

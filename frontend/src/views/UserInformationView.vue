@@ -3,15 +3,7 @@ import RoomInformationPanel from '@/components/information/RoomInformationPanel.
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
-import createClient from 'openapi-fetch'
-import type { paths } from '@/api/schema'
-const client = createClient<paths>({ baseUrl: "http://localhost:8080" })
-const {
-  data,
-  error,
-} = await client.GET('/api/question_groups')
-
-const questionGroups = data!
+const questionGroups: QuestionGroup[] = []
 </script>
 
 <template>
