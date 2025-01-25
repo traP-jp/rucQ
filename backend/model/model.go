@@ -10,6 +10,7 @@ func GetAllModels() []any {
 		&Camp{},
 		&Event{},
 		&User{},
+		&QuestionGroup{},
 		&Question{},
 		&Answer{},
 	}

@@ -265,6 +265,49 @@ paths:
                 $ref: '#/components/schemas/User'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/question_groups:
+    get:
+      summary: 質問グループの一覧を取得
+      tags:
+        - Questions
+      operationId: getQuestionGroups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuestionGroup'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 質問グループを作成
+      tags:
+        - Questions
+      operationId: postQuestionGroup
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostQuestionGroupRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionGroup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/questions:
     get:
       summary: 質問の一覧を取得
@@ -709,10 +752,84 @@ components:
       required:
         - traq_id
         - is_staff
+    QuestionGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        due:
+          type: string
+          format: date-time
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+      required:
+        - id
+        - name
+        - description
+        - due
+        - questions
+    PostQuestionGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        due:
+          type: string
+          format: date-time
+      required:
+        - name
+        - description
+        - due
     Question:
       type: object
       properties:
         id:
+          type: integer
+        question_group_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
+        is_public:
+          type: boolean
+        is_open:
+          type: boolean
+        options:
+          type: array
+          items:
+            type: string
+          nullable: true
+      required:
+        - id
+        - question_group_id
+        - title
+        - description
+        - type
+        - is_public
+        - is_open
+    PostQuestionRequest:
+      type: object
+      properties:
+        question_group_id:
           type: integer
         title:
           type: string
@@ -727,9 +844,6 @@ components:
             - free_number
         is_public:
           type: boolean
-        due:
-          type: string
-          format: date-time
         is_open:
           type: boolean
         options:
@@ -738,45 +852,11 @@ components:
             type: string
           nullable: true
       required:
-        - id
+        - question_group_id
         - title
         - description
         - type
         - is_public
-        - due
-        - is_open
-    PostQuestionRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        type:
-          type: string
-          enum:
-            - single
-            - multiple
-            - free_text
-            - free_number
-        is_public:
-          type: boolean
-        due:
-          type: string
-          format: date-time
-        is_open:
-          type: boolean
-        options:
-          type: array
-          items:
-            type: string
-          nullable: true
-      required:
-        - title
-        - description
-        - type
-        - is_public
-        - due
         - is_open
     Answer:
       type: object

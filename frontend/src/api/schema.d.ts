@@ -128,6 +128,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/question_groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 質問グループの一覧を取得 */
+        get: operations["getQuestionGroups"];
+        put?: never;
+        /** 質問グループを作成 */
+        post: operations["postQuestionGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/questions": {
         parameters: {
             query?: never;
@@ -264,26 +282,38 @@ export interface components {
             traq_id: string;
             is_staff: boolean;
         };
+        QuestionGroup: {
+            id: number;
+            name: string;
+            description: string | null;
+            /** Format: date-time */
+            due: string;
+            questions: components["schemas"]["Question"][];
+        };
+        PostQuestionGroupRequest: {
+            name: string;
+            description: string | null;
+            /** Format: date-time */
+            due: string;
+        };
         Question: {
             id: number;
+            question_group_id: number;
             title: string;
-            description: string;
+            description: string | null;
             /** @enum {string} */
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
-            /** Format: date-time */
-            due: string;
             is_open: boolean;
             options?: string[] | null;
         };
         PostQuestionRequest: {
+            question_group_id: number;
             title: string;
             description: string;
             /** @enum {string} */
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
-            /** Format: date-time */
-            due: string;
             is_open: boolean;
             options?: string[] | null;
         };
@@ -694,6 +724,57 @@ export interface operations {
                     "application/json": components["schemas"]["User"];
                 };
             };
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getQuestionGroups: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionGroup"][];
+                };
+            };
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    postQuestionGroup: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostQuestionGroupRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionGroup"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
             500: components["responses"]["InternalServerError"];
         };
     };
