@@ -111,6 +111,7 @@ type PostOptionRequest struct {
 
 // PostQuestionGroupRequest defines model for PostQuestionGroupRequest.
 type PostQuestionGroupRequest struct {
+	CampId      int       `json:"camp_id"`
 	Description *string   `json:"description"`
 	Due         time.Time `json:"due"`
 	Name        string    `json:"name"`
@@ -167,6 +168,7 @@ type QuestionType string
 
 // QuestionGroup defines model for QuestionGroup.
 type QuestionGroup struct {
+	CampId      int        `json:"camp_id"`
 	Description *string    `json:"description"`
 	Due         time.Time  `json:"due"`
 	Id          int        `json:"id"`
