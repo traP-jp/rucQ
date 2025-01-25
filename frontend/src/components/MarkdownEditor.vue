@@ -4,7 +4,6 @@ const text = defineModel<string>('text')
 const lineCount = ref<number>(1)
 const lineHeights = ref<Record<number, number>>({})
 const editor = ref<HTMLTextAreaElement | null>(null)
-const numbers = ref<HTMLDivElement | null>(null)
 
 // GPT 産
 const updateLine = () => {
@@ -40,7 +39,7 @@ onMounted(() => {
 
 <template>
   <div :class="$style.container">
-    <div :class="$style.numbers" ref="numbers">
+    <div :class="$style.numbers">
       <div v-for="line in lineCount" :key="line" :style="{ height: lineHeights[line] + 'px' }">
         {{ line }}
       </div>
