@@ -36,7 +36,7 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -77,6 +77,26 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 	return e.JSON(http.StatusCreated, response)
 }
 
+func (s *Server) GetDefaultCamp(e echo.Context) error {
+	camp, err := s.repo.GetDefaultCamp()
+
+	if err != nil {
+		e.Logger().Errorf("failed to get default camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Camp
+
+	if err := copier.Copy(&response, camp); err != nil {
+		e.Logger().Errorf("failed to copy camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
+}
+
 func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 	camp, err := s.repo.GetCampByID(uint(campID))
 
@@ -98,7 +118,7 @@ func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 }
 
 func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)

@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Server) GetMyBudget(e echo.Context, params GetMyBudgetParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)

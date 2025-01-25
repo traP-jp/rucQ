@@ -29,7 +29,7 @@ func (s *Server) GetQuestions(e echo.Context) error {
 }
 
 func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -61,7 +61,7 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	var questionResponse []Question
+	var questionResponse Question
 
 	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
@@ -73,7 +73,7 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 }
 
 func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params DeleteQuestionParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -115,7 +115,7 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 }
 
 func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQuestionParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
