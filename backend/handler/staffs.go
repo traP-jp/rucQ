@@ -14,7 +14,7 @@ func (s *Server) GetStaffs(e echo.Context) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get staffs: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response []User
@@ -22,7 +22,7 @@ func (s *Server) GetStaffs(e echo.Context) error {
 	if err := copier.Copy(&response, &staffs); err != nil {
 		e.Logger().Errorf("failed to copy staffs: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, &response)
@@ -35,11 +35,11 @@ func (s *Server) PostStaff(e echo.Context, params PostStaffParams) error {
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
 
-			return e.JSON(http.StatusInternalServerError, "Internal server error")
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 
 		if !loggedInUser.IsStaff {
-			return e.JSON(http.StatusForbidden, "Forbidden")
+			return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 		}
 	}
 
@@ -52,13 +52,13 @@ func (s *Server) PostStaff(e echo.Context, params PostStaffParams) error {
 	newStaff, err := s.repo.GetOrCreateUser(req.TraqId)
 
 	if err != nil {
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.SetUserIsStaff(newStaff, true); err != nil {
 		e.Logger().Errorf("failed to set user as staff: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.NoContent(http.StatusNoContent)
@@ -70,11 +70,11 @@ func (s *Server) DeleteStaff(e echo.Context, params DeleteStaffParams) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !loggedInUser.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	staff, err := s.repo.GetOrCreateUser(params.StaffId)
@@ -82,13 +82,13 @@ func (s *Server) DeleteStaff(e echo.Context, params DeleteStaffParams) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get or create staff: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.SetUserIsStaff(staff, false); err != nil {
 		e.Logger().Errorf("failed to set user as staff: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.NoContent(http.StatusNoContent)

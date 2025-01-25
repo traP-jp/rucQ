@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -14,7 +15,7 @@ func (s *Server) GetQuestions(e echo.Context) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get questions: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var questionsResponse []Question
@@ -22,7 +23,7 @@ func (s *Server) GetQuestions(e echo.Context) error {
 	if err := copier.Copy(&questionsResponse, &questions); err != nil {
 		e.Logger().Errorf("failed to copy questions: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, questionsResponse)
@@ -34,11 +35,11 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	var req PostQuestionJSONRequestBody
@@ -52,13 +53,13 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 	if err := copier.Copy(&questionModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.CreateQuestion(&questionModel); err != nil {
 		e.Logger().Errorf("failed to create question: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var questionResponse Question
@@ -66,7 +67,7 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusCreated, &questionResponse)
@@ -78,17 +79,21 @@ func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params De
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	if err := s.repo.DeleteQuestionByID(uint(questionID)); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to delete question: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.NoContent(http.StatusNoContent)
@@ -98,9 +103,13 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 	question, err := s.repo.GetQuestionByID(uint(questionID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to get question: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var questionResponse Question
@@ -108,7 +117,7 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 	if err := copier.Copy(&questionResponse, &question); err != nil {
 		e.Logger().Errorf("failed to copy question: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, &questionResponse)
@@ -120,11 +129,11 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	var req PutQuestionJSONRequestBody
@@ -138,13 +147,17 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 	if err := copier.Copy(&questionModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.UpdateQuestion(uint(questionID), &questionModel); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to update question: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var questionResponse Question
@@ -152,7 +165,7 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	questionResponse.Id = questionID
