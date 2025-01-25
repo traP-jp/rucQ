@@ -49,6 +49,11 @@ const router = createRouter({
               name: 'UserInformationView',
               component: () => import('@/views/admin/AdminInformationView.vue'),
             },
+            {
+              path: 'users/detail/:id',
+              name: 'DetailPage',
+              component: () => import('@/views/admin/AdminInformationDetail.vue'),
+            },
           ],
         },
       ],
