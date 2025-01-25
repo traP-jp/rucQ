@@ -39,14 +39,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Camp'
+              $ref: '#/components/schemas/PostCampRequest'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
+                $ref: '#/components/schemas/PostCampRequest'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -87,7 +87,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Camp'
+              $ref: '#/components/schemas/PostCampRequest'
       responses:
         '200':
           description: OK
@@ -525,7 +525,7 @@ components:
       description: 合宿ID
       required: true
       schema:
-        type: string
+        type: integer
     EventId:
       name: event_id
       in: path
@@ -608,6 +608,8 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        display_id:
           type: string
         name:
           type: string
@@ -617,6 +619,23 @@ components:
           type: string
       required:
         - id
+        - display_id
+        - name
+        - is_draft
+        - description
+    PostCampRequest:
+      type: object
+      properties:
+        display_id:
+          type: string
+        name:
+          type: string
+        is_draft:
+          type: boolean
+        description:
+          type: string
+      required:
+        - display_id
         - name
         - is_draft
         - description

@@ -39,7 +39,8 @@ type Answer struct {
 // Camp defines model for Camp.
 type Camp struct {
 	Description string `json:"description"`
-	Id          string `json:"id"`
+	DisplayId   string `json:"display_id"`
+	Id          int    `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
 }
@@ -61,6 +62,14 @@ type Event struct {
 type PostAnswerRequest struct {
 	Content    string `json:"content"`
 	QuestionId int    `json:"question_id"`
+}
+
+// PostCampRequest defines model for PostCampRequest.
+type PostCampRequest struct {
+	Description string `json:"description"`
+	DisplayId   string `json:"display_id"`
+	IsDraft     bool   `json:"is_draft"`
+	Name        string `json:"name"`
 }
 
 // PostEventRequest defines model for PostEventRequest.
@@ -118,7 +127,7 @@ type User struct {
 type AnswerId = int
 
 // CampId defines model for CampId.
-type CampId = string
+type CampId = int
 
 // EventId defines model for EventId.
 type EventId = int
@@ -257,10 +266,10 @@ type PostAnswerJSONRequestBody = PostAnswerRequest
 type PutAnswerJSONRequestBody = PostAnswerRequest
 
 // PostCampJSONRequestBody defines body for PostCamp for application/json ContentType.
-type PostCampJSONRequestBody = Camp
+type PostCampJSONRequestBody = PostCampRequest
 
 // PutCampJSONRequestBody defines body for PutCamp for application/json ContentType.
-type PutCampJSONRequestBody = Camp
+type PutCampJSONRequestBody = PostCampRequest
 
 // PostEventJSONRequestBody defines body for PostEvent for application/json ContentType.
 type PostEventJSONRequestBody = PostEventRequest

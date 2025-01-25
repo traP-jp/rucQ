@@ -13,7 +13,7 @@ type Event struct {
 	Location        string
 	TimeStart       time.Time
 	TimeEnd         time.Time
-	CampID          string
+	CampID          uint
 	OrganizerTraqID string
 	ByStaff         bool
 }

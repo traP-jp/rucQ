@@ -78,7 +78,7 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 }
 
 func (s *Server) GetCamp(e echo.Context, campID CampId) error {
-	camp, err := s.repo.GetCampByID(campID)
+	camp, err := s.repo.GetCampByID(uint(campID))
 
 	if err != nil {
 		e.Logger().Errorf("failed to get camp: %v", err)
@@ -98,5 +98,51 @@ func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 }
 
 func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) error {
-	return nil
+	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return e.JSON(http.StatusForbidden, "Forbidden")
+	}
+
+	var req PutCampJSONRequestBody
+
+	if err := e.Bind(&req); err != nil {
+		return e.JSON(http.StatusBadRequest, err)
+	}
+
+	camp, err := s.repo.GetCampByID(uint(campID))
+
+	if err != nil {
+		e.Logger().Errorf("failed to get camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := copier.Copy(camp, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.UpdateCamp(uint(campID), camp); err != nil {
+		e.Logger().Errorf("failed to update camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Camp
+
+	if err := copier.Copy(&response, camp); err != nil {
+		e.Logger().Errorf("failed to copy camp: %v", err)
+
+		return e.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
 }

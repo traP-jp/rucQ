@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/traP-jp/rucQ/backend/model"
+	"gorm.io/gorm"
 )
 
 func (r *Repository) CreateCamp(camp *model.Camp) error {
@@ -31,12 +32,28 @@ func (r *Repository) GetCamps() ([]model.Camp, error) {
 	return camps, nil
 }
 
-func (r *Repository) GetCampByID(id string) (*model.Camp, error) {
+func (r *Repository) GetCampByID(id uint) (*model.Camp, error) {
 	var camp model.Camp
 
-	if err := r.db.Where(&model.Camp{ID: id}).First(&camp).Error; err != nil {
+	if err := r.db.Where(&model.Camp{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}).First(&camp).Error; err != nil {
 		return nil, err
 	}
 
 	return &camp, nil
+}
+
+func (r *Repository) UpdateCamp(campID uint, camp *model.Camp) error {
+	if err := r.db.Where(&model.Camp{
+		Model: gorm.Model{
+			ID: campID,
+		},
+	}).Updates(camp).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

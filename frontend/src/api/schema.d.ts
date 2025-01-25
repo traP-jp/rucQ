@@ -224,7 +224,14 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Camp: {
-            id: string;
+            id: number;
+            display_id: string;
+            name: string;
+            is_draft: boolean;
+            description: string;
+        };
+        PostCampRequest: {
+            display_id: string;
             name: string;
             is_draft: boolean;
             description: string;
@@ -363,7 +370,7 @@ export interface components {
         /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
         "X-Forwarded-User": string;
         /** @description 合宿ID */
-        CampId: string;
+        CampId: number;
         /** @description イベントID */
         EventId: number;
         /** @description 質問ID */
@@ -412,7 +419,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Camp"];
+                "application/json": components["schemas"]["PostCampRequest"];
             };
         };
         responses: {
@@ -422,7 +429,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Camp"];
+                    "application/json": components["schemas"]["PostCampRequest"];
                 };
             };
             400: components["responses"]["BadRequest"];
@@ -471,7 +478,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Camp"];
+                "application/json": components["schemas"]["PostCampRequest"];
             };
         };
         responses: {
