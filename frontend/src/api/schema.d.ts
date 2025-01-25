@@ -389,7 +389,7 @@ export interface components {
         Budget: {
             id: number;
             camp_id: number;
-            amount: number;
+            amount?: number | null;
         };
         PostStaffRequest: {
             traq_id: string;

@@ -992,10 +992,10 @@ components:
           type: integer
         amount:
           type: integer
+          nullable: true
       required:
         - id
         - camp_id
-        - amount
     PostStaffRequest:
       type: object
       properties:

@@ -38,9 +38,9 @@ type Answer struct {
 
 // Budget defines model for Budget.
 type Budget struct {
-	Amount int `json:"amount"`
-	CampId int `json:"camp_id"`
-	Id     int `json:"id"`
+	Amount *int `json:"amount"`
+	CampId int  `json:"camp_id"`
+	Id     int  `json:"id"`
 }
 
 // Camp defines model for Camp.
