@@ -2,8 +2,14 @@
 import { RouterView } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import SideBar from '@/components/layout/SideBar.vue'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
 import MobileFooter from '@/components/layout/MobileFooter.vue'
+
+
+//初期のページタイトルを定義
+
+</script>
+
+
 
 const { xs } = useDisplay()
 </script>
@@ -12,6 +18,7 @@ const { xs } = useDisplay()
   <v-app style="background: var(--color-background)">
     <side-bar v-if="!xs" />
     <mobile-header v-if="xs" />
+
     <v-main>
       <router-view />
     </v-main>

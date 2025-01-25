@@ -1,4 +1,9 @@
 <script setup lang="ts">
+
+import MobileHeader from '@/components/layout/MobileHeader.vue'
+import { useDisplay } from 'vuetify'
+
+const { mobile } = useDisplay()
 import { getTimeStringNoPad, getDayString } from '@/lib/date'
 import { getLayout, epoch, type BlockGroup } from '@/lib/event-layout'
 import { events, plans } from '@/lib/sample-data'
@@ -6,6 +11,7 @@ import EventBlock from '@/components/EventBlock.vue'
 import { onMounted, ref } from 'vue'
 
 const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
+
 
 onMounted(() => {
   days.value = []
@@ -30,6 +36,7 @@ const onlyPlans = (group: BlockGroup) => {
 </script>
 
 <template>
+ <mobile-header v-if="mobile" title="Schedule" />
   <div :class="$style.container" v-if="days.length > 0">
     <div v-for="(day, index) in days" :key="day.dateString">
       <h2 style="margin-bottom: 20px; font-weight: 700; font-family: 'Avenir Next'">

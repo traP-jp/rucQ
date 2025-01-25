@@ -1,46 +1,26 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 
-const route = useRoute() // 現在のルート情報を取得
-const title = ref<string>('') // ヘッダーに表示するタイトル
+import { defineProps } from 'vue'
 
-// URL に基づいてタイトルを設定する関数
-const updateTitle = () => {
-  const routeName = route.path.split('/').pop() || '' // ルート名が存在しない場合を考慮
-  switch (routeName) {
-    case 'guidebook':
-      title.value = '合宿のしおり'
-      break
-    case 'schedule':
-      title.value = 'スケジュール'
-      break
-    case 'notes':
-      title.value = 'ノート'
-      break
-    case 'chat':
-      title.value = 'チャット'
-      break
-    case 'info':
-      title.value = '情報'
-      break
-    default:
-      title.value = '合宿のしおり' // デフォルトでは空にする
-  }
-}
+//親コンポーネントからタイトルを受け取る
+const props = defineProps<{
+  title: string
+}>()
 
-// ルートが変更されたときにタイトルを更新
-watch(
-  () => route.name,
-  () => updateTitle(),
-  { immediate: true } // 初回にも実行
-)
+
+
 </script>
 
 <template>
   <header class="app-header">
-    <img src="/logo/logo-white.svg" alt="rucQ Icon" class="logo" />
-    <h2 class="page-title">{{ title }}</h2>
+
+    <div class="left">
+     <img src="/logo/logo-white.svg" alt="rucQ Icon" class="logo" />
+    </div>
+    <div class="center">
+      <h1 class="page-title">{{ props.title }}</h1>
+    </div>
+
   </header>
 </template>
 
@@ -54,12 +34,23 @@ watch(
   z-index: 100000; /* 他の要素より手前に表示 */
 }
 
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.center {
+  flex-grow: 1; /* 中央のタイトルが残りのスペースを占める */
+  text-align: center;
+}
+
 .app-title {
   font-size: 24px;
   font-weight: bold;
   margin: 0;
   margin-right: 20px; /* ロゴとタイトルの間隔を調整 */
 }
+
 
 .page-title {
   font-size: 20px;
