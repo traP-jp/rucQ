@@ -839,12 +839,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Question'
+        camp_id:
+          type: integer
       required:
         - id
         - name
         - description
         - due
         - questions
+        - camp_id
     PostQuestionGroupRequest:
       type: object
       properties:
@@ -856,10 +859,13 @@ components:
         due:
           type: string
           format: date-time
+        camp_id:
+          type: integer
       required:
         - name
         - description
         - due
+        - camp_id
     Question:
       type: object
       properties:

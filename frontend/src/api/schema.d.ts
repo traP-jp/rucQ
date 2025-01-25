@@ -340,12 +340,14 @@ export interface components {
             /** Format: date-time */
             due: string;
             questions: components["schemas"]["Question"][];
+            camp_id: number;
         };
         PostQuestionGroupRequest: {
             name: string;
             description: string | null;
             /** Format: date-time */
             due: string;
+            camp_id: number;
         };
         Question: {
             id: number;
