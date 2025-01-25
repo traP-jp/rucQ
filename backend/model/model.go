@@ -1,5 +1,9 @@
 package model
 
+import "errors"
+
+var ErrAlreadyExists = errors.New("already exists")
+
 // 全モデルを書いておく
 func GetAllModels() []any {
 	return []any{

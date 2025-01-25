@@ -1,9 +1,20 @@
 package repository
 
-import "github.com/traP-jp/rucQ/backend/model"
+import (
+	"errors"
+
+	"github.com/go-sql-driver/mysql"
+	"github.com/traP-jp/rucQ/backend/model"
+)
 
 func (r *Repository) CreateCamp(camp *model.Camp) error {
 	if err := r.db.Create(camp).Error; err != nil {
+		var mysqlErr *mysql.MySQLError
+
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+			return model.ErrAlreadyExists
+		}
+
 		return err
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -56,6 +57,10 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 	}
 
 	if err := s.repo.CreateCamp(&campModel); err != nil {
+		if errors.Is(err, model.ErrAlreadyExists) {
+			return echo.NewHTTPError(http.StatusConflict, "Camp already exists")
+		}
+
 		e.Logger().Errorf("failed to create camp: %v", err)
 
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
