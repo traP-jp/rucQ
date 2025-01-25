@@ -133,7 +133,7 @@ interface Item {
 }
 
 interface options {
-  optioinId: number
+  optionId: number
   option: string
 }
 
@@ -148,11 +148,15 @@ const newItem = ref<Item>({
   description: '',
   deadline: '2023-11-23',
   type: 'checkbox',
-  questions: [{ description: '', options: [{ optioinId: 0, option: '' }] }],
+  questions: [{ description: '', options: [{ optionId: 0, option: '' }] }],
 })
 
 const deleteOption = (questionIndex: number, optionId: number) => {
   newItem.value.questions[questionIndex].options.splice(optionId, 1)
+  // optionIdを再割り当て
+  newItem.value.questions[questionIndex].options.forEach((option, index) => {
+    option.optionId = index
+  })
 }
 
 const goToDetail = (id: number) => {
@@ -181,13 +185,13 @@ const addItem = () => {
 // checkbox, radiobutton のオプションを追加するメソッド
 const addOption = (index: number) => {
   newItem.value.questions[index].options.push({
-    optioinId: newItem.value.questions[index].options.length,
+    optionId: newItem.value.questions[index].options.length,
     option: '',
   })
 }
 
 const addQuestionItem = () => {
-  newItem.value.questions.push({ description: '', options: [{ optioinId: 0, option: '' }] })
+  newItem.value.questions.push({ description: '', options: [{ optionId: 0, option: '' }] })
 }
 
 const dialogClose = () => {
