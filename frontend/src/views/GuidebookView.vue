@@ -1,6 +1,5 @@
 <template>
-  <mobile-header v-if="mobile" title="Guidebook" />
-
+  <mobile-header v-if="xs" title="Guidebook" />
 
   <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
@@ -15,7 +14,7 @@ import { marked } from 'marked'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
-const { mobile } = useDisplay()
+const { xs } = useDisplay()
 
 const markdown = ref(`
 # 2024年度 夏合宿
@@ -72,6 +71,4 @@ const htmlContent = computed(() => marked(markdown.value))
   margin: 0 auto; /* 中央揃え */
   padding: 70px 30px 70px 30px; /* 下にフッターの余白を追加 */
 }
-
-
 </style>

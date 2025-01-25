@@ -11,7 +11,7 @@ const { xs } = useDisplay()
 
 <template>
   <v-app style="background: var(--color-background)">
-    <side-bar v-if="!xs" />
+    <side-bar />
     <mobile-header v-if="xs" />
 
     <v-main>
