@@ -69,9 +69,9 @@ onMounted(async () => {
 :deep(h4),
 :deep(h5),
 :deep(h6) {
-  margin-bottom: 0.5em;
+  padding-top: 0.5em;
   font-weight: bold;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 :deep(strong) {
@@ -79,7 +79,8 @@ onMounted(async () => {
 }
 
 :deep(code) {
-  font-family: 'Roboto Mono', 'M PLUS 1p';
+  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
+  font-weight: 500;
   font-size: 11pt;
 }
 
@@ -88,12 +89,14 @@ onMounted(async () => {
   border-radius: 6px;
   max-height: 400px;
   overflow: scroll;
-  background-color: var(--color-codeback) !important;
+  background-color: var(--color-darkgray) !important;
 }
 
 :deep(p code) {
-  color: var(--color-code);
   margin: 0 0px;
+  background-color: var(--color-theme-pale);
+  border-radius: 4px;
+  border: 2px solid var(--color-theme-pale);
 }
 
 :deep(ul),
@@ -109,22 +112,39 @@ onMounted(async () => {
 
 :deep(blockquote) {
   border-radius: 0px;
-  color: var(--color-middle);
+  color: var(--color-darkgray);
   padding: 0px 0px 0px 10px;
-  border-left: 4px solid rgb(139, 211, 32);
+  border-left: 4px solid var(--color-lightgray);
   margin: 0 0 8px 4px;
 }
 
+:deep(tr:not(:last-child)) {
+  border-bottom: 1px dashed var(--color-lightgray);
+}
+
+:deep(thead) {
+  border-bottom: 1px solid var(--color-black);
+}
+
+:deep(th),
+:deep(td) {
+  padding: 4px;
+}
+
+:deep(th) {
+  font-weight: bold;
+}
+
+:deep(table) {
+  border-collapse: collapse;
+}
+
 :deep(a) {
-  color: var(--color-link) !important;
+  color: #0066ff !important;
   text-decoration: none;
 }
 
 :deep(a):hover {
   text-decoration: underline;
-}
-
-:deep(:last-child) {
-  margin-bottom: 0; /* 最下部に隙間ができることを防ぐ */
 }
 </style>
