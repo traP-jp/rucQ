@@ -46,11 +46,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
+                $ref: '#/components/schemas/PostCampRequest'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/camps/{camp_id}:
@@ -607,35 +609,35 @@ components:
       properties:
         id:
           type: integer
+        display_id:
+          type: string
         name:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
         - id
+        - display_id
         - name
         - is_draft
-        - summary
         - description
     PostCampRequest:
       type: object
       properties:
+        display_id:
+          type: string
         name:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
+        - display_id
         - name
         - is_draft
-        - summary
         - description
     Event:
       type: object

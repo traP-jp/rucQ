@@ -225,15 +225,15 @@ export interface components {
     schemas: {
         Camp: {
             id: number;
+            display_id: string;
             name: string;
             is_draft: boolean;
-            summary: string;
             description: string;
         };
         PostCampRequest: {
+            display_id: string;
             name: string;
             is_draft: boolean;
-            summary: string;
             description: string;
         };
         Event: {
@@ -268,21 +268,19 @@ export interface components {
             id: number;
             title: string;
             description: string;
-            type: string;
+            /** @enum {string} */
+            type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             /** Format: date-time */
             due: string;
             is_open: boolean;
-            options?: components["schemas"]["Option"][];
+            options?: string[] | null;
         };
-        Option: {
-            id: number;
-            body: string;
-        } | null;
         PostQuestionRequest: {
             title: string;
             description: string;
-            type: string;
+            /** @enum {string} */
+            type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             /** Format: date-time */
             due: string;
@@ -431,11 +429,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Camp"];
+                    "application/json": components["schemas"]["PostCampRequest"];
                 };
             };
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
             500: components["responses"]["InternalServerError"];
         };
     };

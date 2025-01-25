@@ -39,10 +39,10 @@ type Answer struct {
 // Camp defines model for Camp.
 type Camp struct {
 	Description string `json:"description"`
+	DisplayId   string `json:"display_id"`
 	Id          int    `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // Event defines model for Event.
@@ -67,9 +67,9 @@ type PostAnswerRequest struct {
 // PostCampRequest defines model for PostCampRequest.
 type PostCampRequest struct {
 	Description string `json:"description"`
+	DisplayId   string `json:"display_id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // PostEventRequest defines model for PostEventRequest.
