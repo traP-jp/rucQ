@@ -1,25 +1,60 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute() // 追加
+const value = ref<string>('guidebook')
+
+watch(value, (val: string) => {
+  switch (val) {
+    case 'guidebook':
+      const segments = route.path.split('/')
+      const parentPath = '/' + segments[1] + '/'
+      router.push(parentPath)
+      break
+    case 'schedule':
+      router.push('schedule')
+      break
+    case 'notes':
+      router.push('personal-notes')
+      break
+    case 'chat':
+      router.push('chat')
+      break
+    case 'info':
+      router.push('info')
+      break
+  }
+})
+</script>
 
 <template>
-  <v-bottom-navigation>
+  <v-bottom-navigation v-model="value" color="primary" mandatory grow>
     <v-btn value="guidebook">
-      <v-icon>mdi-book-open</v-icon>
+      <v-icon size="24">{{
+        value === 'guidebook'
+          ? 'mdi-book-open-blank-variant'
+          : 'mdi-book-open-blank-variant-outline'
+      }}</v-icon>
     </v-btn>
 
     <v-btn value="schedule">
-      <v-icon>mdi-calendar</v-icon>
+      <v-icon size="24">{{ value === 'schedule' ? 'mdi-clock' : 'mdi-clock-outline' }}</v-icon>
     </v-btn>
 
     <v-btn value="notes">
-      <v-icon>mdi-notebook</v-icon>
+      <v-icon size="24">{{ value === 'notes' ? 'mdi-book-edit' : 'mdi-book-edit-outline' }}</v-icon>
     </v-btn>
 
     <v-btn value="chat">
-      <v-icon>mdi-chat</v-icon>
+      <v-icon size="24">{{ value === 'chat' ? 'mdi-chat' : 'mdi-chat-outline' }}</v-icon>
     </v-btn>
 
-    <v-btn value="information">
-      <v-icon>mdi-information</v-icon>
+    <v-btn value="info">
+      <v-icon size="24">{{
+        value === 'info' ? 'mdi-information' : 'mdi-information-outline'
+      }}</v-icon>
     </v-btn>
   </v-bottom-navigation>
 </template>

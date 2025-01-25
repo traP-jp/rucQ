@@ -3,20 +3,18 @@ import { ref, watch } from 'vue'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
 import EditPreviewButton from '@/components/EditPreviewButton.vue'
+import MobileHeader from '@/components/layout/MobileHeader.vue'
+import { useDisplay } from 'vuetify'
+
+const { xs } = useDisplay()
 
 const text = ref('')
 
 const isPreview = ref(false)
-
-watch(
-  () => text.value,
-  () => {
-    console.log(text.value)
-  },
-)
 </script>
 
 <template>
+  <mobile-header v-if="xs" title="PersonalNote" />
   <div :class="$style.container">
     <MarkdownEditor v-if="!isPreview" v-model:text="text" />
     <MarkdownPreview v-else v-model:text="text" />

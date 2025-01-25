@@ -17,44 +17,44 @@ paths:
         - Camps
       operationId: getCamps
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Camp'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/Camp"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: 合宿を作成
       tags:
         - Camps
       operationId: postCamp
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostCampRequest'
+              $ref: "#/components/schemas/PostCampRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostCampRequest'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/PostCampRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/camps/default:
     get:
       summary: デフォルトの合宿を取得
@@ -62,16 +62,16 @@ paths:
         - Camps
       operationId: getDefaultCamp
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Camp"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/camps/{camp_id}:
     get:
       summary: 合宿の詳細を取得
@@ -79,47 +79,47 @@ paths:
         - Camps
       operationId: getCamp
       parameters:
-        - $ref: '#/components/parameters/CampId'
+        - $ref: "#/components/parameters/CampId"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Camp"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
       summary: 合宿を更新
       tags:
         - Camps
       operationId: putCamp
       parameters:
-        - $ref: '#/components/parameters/CampId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/CampId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostCampRequest'
+              $ref: "#/components/schemas/PostCampRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Camp"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/events:
     get:
       summary: イベントの一覧を取得
@@ -127,40 +127,40 @@ paths:
         - Events
       operationId: getEvents
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/Event"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: イベントを作成
       tags:
         - Events
       operationId: postEvent
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostEventRequest'
+              $ref: "#/components/schemas/PostEventRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/events/{event_id}:
     get:
       summary: イベントの詳細を取得
@@ -168,47 +168,47 @@ paths:
         - Events
       operationId: getEvent
       parameters:
-        - $ref: '#/components/parameters/EventId'
+        - $ref: "#/components/parameters/EventId"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Event"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
       summary: イベントを更新
       tags:
         - Events
       operationId: putEvent
       parameters:
-        - $ref: '#/components/parameters/EventId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/EventId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostEventRequest'
+              $ref: "#/components/schemas/PostEventRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/events/{event_id}/register:
     post:
       summary: イベントに参加
@@ -216,34 +216,34 @@ paths:
         - Events
       operationId: registerEvent
       parameters:
-        - $ref: '#/components/parameters/EventId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/EventId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
       summary: イベントへの参加をキャンセル
       tags:
         - Events
       operationId: unregisterEvent
       parameters:
-        - $ref: '#/components/parameters/EventId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/EventId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/events/{event_id}/participants:
     get:
       summary: イベントの参加者一覧を取得
@@ -251,20 +251,20 @@ paths:
         - Events
       operationId: getParticipants
       parameters:
-        - $ref: '#/components/parameters/EventId'
+        - $ref: "#/components/parameters/EventId"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/User"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/me:
     get:
       summary: 自分の情報を取得
@@ -272,16 +272,16 @@ paths:
         - Users
       operationId: getMe
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/question_groups:
     get:
       summary: 質問グループの一覧を取得
@@ -289,42 +289,42 @@ paths:
         - Questions
       operationId: getQuestionGroups
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/QuestionGroup'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/QuestionGroup"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: 質問グループを作成
       tags:
         - Questions
       operationId: postQuestionGroup
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostQuestionGroupRequest'
+              $ref: "#/components/schemas/PostQuestionGroupRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QuestionGroup'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/QuestionGroup"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/questions:
     get:
       summary: 質問の一覧を取得
@@ -332,42 +332,42 @@ paths:
         - Questions
       operationId: getQuestions
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Question'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/Question"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: 質問を作成
       tags:
         - Questions
       operationId: postQuestion
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostQuestionRequest'
+              $ref: "#/components/schemas/PostQuestionRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Question'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Question"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/questions/{question_id}:
     get:
       summary: 質問の詳細を取得
@@ -375,66 +375,66 @@ paths:
         - Questions
       operationId: getQuestion
       parameters:
-        - $ref: '#/components/parameters/QuestionId'
+        - $ref: "#/components/parameters/QuestionId"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Question'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Question"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
       summary: 質問を更新
       tags:
         - Questions
       operationId: putQuestion
       parameters:
-        - $ref: '#/components/parameters/QuestionId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/QuestionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostQuestionRequest'
+              $ref: "#/components/schemas/PostQuestionRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Question'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Question"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
       summary: 質問を削除
       tags:
         - Questions
       operationId: deleteQuestion
       parameters:
-        - $ref: '#/components/parameters/QuestionId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/QuestionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/options:
     post:
       summary: 選択肢を作成
@@ -442,26 +442,26 @@ paths:
         - Questions
       operationId: postOption
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostOptionRequest'
+              $ref: "#/components/schemas/PostOptionRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Option'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Option"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/options/{option_id}:
     put:
       summary: 選択肢を更新
@@ -469,29 +469,29 @@ paths:
         - Questions
       operationId: putOption
       parameters:
-        - $ref: '#/components/parameters/OptionId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/OptionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostOptionRequest'
+              $ref: "#/components/schemas/PostOptionRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Option'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Option"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/me/answers/{question_id}:
     get:
       summary: 自分の回答を取得
@@ -499,46 +499,46 @@ paths:
         - Questions
       operationId: getMyAnswer
       parameters:
-        - $ref: '#/components/parameters/QuestionId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/QuestionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Answer'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Answer"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
       summary: 回答を更新
       tags:
         - Questions
       operationId: putAnswer
       parameters:
-        - $ref: '#/components/parameters/QuestionId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/QuestionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PutAnswerRequest'
+              $ref: "#/components/schemas/PutAnswerRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/me/budgets:
     get:
       summary: 自分の予算を取得
@@ -546,16 +546,16 @@ paths:
         - Budgets
       operationId: getMyBudget
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Budget'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Budget"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -563,59 +563,59 @@ paths:
         - Staffs
       operationId: getStaffs
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: 合宿係を追加
       tags:
         - Staffs
       operationId: postStaff
       parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostStaffRequest'
+              $ref: "#/components/schemas/PostStaffRequest"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
       summary: 合宿係を削除
       tags:
         - Staffs
       operationId: deleteStaff
       parameters:
-        - $ref: '#/components/parameters/StaffId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
+        - $ref: "#/components/parameters/StaffId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   parameters:
@@ -775,6 +775,8 @@ components:
           type: string
         by_staff:
           type: boolean
+        display_color:
+          type: string
       required:
         - id
         - name
@@ -785,6 +787,7 @@ components:
         - camp_id
         - organizer_traq_id
         - by_staff
+        - display_color
     PostEventRequest:
       type: object
       properties:
@@ -804,6 +807,8 @@ components:
           type: integer
         create_as_staff:
           type: boolean
+        display_color:
+          type: string
       required:
         - name
         - description
@@ -812,6 +817,7 @@ components:
         - time_end
         - camp_id
         - create_as_staff
+        - display_color
     User:
       type: object
       properties:
@@ -838,13 +844,16 @@ components:
         questions:
           type: array
           items:
-            $ref: '#/components/schemas/Question'
+            $ref: "#/components/schemas/Question"
+        camp_id:
+          type: integer
       required:
         - id
         - name
         - description
         - due
         - questions
+        - camp_id
     PostQuestionGroupRequest:
       type: object
       properties:
@@ -856,10 +865,13 @@ components:
         due:
           type: string
           format: date-time
+        camp_id:
+          type: integer
       required:
         - name
         - description
         - due
+        - camp_id
     Question:
       type: object
       properties:
@@ -886,7 +898,7 @@ components:
         options:
           type: array
           items:
-            $ref: '#/components/schemas/Option'
+            $ref: "#/components/schemas/Option"
           nullable: true
       required:
         - id

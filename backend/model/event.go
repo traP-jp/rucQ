@@ -16,4 +16,5 @@ type Event struct {
 	CampID          uint
 	OrganizerTraqID string
 	ByStaff         bool
+	DisplayColor    string
 }

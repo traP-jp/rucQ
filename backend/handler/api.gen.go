@@ -75,6 +75,7 @@ type Event struct {
 	OrganizerTraqId string    `json:"organizer_traq_id"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
+	DisplayColor    string    `json:"display_color"`
 }
 
 // Option defines model for Option.
@@ -101,6 +102,7 @@ type PostEventRequest struct {
 	Name          string    `json:"name"`
 	TimeEnd       time.Time `json:"time_end"`
 	TimeStart     time.Time `json:"time_start"`
+	DisplayColor  string    `json:"display_color"`
 }
 
 // PostOptionRequest defines model for PostOptionRequest.
@@ -111,6 +113,7 @@ type PostOptionRequest struct {
 
 // PostQuestionGroupRequest defines model for PostQuestionGroupRequest.
 type PostQuestionGroupRequest struct {
+	CampId      int       `json:"camp_id"`
 	Description *string   `json:"description"`
 	Due         time.Time `json:"due"`
 	Name        string    `json:"name"`
@@ -167,6 +170,7 @@ type QuestionType string
 
 // QuestionGroup defines model for QuestionGroup.
 type QuestionGroup struct {
+	CampId      int        `json:"camp_id"`
 	Description *string    `json:"description"`
 	Due         time.Time  `json:"due"`
 	Id          int        `json:"id"`

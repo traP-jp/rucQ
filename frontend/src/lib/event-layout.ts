@@ -151,7 +151,7 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
     }
   }
 
-  console.log(arrange)
+  // console.log(arrange)
 
   // 以上で arrange に全てのプラントスタンプの位置と列の情報が入った
   // この arrange を、before（次の時間からのイベントが始まる前）にイベントが入っていない要素を境に分割する
@@ -185,7 +185,7 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
   }
   groups[groups.length - 1].End = groups[groups.length - 1].Start
 
-  console.log(affiliation)
+  // console.log(affiliation)
 
   for (const idText in plansDic) {
     const id = Number(idText) // 強制的に string として列挙されるという謎の仕様
@@ -204,7 +204,7 @@ export const getLayout = (events: Event[], plans: Plan[]) => {
     groups[i].Columns = Math.max(...arr.map((t) => t.after.length), 1)
   }
 
-  console.log(groups)
+  // console.log(groups)
 
   return groups
 }

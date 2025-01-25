@@ -23,4 +23,16 @@ app.use(createPinia())
 app.use(router)
 app.use(vuetify)
 
+import { useUserStore } from './store'
+const userStore = useUserStore()
+
+const initializeUserStore = async () => {
+  const res = await fetch('/api/me')
+  userStore.userId = await res.text()
+}
+
+initializeUserStore().catch((error) => {
+  console.error('Failed to initialize user store:', error)
+})
+
 app.mount('#app')

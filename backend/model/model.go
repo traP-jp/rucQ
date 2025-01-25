@@ -1,8 +1,15 @@
 package model
 
-import "errors"
+import (
+	"errors"
 
-var ErrAlreadyExists = errors.New("already exists")
+	"gorm.io/gorm"
+)
+
+var (
+	ErrAlreadyExists = errors.New("already exists")
+	ErrNotFound      = gorm.ErrRecordNotFound
+)
 
 // 全モデルを書いておく
 func GetAllModels() []any {
