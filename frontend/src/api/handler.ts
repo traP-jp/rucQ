@@ -37,6 +37,23 @@ export const fetchApi = async (
   }
 }
 
+// 合宿のしおり
+export const getDefalutCamps = async () => {
+  return fetchApi('GET', `/camps/default`)
+}
+
+export const getCamps = async (camp_id : number) => {
+  return fetchApi('GET', `/camps/${camp_id}`)
+}
+
+export const newCamp = async (params: CampParams) => {
+  return fetchApi('POST', `/camps`, { parameters: params })
+}
+
+export const editCamp = async (camp_id: number, params: CampParams) => {
+  return fetchApi('PUT', `/camps/${camp_id}`, { parameters: params })
+}
+
 // イベント
 
 export const getEvents = async () => {
