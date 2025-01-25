@@ -1,51 +1,49 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { components } from '@/api/schema'
 
-import createClient from 'openapi-fetch'
-import type { paths } from '@/api/schema'
-const client = createClient<paths>({ baseUrl: "http://localhost:8080" })
-const {
-  data,
-  error,
-} = await client.GET('/api/questions')
-
-const props = defineProps<{
+defineProps<{
   question: components["schemas"]["Question"]
 }>()
 
+const selectNo = ref('false')
+
 const validateNumber = (value: string) => {
-  return value === 'OK' || value === '' || 'Error Message'
+  return value === 'OK' || value === '' || '数値を入力してください'
 }
 </script>
 
 <template>
-  <div v-if="true" class="d-flex">
+  <div v-if="question.type === 'free_text'" class="d-flex">
     <v-text-field
-      :disabled="false"
-      :label="'アレルギー'"
-      :hint="'12/27まで 食物アレルギー等'"
+      :disabled="!question.is_open"
+      :label="question.title"
+      :hint="question.description ?? ''"
       persistent-hint
       density="comfortable"
     />
     <div class="d-flex flex-column align-center">
       なし
-      <v-checkbox-btn class="flex-grow-0" />
+      <v-checkbox-btn v-model="selectNo" class="flex-grow-0" />
     </div>
   </div>
 
   <v-text-field
-    v-if="true"
-    label="身長"
-    :hint="'1/5まで 単位はcm'"
+    v-if="question.type === 'free_number'"
+    :disabled="!question.is_open"
+    :label="question.title"
+    :hint="question.description ?? ''"
     persistent-hint
     density="comfortable"
     :rules="[validateNumber]"
   />
 
   <v-select
-    label="スキー"
-    :items="['する', 'しない']"
-    :hint="'1/5まで する場合はレンタル調査にも回答してください'"
+    v-if="question.type === 'single'"
+    :disabled="!question.is_open"
+    :label="question.title"
+    :items="question.options ?? []"
+    :hint="question.description ?? ''"
     persistent-hint
     density="comfortable"
     clearable
