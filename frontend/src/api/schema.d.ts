@@ -339,7 +339,7 @@ export interface components {
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             is_open: boolean;
-            options?: string[] | null;
+            options?: components["schemas"]["Option"][] | null;
         };
         PostQuestionRequest: {
             question_group_id: number;
@@ -349,7 +349,6 @@ export interface components {
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             is_open: boolean;
-            options?: components["schemas"]["Option"][];
         };
         Option: {
             id: number;

@@ -880,7 +880,7 @@ components:
         options:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Option'
           nullable: true
       required:
         - id
@@ -910,10 +910,6 @@ components:
           type: boolean
         is_open:
           type: boolean
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Option'
       required:
         - question_group_id
         - title

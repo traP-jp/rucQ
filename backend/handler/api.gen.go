@@ -107,7 +107,6 @@ type PostQuestionRequest struct {
 	Description     string                  `json:"description"`
 	IsOpen          bool                    `json:"is_open"`
 	IsPublic        bool                    `json:"is_public"`
-	Options         *[]Option               `json:"options,omitempty"`
 	QuestionGroupId int                     `json:"question_group_id"`
 	Title           string                  `json:"title"`
 	Type            PostQuestionRequestType `json:"type"`
@@ -127,7 +126,7 @@ type Question struct {
 	Id              int          `json:"id"`
 	IsOpen          bool         `json:"is_open"`
 	IsPublic        bool         `json:"is_public"`
-	Options         *[]string    `json:"options"`
+	Options         *[]Option    `json:"options"`
 	QuestionGroupId int          `json:"question_group_id"`
 	Title           string       `json:"title"`
 	Type            QuestionType `json:"type"`
