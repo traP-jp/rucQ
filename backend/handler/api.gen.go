@@ -4,6 +4,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -30,10 +31,21 @@ const (
 
 // Answer defines model for Answer.
 type Answer struct {
-	Content    *string `json:"content"`
-	Id         int     `json:"id"`
-	QuestionId int     `json:"question_id"`
-	UserTraqId string  `json:"user_traq_id"`
+	Content    *Answer_Content `json:"content"`
+	Id         int             `json:"id"`
+	QuestionId int             `json:"question_id"`
+	UserTraqId string          `json:"user_traq_id"`
+}
+
+// AnswerContent0 defines model for .
+type AnswerContent0 = string
+
+// AnswerContent1 defines model for .
+type AnswerContent1 = []string
+
+// Answer_Content defines model for Answer.Content.
+type Answer_Content struct {
+	union json.RawMessage
 }
 
 // Budget defines model for Budget.
@@ -124,7 +136,18 @@ type PostStaffRequest struct {
 
 // PutAnswerRequest defines model for PutAnswerRequest.
 type PutAnswerRequest struct {
-	Content *string `json:"content"`
+	Content *PutAnswerRequest_Content `json:"content"`
+}
+
+// PutAnswerRequestContent0 defines model for .
+type PutAnswerRequestContent0 = string
+
+// PutAnswerRequestContent1 defines model for .
+type PutAnswerRequestContent1 = []string
+
+// PutAnswerRequest_Content defines model for PutAnswerRequest.Content.
+type PutAnswerRequest_Content struct {
+	union json.RawMessage
 }
 
 // Question defines model for Question.
@@ -343,6 +366,130 @@ type PutQuestionJSONRequestBody = PostQuestionRequest
 
 // PostStaffJSONRequestBody defines body for PostStaff for application/json ContentType.
 type PostStaffJSONRequestBody = PostStaffRequest
+
+// AsAnswerContent0 returns the union data inside the Answer_Content as a AnswerContent0
+func (t Answer_Content) AsAnswerContent0() (AnswerContent0, error) {
+	var body AnswerContent0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAnswerContent0 overwrites any union data inside the Answer_Content as the provided AnswerContent0
+func (t *Answer_Content) FromAnswerContent0(v AnswerContent0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAnswerContent0 performs a merge with any union data inside the Answer_Content, using the provided AnswerContent0
+func (t *Answer_Content) MergeAnswerContent0(v AnswerContent0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAnswerContent1 returns the union data inside the Answer_Content as a AnswerContent1
+func (t Answer_Content) AsAnswerContent1() (AnswerContent1, error) {
+	var body AnswerContent1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAnswerContent1 overwrites any union data inside the Answer_Content as the provided AnswerContent1
+func (t *Answer_Content) FromAnswerContent1(v AnswerContent1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAnswerContent1 performs a merge with any union data inside the Answer_Content, using the provided AnswerContent1
+func (t *Answer_Content) MergeAnswerContent1(v AnswerContent1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t Answer_Content) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *Answer_Content) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPutAnswerRequestContent0 returns the union data inside the PutAnswerRequest_Content as a PutAnswerRequestContent0
+func (t PutAnswerRequest_Content) AsPutAnswerRequestContent0() (PutAnswerRequestContent0, error) {
+	var body PutAnswerRequestContent0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPutAnswerRequestContent0 overwrites any union data inside the PutAnswerRequest_Content as the provided PutAnswerRequestContent0
+func (t *PutAnswerRequest_Content) FromPutAnswerRequestContent0(v PutAnswerRequestContent0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePutAnswerRequestContent0 performs a merge with any union data inside the PutAnswerRequest_Content, using the provided PutAnswerRequestContent0
+func (t *PutAnswerRequest_Content) MergePutAnswerRequestContent0(v PutAnswerRequestContent0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPutAnswerRequestContent1 returns the union data inside the PutAnswerRequest_Content as a PutAnswerRequestContent1
+func (t PutAnswerRequest_Content) AsPutAnswerRequestContent1() (PutAnswerRequestContent1, error) {
+	var body PutAnswerRequestContent1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPutAnswerRequestContent1 overwrites any union data inside the PutAnswerRequest_Content as the provided PutAnswerRequestContent1
+func (t *PutAnswerRequest_Content) FromPutAnswerRequestContent1(v PutAnswerRequestContent1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePutAnswerRequestContent1 performs a merge with any union data inside the PutAnswerRequest_Content, using the provided PutAnswerRequestContent1
+func (t *PutAnswerRequest_Content) MergePutAnswerRequestContent1(v PutAnswerRequestContent1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PutAnswerRequest_Content) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PutAnswerRequest_Content) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
