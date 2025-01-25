@@ -101,6 +101,10 @@ func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 	camp, err := s.repo.GetCampByID(uint(campID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to get camp: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -139,6 +143,10 @@ func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) er
 	camp, err := s.repo.GetCampByID(uint(campID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to get camp: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")

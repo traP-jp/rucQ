@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -86,6 +87,10 @@ func (s *Server) DeleteQuestion(e echo.Context, questionID QuestionId, params De
 	}
 
 	if err := s.repo.DeleteQuestionByID(uint(questionID)); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to delete question: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -98,6 +103,10 @@ func (s *Server) GetQuestion(e echo.Context, questionID QuestionId) error {
 	question, err := s.repo.GetQuestionByID(uint(questionID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to get question: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -142,6 +151,10 @@ func (s *Server) PutQuestion(e echo.Context, questionID QuestionId, params PutQu
 	}
 
 	if err := s.repo.UpdateQuestion(uint(questionID), &questionModel); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to update question: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
