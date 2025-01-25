@@ -1,6 +1,7 @@
 <template>
   <mobile-header v-if="mobile" title="Guidebook" />
 
+
   <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
   <footer class="guidebook-footer">
@@ -60,24 +61,6 @@ const htmlContent = computed(() => marked(markdown.value))
 </script>
 
 <style>
-.guidebook-header {
-  /* ヘッダー  あとでちゃんとしたのに変更する　仮*/
-  background-color: #2c5282;
-  color: #f7fafc;
-  padding: 20px;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  width: 100%;
-  height: 60px;
-  font-size: 24px;
-  z-index: 100;
-}
-
 .guidebook-markdown {
   padding: 30px;
   background-color: #f7fafc; /* 背景色  あとで色はちゃんと設定する*/

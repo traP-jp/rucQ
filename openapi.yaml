@@ -46,11 +46,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camp'
+                $ref: '#/components/schemas/PostCampRequest'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/camps/default:
+    get:
+      summary: デフォルトの合宿を取得
+      tags:
+        - Camps
+      operationId: getDefaultCamp
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camp'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/camps/{camp_id}:
@@ -263,6 +282,49 @@ paths:
                 $ref: '#/components/schemas/User'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/question_groups:
+    get:
+      summary: 質問グループの一覧を取得
+      tags:
+        - Questions
+      operationId: getQuestionGroups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuestionGroup'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 質問グループを作成
+      tags:
+        - Questions
+      operationId: postQuestionGroup
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostQuestionGroupRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionGroup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/questions:
     get:
       summary: 質問の一覧を取得
@@ -373,12 +435,12 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/answers:
+  /api/options:
     post:
-      summary: 回答を作成
+      summary: 選択肢を作成
       tags:
         - Questions
-      operationId: postAnswer
+      operationId: postOption
       parameters:
         - $ref: '#/components/parameters/X-Forwarded-User'
       requestBody:
@@ -386,33 +448,82 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostAnswerRequest'
+              $ref: '#/components/schemas/PostOptionRequest'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Answer'
+                $ref: '#/components/schemas/Option'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/answers/{answer_id}:
+  /api/options/{option_id}:
     put:
-      summary: 回答を更新
+      summary: 選択肢を更新
       tags:
         - Questions
-      operationId: putAnswer
+      operationId: putOption
       parameters:
-        - $ref: '#/components/parameters/AnswerId'
+        - $ref: '#/components/parameters/OptionId'
         - $ref: '#/components/parameters/X-Forwarded-User'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostAnswerRequest'
+              $ref: '#/components/schemas/PostOptionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Option'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/me/answers/{question_id}:
+    get:
+      summary: 自分の回答を取得
+      tags:
+        - Questions
+      operationId: getMyAnswer
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 回答を更新
+      tags:
+        - Questions
+      operationId: putAnswer
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutAnswerRequest'
       responses:
         '200':
           description: OK
@@ -428,23 +539,21 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    delete:
-      summary: 回答を削除
+  /api/me/budgets:
+    get:
+      summary: 自分の予算を取得
       tags:
-        - Questions
-      operationId: deleteAnswer
+        - Budgets
+      operationId: getMyBudget
       parameters:
-        - $ref: '#/components/parameters/AnswerId'
         - $ref: '#/components/parameters/X-Forwarded-User'
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/staffs:
@@ -514,7 +623,6 @@ components:
       name: X-Forwarded-User
       in: header
       description: ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-      required: true
       schema:
         type: string
     CampId:
@@ -535,6 +643,13 @@ components:
       name: question_id
       in: path
       description: 質問ID
+      required: true
+      schema:
+        type: integer
+    OptionId:
+      name: option_id
+      in: path
+      description: 選択肢ID
       required: true
       schema:
         type: integer
@@ -607,35 +722,35 @@ components:
       properties:
         id:
           type: integer
+        display_id:
+          type: string
         name:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
         - id
+        - display_id
         - name
         - is_draft
-        - summary
         - description
     PostCampRequest:
       type: object
       properties:
+        display_id:
+          type: string
         name:
           type: string
         is_draft:
           type: boolean
-        summary:
-          type: string
         description:
           type: string
       required:
+        - display_id
         - name
         - is_draft
-        - summary
         - description
     Event:
       type: object
@@ -707,92 +822,127 @@ components:
       required:
         - traq_id
         - is_staff
+    QuestionGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        due:
+          type: string
+          format: date-time
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        camp_id:
+          type: integer
+      required:
+        - id
+        - name
+        - description
+        - due
+        - questions
+        - camp_id
+    PostQuestionGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        due:
+          type: string
+          format: date-time
+        camp_id:
+          type: integer
+      required:
+        - name
+        - description
+        - due
+        - camp_id
     Question:
       type: object
       properties:
         id:
           type: integer
+        question_group_id:
+          type: integer
         title:
           type: string
         description:
           type: string
+          nullable: true
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
-        due:
-          type: string
-          format: date-time
         is_open:
           type: boolean
         options:
           type: array
           items:
             $ref: '#/components/schemas/Option'
+          nullable: true
       required:
         - id
+        - question_group_id
         - title
         - description
         - type
         - is_public
-        - due
         - is_open
-    Option:
-      type: object
-      properties:
-        id:
-          type: integer
-        body:
-          type: string
-      required:
-        - id
-        - body
-      nullable: true
     PostQuestionRequest:
       type: object
       properties:
+        question_group_id:
+          type: integer
         title:
           type: string
         description:
           type: string
         type:
           type: string
+          enum:
+            - single
+            - multiple
+            - free_text
+            - free_number
         is_public:
           type: boolean
-        due:
-          type: string
-          format: date-time
         is_open:
           type: boolean
-        options:
-          type: array
-          items:
-            type: string
-          nullable: true
       required:
+        - question_group_id
         - title
         - description
         - type
         - is_public
-        - due
         - is_open
-    Answer:
+    Option:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         question_id:
           type: integer
-        user_traq_id:
-          type: string
         content:
           type: string
-          nullable: true
       required:
         - id
         - question_id
-        - user_traq_id
-    PostAnswerRequest:
+        - content
+    PostOptionRequest:
       type: object
       properties:
         question_id:
@@ -802,6 +952,49 @@ components:
       required:
         - question_id
         - content
+    Answer:
+      type: object
+      properties:
+        id:
+          type: integer
+        question_id:
+          type: integer
+        user_traq_id:
+          type: string
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          nullable: true
+      required:
+        - id
+        - question_id
+        - user_traq_id
+    PutAnswerRequest:
+      type: object
+      properties:
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          nullable: true
+    Budget:
+      type: object
+      properties:
+        id:
+          type: integer
+        camp_id:
+          type: integer
+        amount:
+          type: integer
+          nullable: true
+      required:
+        - id
+        - camp_id
     PostStaffRequest:
       type: object
       properties:
@@ -819,5 +1012,7 @@ tags:
     description: User API
   - name: Questions
     description: Question API
+  - name: Budgets
+    description: Budget API
   - name: Staffs
     description: Staff API
