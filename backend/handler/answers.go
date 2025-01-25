@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMyAnswerParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -36,7 +36,7 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res.UserTraqId = params.XForwardedUser
+	res.UserTraqId = *params.XForwardedUser
 
 	return e.JSON(http.StatusOK, res)
 }
@@ -48,7 +48,7 @@ func (s *Server) PutAnswer(e echo.Context, questionID QuestionId, params PutAnsw
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -83,7 +83,7 @@ func (s *Server) PutAnswer(e echo.Context, questionID QuestionId, params PutAnsw
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res.UserTraqId = params.XForwardedUser
+	res.UserTraqId = *params.XForwardedUser
 
 	return e.JSON(http.StatusOK, res)
 }

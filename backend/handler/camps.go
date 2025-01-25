@@ -36,7 +36,7 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -118,7 +118,7 @@ func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 }
 
 func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
