@@ -34,7 +34,7 @@ func (r *Repository) GetCamps() ([]model.Camp, error) {
 func (r *Repository) GetCampByID(id string) (*model.Camp, error) {
 	var camp model.Camp
 
-	if err := r.db.Model(&model.Camp{ID: id}).First(&camp).Error; err != nil {
+	if err := r.db.Where(&model.Camp{ID: id}).First(&camp).Error; err != nil {
 		return nil, err
 	}
 
