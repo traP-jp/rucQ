@@ -539,53 +539,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/answers:
-    post:
-      summary: 回答を作成
-      deprecated: true
-      tags:
-        - Questions
-      operationId: postAnswer
-      parameters:
-        - $ref: '#/components/parameters/X-Forwarded-User'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostAnswerRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /api/answers/{answer_id}:
-    delete:
-      summary: 回答を削除
-      deprecated: true
-      tags:
-        - Questions
-      operationId: deleteAnswer
-      parameters:
-        - $ref: '#/components/parameters/AnswerId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
-      responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
   /api/me/budgets:
     get:
       summary: 自分の予算を取得
@@ -1010,16 +963,6 @@ components:
         - id
         - question_id
         - user_traq_id
-    PostAnswerRequest:
-      type: object
-      properties:
-        question_id:
-          type: integer
-        content:
-          type: string
-      required:
-        - question_id
-        - content
     PutAnswerRequest:
       type: object
       properties:
