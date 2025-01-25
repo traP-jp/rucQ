@@ -24,7 +24,7 @@
 .path {
   padding: 0 20px;
   font-weight: bold;
-  background-color: var(--color-text);
+  background-color: var(--color-text-sub);
   color: var(--color-background);
   border-radius: 6px;
 }
