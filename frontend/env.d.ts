@@ -8,6 +8,7 @@ type EventParams = {
   time_end: string
   camp_id: number
   create_as_staff: boolean
+  display_color: string
 }
 
 type Event = {
@@ -20,6 +21,7 @@ type Event = {
   camp_id: number
   organizer_traq_id: string
   by_staff: true
+  display_color: string
 }
 
 type OptionParams = {
