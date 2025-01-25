@@ -2,22 +2,17 @@
 import { ref } from 'vue'
 import UserInformationEdit from './UserInformationEdit.vue'
 
-const editMode = ref(false)
+import createClient from 'openapi-fetch'
+import type { paths } from '@/api/schema'
+const client = createClient<paths>({ baseUrl: "http://localhost:8080" })
+const {
+  data,
+  error,
+} = await client.GET('/api/questions')
 
-const items = [
-  {
-    label: '行きのバス',
-    value: '乗る',
-  },
-  {
-    label: '帰りのバス',
-    value: '乗らない',
-  },
-  {
-    label: 'アレルギー',
-    value: 'まんじゅう',
-  },
-]
+const questions = data!
+
+const editMode = ref(false)
 
 const toggleEditMode = () => {
   if (editMode.value) {
@@ -44,11 +39,15 @@ const toggleEditMode = () => {
     <v-data-table
       v-if="!editMode"
       class="pa-2"
-      :items="items"
+      :items="questions"
       density="compact"
       hide-default-header
       hide-default-footer
     />
-    <user-information-edit v-else />
+    <ul v-else>
+      <li v-for="question in questions" :key="question.id">
+        <user-information-edit :question="question" />
+      </li>
+    </ul>
   </v-card>
 </template>

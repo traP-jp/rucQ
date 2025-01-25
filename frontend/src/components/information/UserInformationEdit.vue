@@ -1,4 +1,18 @@
 <script setup lang="ts">
+import type { components } from '@/api/schema'
+
+import createClient from 'openapi-fetch'
+import type { paths } from '@/api/schema'
+const client = createClient<paths>({ baseUrl: "http://localhost:8080" })
+const {
+  data,
+  error,
+} = await client.GET('/api/questions')
+
+const props = defineProps<{
+  question: components["schemas"]["Question"]
+}>()
+
 const validateNumber = (value: string) => {
   return value === 'OK' || value === '' || 'Error Message'
 }
@@ -13,7 +27,7 @@ const validateNumber = (value: string) => {
       persistent-hint
       density="comfortable"
     />
-    <div class="d-flex flex-column align-center ">
+    <div class="d-flex flex-column align-center">
       なし
       <v-checkbox-btn class="flex-grow-0" />
     </div>
