@@ -7,9 +7,6 @@ import MobileFooter from '@/components/layout/MobileFooter.vue'
 
 //初期のページタイトルを定義
 
-</script>
-
-
 
 const { xs } = useDisplay()
 </script>

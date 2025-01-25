@@ -43,7 +43,7 @@ watch(value, (val: string) => {
       router.push('schedule')
       break
     case 'notes':
-      router.push('notes')
+      router.push('personal-notes')
       break
     case 'chat':
       router.push('chat')

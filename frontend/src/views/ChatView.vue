@@ -5,7 +5,7 @@ import { useDisplay } from 'vuetify'
 const { mobile } = useDisplay()
 </script>
 
-<template>ChatView
+<template>
     <mobile-header v-if="mobile" title="Chat" />
 </template>
 
