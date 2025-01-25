@@ -264,6 +264,12 @@ type GetMeParams struct {
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
 
+// GetMyAnswersParams defines parameters for GetMyAnswers.
+type GetMyAnswersParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
 // GetMyBudgetParams defines parameters for GetMyBudget.
 type GetMyBudgetParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -404,6 +410,9 @@ type ServerInterface interface {
 	// 自分の情報を取得
 	// (GET /api/me)
 	GetMe(ctx echo.Context, params GetMeParams) error
+	// 自分の回答を取得
+	// (GET /api/me/answers/{question_id})
+	GetMyAnswers(ctx echo.Context, questionId QuestionId, params GetMyAnswersParams) error
 	// 自分の予算を取得
 	// (GET /api/me/budgets)
 	GetMyBudget(ctx echo.Context, params GetMyBudgetParams) error
@@ -868,6 +877,44 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 	return err
 }
 
+// GetMyAnswers converts echo context to params.
+func (w *ServerInterfaceWrapper) GetMyAnswers(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMyAnswersParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetMyAnswers(ctx, questionId, params)
+	return err
+}
+
 // GetMyBudget converts echo context to params.
 func (w *ServerInterfaceWrapper) GetMyBudget(ctx echo.Context) error {
 	var err error
@@ -1260,6 +1307,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/events/:event_id/register", wrapper.UnregisterEvent)
 	router.POST(baseURL+"/api/events/:event_id/register", wrapper.RegisterEvent)
 	router.GET(baseURL+"/api/me", wrapper.GetMe)
+	router.GET(baseURL+"/api/me/answers/:question_id", wrapper.GetMyAnswers)
 	router.GET(baseURL+"/api/me/budgets", wrapper.GetMyBudget)
 	router.POST(baseURL+"/api/options", wrapper.PostOption)
 	router.PUT(baseURL+"/api/options/:option_id", wrapper.PutOption)
