@@ -61,7 +61,7 @@ func (s *Server) PostQuestion(e echo.Context, params PostQuestionParams) error {
 		return e.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	var questionResponse []Question
+	var questionResponse Question
 
 	if err := copier.Copy(&questionResponse, &questionModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
