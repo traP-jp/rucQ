@@ -75,6 +75,7 @@ type Event struct {
 	OrganizerTraqId string    `json:"organizer_traq_id"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
+	DisplayColor    string    `json:"display_color"`
 }
 
 // Option defines model for Option.
@@ -101,6 +102,7 @@ type PostEventRequest struct {
 	Name          string    `json:"name"`
 	TimeEnd       time.Time `json:"time_end"`
 	TimeStart     time.Time `json:"time_start"`
+	DisplayColor  string    `json:"display_color"`
 }
 
 // PostOptionRequest defines model for PostOptionRequest.
