@@ -22,6 +22,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/camps/default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** デフォルトの合宿を取得 */
+        get: operations["getDefaultCamp"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/camps/{camp_id}": {
         parameters: {
             query?: never;
@@ -226,44 +243,10 @@ export interface paths {
         };
         /** 自分の回答を取得 */
         get: operations["getMyAnswer"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/answers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 回答を作成 */
-        post: operations["postAnswer"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/answers/{answer_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
         /** 回答を更新 */
         put: operations["putAnswer"];
         post?: never;
-        /** 回答を削除 */
-        delete: operations["deleteAnswer"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -357,12 +340,14 @@ export interface components {
             /** Format: date-time */
             due: string;
             questions: components["schemas"]["Question"][];
+            camp_id: number;
         };
         PostQuestionGroupRequest: {
             name: string;
             description: string | null;
             /** Format: date-time */
             due: string;
+            camp_id: number;
         };
         Question: {
             id: number;
@@ -397,11 +382,10 @@ export interface components {
             id: number;
             question_id: number;
             user_traq_id: string;
-            content?: string | null;
+            content?: (string | string[]) | null;
         };
-        PostAnswerRequest: {
-            question_id: number;
-            content: string;
+        PutAnswerRequest: {
+            content?: (string | string[]) | null;
         };
         Budget: {
             id: number;
@@ -523,9 +507,9 @@ export interface operations {
     postCamp: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -548,6 +532,28 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             409: components["responses"]["Conflict"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getDefaultCamp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Camp"];
+                };
+            };
+            404: components["responses"]["NotFound"];
             500: components["responses"]["InternalServerError"];
         };
     };
@@ -579,9 +585,9 @@ export interface operations {
     putCamp: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description 合宿ID */
@@ -634,9 +640,9 @@ export interface operations {
     postEvent: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -688,9 +694,9 @@ export interface operations {
     putEvent: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description イベントID */
@@ -722,9 +728,9 @@ export interface operations {
     registerEvent: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description イベントID */
@@ -743,9 +749,9 @@ export interface operations {
     unregisterEvent: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description イベントID */
@@ -789,9 +795,9 @@ export interface operations {
     getMe: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -834,9 +840,9 @@ export interface operations {
     postQuestionGroup: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -885,9 +891,9 @@ export interface operations {
     postQuestion: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -940,9 +946,9 @@ export interface operations {
     putQuestion: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description 質問ID */
@@ -974,9 +980,9 @@ export interface operations {
     deleteQuestion: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description 質問ID */
@@ -996,9 +1002,9 @@ export interface operations {
     postOption: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -1026,9 +1032,9 @@ export interface operations {
     putOption: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description 選択肢ID */
@@ -1060,9 +1066,9 @@ export interface operations {
     getMyAnswer: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
                 /** @description 質問ID */
@@ -1084,51 +1090,22 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
-    postAnswer: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PostAnswerRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Answer"];
-                };
-            };
-            400: components["responses"]["BadRequest"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
     putAnswer: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
-                /** @description 回答ID */
-                answer_id: components["parameters"]["AnswerId"];
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PostAnswerRequest"];
+                "application/json": components["schemas"]["PutAnswerRequest"];
             };
         };
         responses: {
@@ -1147,34 +1124,12 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
-    deleteAnswer: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
-            };
-            path: {
-                /** @description 回答ID */
-                answer_id: components["parameters"]["AnswerId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: components["responses"]["NoContent"];
-            400: components["responses"]["BadRequest"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
     getMyBudget: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -1217,9 +1172,9 @@ export interface operations {
     postStaff: {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;
@@ -1243,9 +1198,9 @@ export interface operations {
                 /** @description 合宿係のtraQ ID */
                 staff_id: components["parameters"]["StaffId"];
             };
-            header: {
+            header?: {
                 /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path?: never;
             cookie?: never;

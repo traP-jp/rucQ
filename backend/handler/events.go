@@ -8,13 +8,15 @@ import (
 	"github.com/traP-jp/rucQ/backend/model"
 )
 
+const trapTraqID = "traP"
+
 func (s *Server) GetEvents(e echo.Context) error {
 	events, err := s.repo.GetEvents()
 
 	if err != nil {
 		e.Logger().Errorf("failed to get events: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response []Event
@@ -22,7 +24,7 @@ func (s *Server) GetEvents(e echo.Context) error {
 	if err := copier.Copy(&response, &events); err != nil {
 		e.Logger().Errorf("failed to copy events: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, response)
@@ -40,34 +42,35 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 	if err := copier.Copy(&eventModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	organizerTraqID := params.XForwardedUser
 
 	if req.CreateAsStaff {
-		user, err := s.repo.GetOrCreateUser(organizerTraqID)
+		user, err := s.repo.GetOrCreateUser(*organizerTraqID)
 
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
 
-			return e.JSON(http.StatusInternalServerError, "Internal server error")
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 
 		if !user.IsStaff {
-			return e.JSON(http.StatusForbidden, "Forbidden")
+			return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 		}
 
-		organizerTraqID = "traP"
+		trapTraqID := "traP"
+		organizerTraqID = &trapTraqID
 		eventModel.ByStaff = true
 	}
 
-	eventModel.OrganizerTraqID = organizerTraqID
+	eventModel.OrganizerTraqID = *organizerTraqID
 
 	if err := s.repo.CreateEvent(&eventModel); err != nil {
 		e.Logger().Errorf("failed to create event: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var eventResponse Event
@@ -75,7 +78,7 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 	if err := copier.Copy(&eventResponse, &eventModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusCreated, &eventResponse)

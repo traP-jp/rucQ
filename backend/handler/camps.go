@@ -15,7 +15,7 @@ func (s *Server) GetCamps(e echo.Context) error {
 	if err != nil {
 		e.Logger().Errorf("failed to get camps: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response []Camp
@@ -23,7 +23,7 @@ func (s *Server) GetCamps(e echo.Context) error {
 	if err := copier.Copy(&response, &camps); err != nil {
 		e.Logger().Errorf("failed to copy camps: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, response)
@@ -36,16 +36,16 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	var campModel model.Camp
@@ -53,7 +53,7 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 	if err := copier.Copy(&campModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.CreateCamp(&campModel); err != nil {
@@ -63,7 +63,7 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 
 		e.Logger().Errorf("failed to create camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response Camp
@@ -71,19 +71,19 @@ func (s *Server) PostCamp(e echo.Context, params PostCampParams) error {
 	if err := copier.Copy(&response, &campModel); err != nil {
 		e.Logger().Errorf("failed to copy camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusCreated, response)
 }
 
-func (s *Server) GetCamp(e echo.Context, campID CampId) error {
-	camp, err := s.repo.GetCampByID(uint(campID))
+func (s *Server) GetDefaultCamp(e echo.Context) error {
+	camp, err := s.repo.GetDefaultCamp()
 
 	if err != nil {
-		e.Logger().Errorf("failed to get camp: %v", err)
+		e.Logger().Errorf("failed to get default camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response Camp
@@ -91,23 +91,47 @@ func (s *Server) GetCamp(e echo.Context, campID CampId) error {
 	if err := copier.Copy(&response, camp); err != nil {
 		e.Logger().Errorf("failed to copy camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
+}
+
+func (s *Server) GetCamp(e echo.Context, campID CampId) error {
+	camp, err := s.repo.GetCampByID(uint(campID))
+
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
+		e.Logger().Errorf("failed to get camp: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Camp
+
+	if err := copier.Copy(&response, camp); err != nil {
+		e.Logger().Errorf("failed to copy camp: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, response)
 }
 
 func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if !user.IsStaff {
-		return e.JSON(http.StatusForbidden, "Forbidden")
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
 	var req PutCampJSONRequestBody
@@ -119,21 +143,25 @@ func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) er
 	camp, err := s.repo.GetCampByID(uint(campID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
 		e.Logger().Errorf("failed to get camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := copier.Copy(camp, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	if err := s.repo.UpdateCamp(uint(campID), camp); err != nil {
 		e.Logger().Errorf("failed to update camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	var response Camp
@@ -141,7 +169,7 @@ func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) er
 	if err := copier.Copy(&response, camp); err != nil {
 		e.Logger().Errorf("failed to copy camp: %v", err)
 
-		return e.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return e.JSON(http.StatusOK, response)

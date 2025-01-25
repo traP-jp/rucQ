@@ -2,6 +2,9 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useDisplay } from 'vuetify'
+
+const { xs } = useDisplay()
 
 // あとでvuetifyにします
 import penIcon from '@/assets/penIcon.svg'
@@ -28,12 +31,9 @@ const router = useRouter()
 
 const isSaved = ref(true) /* 保存されたかどうかのフラグ 　未保存で消えちゃった、にならないように*/
 
-const isMobile = ref(false)
-
 const handleResize = () => {
   /*　画面幅によってviewModeを変更する　スマホモードの時にsplitいらない*/
-  isMobile.value = window.innerWidth <= 768
-  if (isMobile.value) {
+  if (xs) {
     viewMode.value = 'edit'
   }
 }
@@ -119,7 +119,7 @@ const handleBlur = () => {
           :class="{ 'active-background': viewMode === 'edit' }"
         />
         <img
-          v-if="!isMobile"
+          v-if="!xs"
           :src="viewMode === 'split' ? splitIconActive : splitIcon"
           alt="Split Icon"
           @click="showSplit"
@@ -146,7 +146,7 @@ const handleBlur = () => {
       ></textarea>
       <div class="center-bar" v-if="viewMode === 'split'"></div>
       <div
-        :class="['preview-section','markdown']"
+        :class="['preview-section', 'markdown']"
         v-if="viewMode === 'preview' || viewMode === 'split'"
         v-html="previewHtml"
       ></div>
@@ -227,8 +227,6 @@ const handleBlur = () => {
   overflow-y: scroll;
 }
 
-
-
 .toolbar {
   /*ヘッダーと同じ色にしたい*/
   background-color: #ced3d9;
@@ -285,7 +283,6 @@ const handleBlur = () => {
   margin: 0;
 }
 
-
 /* 保存ボタン */
 .save-button {
   position: absolute;
@@ -316,8 +313,4 @@ const handleBlur = () => {
   background-color: #838587;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
-
-
 </style>

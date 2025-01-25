@@ -56,3 +56,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+button, router-link, input, textarea {
+  background: none;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  line-height: inherit;
+}

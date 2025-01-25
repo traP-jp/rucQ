@@ -46,6 +46,22 @@ func (r *Repository) GetCampByID(id uint) (*model.Camp, error) {
 	return &camp, nil
 }
 
+func (r *Repository) GetDefaultCamp() (*model.Camp, error) {
+	var camp model.Camp
+
+	if err := r.db.
+		Where(&model.Camp{
+			IsDraft: false,
+		}).
+		Order("created_at desc").
+		First(&camp).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return &camp, nil
+}
+
 func (r *Repository) UpdateCamp(campID uint, camp *model.Camp) error {
 	if err := r.db.Where(&model.Camp{
 		Model: gorm.Model{

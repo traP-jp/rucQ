@@ -29,7 +29,7 @@ func (s *Server) GetQuestionGroups(e echo.Context) error {
 }
 
 func (s *Server) PostQuestionGroup(e echo.Context, params PostQuestionGroupParams) error {
-	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
