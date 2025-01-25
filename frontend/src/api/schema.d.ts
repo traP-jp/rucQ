@@ -356,6 +356,7 @@ export interface components {
             content: string;
         };
         PostOptionRequest: {
+            question_id: number;
             content: string;
         };
         Answer: {

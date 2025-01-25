@@ -92,7 +92,8 @@ type PostEventRequest struct {
 
 // PostOptionRequest defines model for PostOptionRequest.
 type PostOptionRequest struct {
-	Content string `json:"content"`
+	Content    string `json:"content"`
+	QuestionId int    `json:"question_id"`
 }
 
 // PostQuestionGroupRequest defines model for PostQuestionGroupRequest.

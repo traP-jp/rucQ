@@ -933,9 +933,12 @@ components:
     PostOptionRequest:
       type: object
       properties:
+        question_id:
+          type: integer
         content:
           type: string
       required:
+        - question_id
         - content
     Answer:
       type: object

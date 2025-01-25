@@ -12,6 +12,7 @@ func GetAllModels() []any {
 		&User{},
 		&QuestionGroup{},
 		&Question{},
+		&Option{},
 		&Answer{},
 	}
 }
