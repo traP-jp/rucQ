@@ -1,26 +1,20 @@
 <script setup lang="ts">
-
 import { defineProps } from 'vue'
 
 //親コンポーネントからタイトルを受け取る
 const props = defineProps<{
   title: string
 }>()
-
-
-
 </script>
 
 <template>
   <header class="app-header">
-
     <div class="left">
-     <img src="/logo/logo-white.svg" alt="rucQ Icon" class="logo" />
+      <img src="/logo/logo-white.svg" alt="rucQ Icon" class="logo" />
     </div>
     <div class="center">
       <h1 class="page-title">{{ props.title }}</h1>
     </div>
-
   </header>
 </template>
 
@@ -51,14 +45,13 @@ const props = defineProps<{
   margin-right: 20px; /* ロゴとタイトルの間隔を調整 */
 }
 
-
 .page-title {
   font-size: 20px;
   font-weight: normal;
   margin: 0;
 }
 
-.logo{
+.logo {
   width: 100px;
   margin-top: 10px;
   margin-bottom: 10px;

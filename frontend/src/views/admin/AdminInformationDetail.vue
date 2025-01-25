@@ -51,7 +51,7 @@
       <div v-for="question in questions" :key="question.id">
         <div class="question">
           <div class="questionTitle">
-            <div class="questionTitleText">{{ question.title }} </div>
+            <div class="questionTitleText">{{ question.title }}</div>
             <div class="buttons">
               <div class="allCopyButton">全体をコピー</div>
               <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
@@ -390,7 +390,7 @@ const questions = ref<Question[]>([
   margin-bottom: 30px;
 }
 
-.questionTitleText{
+.questionTitleText {
   max-width: 80%;
 }
 

@@ -52,7 +52,7 @@ type Question = {
   type: string // "single" などいくつかの種類の文字列
   is_public: boolean
   is_open: boolean
-  options: Option[]
+  options?: Option[]
 }
 
 type QuestionGroupParams = {
@@ -67,4 +67,11 @@ type QuestionGroup = {
   description: string
   due: string
   questions: Question[]
+}
+
+type QuestionAnswer =  {
+  id: number
+  question_id: number
+  user_traq_id: string
+  content: string | string[]
 }

@@ -1,94 +1,67 @@
 <script setup lang="ts">
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { ref } from 'vue'
-import UserInformationItem from '@/components/UserInformationItem.vue'
-import { useDisplay } from 'vuetify'
+import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
+import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
+import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
-const editMode = ref(true)
-
-const { xs } = useDisplay()
+const questionGroups: QuestionGroup[] = [
+  {
+    id: 998,
+    name: '基本情報',
+    description: 'ここに説明を追加',
+    due: '12/27',
+    questions: [
+      {
+        id: 244,
+        question_group_id: 998,
+        title: 'スキー',
+        description: 'する場合はレンタル調査にも回答してください',
+        type: 'single',
+        is_public: true,
+        is_open: true,
+        options: [
+          {
+            id: 353,
+            question_id: 244,
+            content: 'する',
+          },
+          {
+            id: 354,
+            question_id: 244,
+            content: 'しない',
+          },
+        ],
+      },
+      {
+        id: 245,
+        question_group_id: 998,
+        title: '身長',
+        description: '1cmきざみ',
+        type: 'free_number',
+        is_public: false,
+        is_open: false,
+      },
+      {
+        id: 246,
+        question_group_id: 998,
+        title: 'アレルギー',
+        description: '食物アレルギー等',
+        type: 'free_text',
+        is_public: false,
+        is_open: true,
+      },
+    ],
+  },
+]
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="UserInformation" />
-  <div :class="$style.container">
-    <div :class="$style.profileContainer">
-      <img :class="$style.userIcon" :src="'https://q.trap.jp/api/v3/public/icon/ogu_kazemiya'" />
-      <div :class="$style.nameContainer">ogu_kazemiya</div>
-    </div>
-    <div :class="$style.informationContainer">
-      <div :class="$style.informationSection">
-        <div :class="$style.divider">public</div>
-        <user-information-item :class="$style.information" :edit-mode="editMode" type="select" />
-      </div>
-      <div :class="$style.informationSection">
-        <div :class="$style.divider">private</div>
-        <user-information-item :class="$style.information" :edit-mode="editMode" type="number" />
-        <user-information-item :class="$style.information" :edit-mode="editMode" type="text" />
-      </div>
-    </div>
-  </div>
+  <v-container class="d-flex flex-column ga-4">
+    <room-information-panel />
+    <payment-information-panel />
+    <information-group-item
+      v-for="questionGroup in questionGroups"
+      :key="questionGroup.id"
+      :questionGroup="questionGroup"
+    />
+  </v-container>
 </template>
-
-<style module>
-.container {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-background-primary);
-  min-height: 100%;
-  width: 100%;
-  padding: 8px;
-}
-
-.profileContainer {
-  display: flex;
-  padding: 32px 48px;
-  gap: 24px;
-  border-bottom: 2px solid var(--color-ui-tertiary);
-}
-
-.userIcon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-}
-
-.nameContainer {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-}
-
-.informationContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-.informationSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 8px 16px;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  font-size: 16px;
-  color: var(--color-ui-secondary);
-}
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--color-ui-secondary);
-  margin: 0 8px;
-}
-
-.information {
-  width: 100%;
-  padding: 8px 16px;
-}
-</style>
