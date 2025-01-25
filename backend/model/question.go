@@ -10,7 +10,7 @@ type Question struct {
 	Type            string
 	IsPublic        bool
 	IsOpen          bool
-	Options         *[]string `gorm:"serializer:json"`
+	Options         []Option
 }
 
 type Answer struct {
