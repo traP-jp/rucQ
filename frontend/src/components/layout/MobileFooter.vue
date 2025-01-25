@@ -30,25 +30,26 @@ watch(value, (val: string) => {
 </script>
 
 <template>
-  <v-bottom-navigation v-model="value" color="primary">
+  <v-bottom-navigation v-model="value" color="primary" mandatory >
     <v-btn value="guidebook">
-      <v-icon>mdi-book-open</v-icon>
+      <v-icon>{{ value === 'guidebook' ? 'mdi-book-open-blank-variant' : 'mdi-book-open-blank-variant-outline' }}</v-icon>
+
     </v-btn>
 
     <v-btn value="schedule">
-      <v-icon>mdi-calendar</v-icon>
+      <v-icon>{{ value === 'schedule' ? 'mdi-clock' : 'mdi-clock-outline' }}</v-icon>
     </v-btn>
 
     <v-btn value="notes">
-      <v-icon>mdi-notebook</v-icon>
+      <v-icon>{{ value === 'notes' ? 'mdi-book-edit' : 'mdi-book-edit-outline' }}</v-icon>
     </v-btn>
 
     <v-btn value="chat">
-      <v-icon>mdi-chat</v-icon>
+      <v-icon>{{ value ==='chat' ? 'mdi-chat' : 'mdi-chat-outline' }}</v-icon>
     </v-btn>
 
     <v-btn value="info">
-      <v-icon>mdi-information</v-icon>
+      <v-icon>{{ value === 'info' ? 'mdi-information' : 'mdi-information-outline' }}</v-icon>
     </v-btn>
   </v-bottom-navigation>
 </template>
