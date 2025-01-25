@@ -12,7 +12,9 @@
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td :class="$style.nameCell" @click="goToDetail(item.id)">{{ item.name }}</td>
+          <td :class="$style.nameCell" @click="goToDetail(item.id)">
+            <span>{{ item.name }}</span>
+          </td>
           <td :class="$style.deadline">{{ item.deadline }}</td>
         </tr>
       </tbody>
@@ -277,10 +279,20 @@ const decideAddItem = () => {
 
 .nameCell {
   cursor: pointer;
+  transition: all ease-in 0.3s;
 }
 
 .nameCell:hover {
-  color: #000000;
+  /* color: #150df9; */
+  /* border-bottom: 1px solid #333 */
+}
+.nameCell span {
+  border-bottom: 1px solid transparent; /* 初期状態は透明なボーダー */
+  transition: border-bottom 0.1s ease-in; /* border-bottom のみにトランジションを適用 */
+}
+
+.nameCell span:hover {
+  border-bottom: 1.5px solid #6b6666; /* ホバー時にボーダーを表示 */
 }
 
 .actions {
@@ -379,6 +391,6 @@ const decideAddItem = () => {
 }
 
 .deleteButton {
-  margin:auto;
+  margin: auto;
 }
 </style>
