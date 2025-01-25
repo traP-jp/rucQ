@@ -243,7 +243,8 @@ export interface paths {
         };
         /** 自分の回答を取得 */
         get: operations["getMyAnswer"];
-        put?: never;
+        /** 回答を更新 */
+        put: operations["putAnswer"];
         post?: never;
         delete?: never;
         options?: never;
@@ -279,8 +280,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** 回答を更新 */
-        put: operations["putAnswer"];
+        put?: never;
         post?: never;
         /**
          * 回答を削除
@@ -427,7 +427,7 @@ export interface components {
             content: string;
         };
         PutAnswerRequest: {
-            content: string;
+            content?: string | null;
         };
         Budget: {
             id: number;
@@ -1132,6 +1132,40 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
+    putAnswer: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
     postAnswer: {
         parameters: {
             query?: never;
@@ -1158,40 +1192,6 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    putAnswer: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
-            };
-            path: {
-                /** @description 回答ID */
-                answer_id: components["parameters"]["AnswerId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PutAnswerRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Answer"];
-                };
-            };
-            400: components["responses"]["BadRequest"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
             500: components["responses"]["InternalServerError"];
         };
     };

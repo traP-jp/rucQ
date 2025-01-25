@@ -510,6 +510,35 @@ paths:
                 $ref: '#/components/schemas/Answer'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 回答を更新
+      tags:
+        - Questions
+      operationId: putAnswer
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutAnswerRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/answers:
     post:
       summary: 回答を作成
@@ -537,35 +566,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/answers/{answer_id}:
-    put:
-      summary: 回答を更新
-      tags:
-        - Questions
-      operationId: putAnswer
-      parameters:
-        - $ref: '#/components/parameters/AnswerId'
-        - $ref: '#/components/parameters/X-Forwarded-User'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PutAnswerRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: 回答を削除
       deprecated: true
@@ -1025,8 +1025,7 @@ components:
       properties:
         content:
           type: string
-      required:
-        - content
+          nullable: true
     Budget:
       type: object
       properties:
