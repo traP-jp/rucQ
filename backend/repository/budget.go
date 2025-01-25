@@ -1,0 +1,18 @@
+package repository
+
+import "github.com/traP-jp/rucQ/backend/model"
+
+func (r *Repository) GetBudgetByUserID(userID uint) (*model.Budget, error) {
+	var budget model.Budget
+
+	if err := r.db.
+		Where(&model.Budget{
+			UserID: userID,
+		}).
+		FirstOrCreate(&budget).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return &budget, nil
+}
