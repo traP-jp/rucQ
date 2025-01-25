@@ -30,3 +30,11 @@ func (r *Repository) GetOrCreateAnswer(query *GetAnswerQuery) (*model.Answer, er
 
 	return &answer, nil
 }
+
+func (r *Repository) UpdateAnswer(answer *model.Answer) error {
+	if err := r.db.Save(answer).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
