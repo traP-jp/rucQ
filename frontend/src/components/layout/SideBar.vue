@@ -10,4 +10,6 @@
   </v-navigation-drawer>
 </template>
 
-<style module></style>
+<style module>
+
+</style>
