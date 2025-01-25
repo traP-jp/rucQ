@@ -549,6 +549,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/me/budgets:
+    get:
+      summary: 自分の予算を取得
+      tags:
+        - Budgets
+      operationId: getMyBudget
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -966,6 +983,19 @@ components:
       required:
         - question_id
         - content
+    Budget:
+      type: object
+      properties:
+        id:
+          type: integer
+        camp_id:
+          type: integer
+        amount:
+          type: integer
+      required:
+        - id
+        - camp_id
+        - amount
     PostStaffRequest:
       type: object
       properties:
@@ -983,5 +1013,7 @@ tags:
     description: User API
   - name: Questions
     description: Question API
+  - name: Budgets
+    description: Budget API
   - name: Staffs
     description: Staff API

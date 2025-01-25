@@ -252,6 +252,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 自分の予算を取得 */
+        get: operations["getMyBudget"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/staffs": {
         parameters: {
             query?: never;
@@ -368,6 +385,11 @@ export interface components {
         PostAnswerRequest: {
             question_id: number;
             content: string;
+        };
+        Budget: {
+            id: number;
+            camp_id: number;
+            amount: number;
         };
         PostStaffRequest: {
             traq_id: string;
@@ -1100,6 +1122,30 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getMyBudget: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Budget"];
+                };
+            };
             500: components["responses"]["InternalServerError"];
         };
     };
