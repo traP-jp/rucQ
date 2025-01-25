@@ -14,12 +14,7 @@ const text = ref('')
 
 const isPreview = ref(false)
 
-watch(
-  () => text.value,
-  () => {
-    console.log(text.value)
-  },
-)
+
 </script>
 
 <template>
