@@ -32,7 +32,7 @@ const onlyPlans = (group: BlockGroup) => {
 <template>
   <div :class="$style.container" v-if="days.length > 0">
     <div v-for="(day, index) in days" :key="day.dateString">
-      <h2 style="margin-bottom: 20px; font-weight: 700">
+      <h2 style="margin-bottom: 20px; font-weight: 700; font-family: 'Avenir Next'">
         {{ `Day ${index} - ${day.dateString}` }}
       </h2>
       <div
@@ -51,7 +51,9 @@ const onlyPlans = (group: BlockGroup) => {
           :class="$style.timehead"
           :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 1} / ${(timehead.Line - group.Start) * 2 + 2}; grid-column: 1;`"
         >
-          <h5>{{ getTimeStringNoPad(new Date(timehead.Time)) }}</h5>
+          <h5 style="font-family: 'Avenir Next'; font-weight: 700">
+            {{ getTimeStringNoPad(new Date(timehead.Time)) }}
+          </h5>
         </div>
         <div
           v-for="timehead in group.TimeTable"
@@ -67,7 +69,7 @@ const onlyPlans = (group: BlockGroup) => {
         >
           <hr
             v-if="!group.Plans.map((p) => epoch(p.At)).includes(timehead.Time)"
-            style="border: 0px; border-top: 1px dashed gray; margin-top: -0.5px"
+            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
           />
         </div>
         <div
@@ -76,7 +78,7 @@ const onlyPlans = (group: BlockGroup) => {
           :class="$style.plan"
           :style="`grid-row: ${(plan.Row - group.Start) * 2 + 1} / ${(plan.Row - group.Start) * 2 + 2}; grid-column: 2;`"
         >
-          <h5>{{ plan.Text }}</h5>
+          <h5 style="font-weight: 500">{{ plan.Text }}</h5>
         </div>
         <EventBlock
           v-for="event in group.Events"
@@ -92,9 +94,8 @@ const onlyPlans = (group: BlockGroup) => {
 <style module>
 .container {
   margin: auto;
-  width: 400px;
-  height: 100vh;
-  border: 1px solid black;
+  padding: 20px 10px;
+  max-width: 600px;
 }
 
 .blockgroup {
@@ -116,7 +117,8 @@ const onlyPlans = (group: BlockGroup) => {
 
 .timehead {
   margin: auto 0;
-  width: 40px;
+  padding-right: 10px;
+  width: 50px;
   overflow: visible;
   display: flex;
   flex-direction: row;
