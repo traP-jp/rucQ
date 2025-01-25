@@ -128,6 +128,11 @@ type PostStaffRequest struct {
 	TraqId string `json:"traq_id"`
 }
 
+// PutAnswerRequest defines model for PutAnswerRequest.
+type PutAnswerRequest struct {
+	Content string `json:"content"`
+}
+
 // Question defines model for Question.
 type Question struct {
 	Description     *string      `json:"description"`
@@ -331,7 +336,7 @@ type PostStaffParams struct {
 type PostAnswerJSONRequestBody = PostAnswerRequest
 
 // PutAnswerJSONRequestBody defines body for PutAnswer for application/json ContentType.
-type PutAnswerJSONRequestBody = PostAnswerRequest
+type PutAnswerJSONRequestBody = PutAnswerRequest
 
 // PostCampJSONRequestBody defines body for PostCamp for application/json ContentType.
 type PostCampJSONRequestBody = PostCampRequest

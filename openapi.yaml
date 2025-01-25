@@ -549,7 +549,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostAnswerRequest'
+              $ref: '#/components/schemas/PutAnswerRequest'
       responses:
         '200':
           description: OK
@@ -1017,6 +1017,13 @@ components:
           type: string
       required:
         - question_id
+        - content
+    PutAnswerRequest:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
         - content
     Budget:
       type: object

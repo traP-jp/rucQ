@@ -420,6 +420,9 @@ export interface components {
             question_id: number;
             content: string;
         };
+        PutAnswerRequest: {
+            content: string;
+        };
         Budget: {
             id: number;
             camp_id: number;
@@ -1167,7 +1170,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PostAnswerRequest"];
+                "application/json": components["schemas"]["PutAnswerRequest"];
             };
         };
         responses: {
