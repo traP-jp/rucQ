@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer width="230" app>
+  <v-navigation-drawer width="230" :mobile-breakpoint="600" app>
     <img src="/logo/logo.svg" alt="rucQ Icon" class="logo" />
     <v-list dense v-model="value" mandatory>
       <v-list-item
@@ -12,10 +12,7 @@
         <div class="header-tab">
           <v-icon class="mr-3">{{ value === item.value ? item.iconActive : item.icon }}</v-icon>
           <!-- 選択中の項目の文字を太くする -->
-          <span
-            class="header-title"
-            :class="{ 'header-title-active': value === item.value }"
-          >
+          <span class="header-title" :class="{ 'header-title-active': value === item.value }">
             {{ item.title }}
           </span>
         </div>
