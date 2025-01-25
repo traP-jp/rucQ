@@ -12,7 +12,9 @@
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td :class="$style.nameCell" @click="goToDetail(item.id)">{{ item.name }}</td>
+          <td :class="$style.nameCell" @click="goToDetail(item.id)">
+            <span>{{ item.name }}</span>
+          </td>
           <td :class="$style.deadline">{{ item.deadline }}</td>
         </tr>
       </tbody>
@@ -20,20 +22,96 @@
 
     <!-- アクションボタン -->
     <div :class="$style.actions">
-      <button @click="addItem">項目追加</button>
-      <v-dialog v-model="dialog" max-width="290">
-        <v-sheet>
-          <v-card>
-            <v-card-title>項目追加</v-card-title>
-            <v-card-text>
-              <v-text-field label="内容" v-model="newItem.name"></v-text-field>
-              <v-text-field label="期限" v-model="newItem.deadline"></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn @click="dialog = false">キャンセル</v-btn>
-              <v-btn @click="addItem">追加</v-btn>
-            </v-card-actions>
-          </v-card>
+      <button @click="addItem">アンケートの追加</button>
+      <v-dialog v-model="dialog">
+        <v-sheet :class="$style.dialogSheet">
+          <v-card-title>アンケートを追加</v-card-title>
+          <v-textarea
+            label="質問タイトル"
+            v-model="newItem.name"
+            :class="$style.textField"
+            variant="outlined"
+            rows="1"
+            auto-grow
+          />
+          <v-textarea
+            label="説明"
+            v-model="newItem.description"
+            :class="$style.textField"
+            variant="outlined"
+            rows="2"
+            auto-grow
+          />
+          <v-textarea
+            label="回答期限"
+            v-model="newItem.deadline"
+            variant="outlined"
+            rows="1"
+            auto-grow
+            :class="$style.textField"
+          />
+
+          <div :class="$style.selectAnswerStyle">
+            <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
+            <div
+              v-for="(question, index) in newItem.questions"
+              :key="index"
+              :class="$style.questionCard"
+            >
+              <v-textarea
+                label="説明"
+                v-model="newItem.questions[index].description"
+                :class="$style.textField"
+                variant="outlined"
+                rows="1"
+                auto-grow
+              />
+              <v-select
+                label="回答形式"
+                :items="['checkbox', 'text', 'radiobutton']"
+                v-model="newItem.type"
+                :class="$style.textField"
+                variant="outlined"
+              />
+              <div v-if="newItem.type === 'checkbox' || newItem.type === 'radiobutton'">
+                <v-btn @click="addOption(index)" :class="$style.addOptionButton"
+                  >選択肢を追加</v-btn
+                >
+                <div
+                  v-for="(option, optionId) in newItem.questions[index].options"
+                  :key="optionId"
+                  :class="$style.optionContainer"
+                >
+                  <div :class="$style.optionRow">
+                    <v-textarea
+                      label="選択肢名"
+                      v-model="newItem.questions[index].options[optionId].option"
+                      :class="$style.textOptionField"
+                      variant="outlined"
+                      rows="1"
+                      hide-details
+                      auto-grow
+                    />
+
+                    <!-- ここにバツボタン -->
+                    <v-btn
+                      @click="deleteOption(index, optionId)"
+                      color="red-darken-1"
+                      :class="$style.deleteButton"
+                      >削除
+                    </v-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div :class="$style.dialogButtonContainer">
+            <v-btn @click="decideAddItem" color="primary">質問の追加</v-btn>
+
+            <v-btn @click="dialogClose" color="primary" variant="tonal" :class="$style.closeButton"
+              >キャンセル</v-btn
+            >
+          </div>
         </v-sheet>
       </v-dialog>
     </div>
@@ -46,7 +124,42 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const dialog = ref(false)
-const newItem = ref({ name: '', deadline: '' })
+interface Item {
+  // 連携の時に頑張る　頑張れ
+  id: number
+  name: string
+  description: string
+  deadline: string
+  type: string
+  questions: question[]
+}
+
+interface options {
+  optionId: number
+  option: string
+}
+
+interface question {
+  description: string
+  options: options[]
+}
+
+const newItem = ref<Item>({
+  id: 0,
+  name: 'aaaaa',
+  description: '',
+  deadline: '2023-11-23',
+  type: 'checkbox',
+  questions: [{ description: '', options: [{ optionId: 0, option: '' }] }],
+})
+
+const deleteOption = (questionIndex: number, optionId: number) => {
+  newItem.value.questions[questionIndex].options.splice(optionId, 1)
+  // optionIdを再割り当て
+  newItem.value.questions[questionIndex].options.forEach((option, index) => {
+    option.optionId = index
+  })
+}
 
 const goToDetail = (id: number) => {
   // クリック時に詳細ページに移動
@@ -70,6 +183,34 @@ const expiredEventsCount = computed(() => {
 const addItem = () => {
   dialog.value = true
 }
+
+// checkbox, radiobutton のオプションを追加するメソッド
+const addOption = (index: number) => {
+  newItem.value.questions[index].options.push({
+    optionId: newItem.value.questions[index].options.length,
+    option: '',
+  })
+}
+
+const addQuestionItem = () => {
+  newItem.value.questions.push({ description: '', options: [{ optionId: 0, option: '' }] })
+}
+
+const dialogClose = () => {
+  dialog.value = false
+  newItem.value = { id: 0, name: '', deadline: '', description: '', type: 'text', questions: [] }
+}
+
+const decideAddItem = () => {
+  // 2024-12-01のような形式かどうかの確認
+  if (newItem.value.deadline.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    items.value.push({ ...newItem.value, id: items.value.length + 1 })
+    dialogClose()
+  } else {
+    alert('日付の形式が正しくありません (yyyy-mm-dd)')
+    return
+  }
+}
 </script>
 
 <style module>
@@ -86,7 +227,7 @@ const addItem = () => {
   margin: 30px auto;
   padding: 20px;
   width: 90%;
-  background-color: #f3f1f0;
+  background-color: rgb(248, 248, 248);
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -111,6 +252,15 @@ const addItem = () => {
   font-size: 17px;
 }
 
+.questionCard {
+  background-color: #fefefe;
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .typeColumn,/*内容　期限*/
 .nameColumn {
   font-weight: bold;
@@ -129,10 +279,20 @@ const addItem = () => {
 
 .nameCell {
   cursor: pointer;
+  transition: all ease-in 0.3s;
 }
 
 .nameCell:hover {
-  color: #000000;
+  /* color: #150df9; */
+  /* border-bottom: 1px solid #333 */
+}
+.nameCell span {
+  border-bottom: 1px solid transparent; /* 初期状態は透明なボーダー */
+  transition: border-bottom 0.1s ease-in; /* border-bottom のみにトランジションを適用 */
+}
+
+.nameCell span:hover {
+  border-bottom: 1.5px solid #6b6666; /* ホバー時にボーダーを表示 */
 }
 
 .actions {
@@ -153,5 +313,84 @@ const addItem = () => {
 
 .actions button:hover {
   background-color: #21867a;
+}
+
+.dialogSheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+  min-width: 300px;
+  margin: auto;
+  max-height: 90vh;
+}
+
+.dialogButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: 20px;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.textField {
+  resize: none;
+  width: 80%;
+  margin: auto;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.textOptionField {
+  resize: none;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  width: 100%;
+}
+
+.addedOption {
+  margin-top: 10px;
+}
+
+.selectAnswerStyle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  gap: 20px;
+  padding-bottom: 80px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.addOptionButton {
+  margin-top: 10px;
+  margin-bottom: 20px !important;
+  text-align: center;
+  margin: 0 auto;
+  display: block;
+}
+
+.optionContainer {
+  margin-top: 10px;
+  width: 80%;
+  display: flex;
+  margin: auto;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: auto;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.deleteButton {
+  margin: auto;
 }
 </style>
