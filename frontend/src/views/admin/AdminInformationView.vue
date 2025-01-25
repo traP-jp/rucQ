@@ -50,26 +50,46 @@
           />
 
           <div :class="$style.selectAnswerStyle">
-            <v-select
-              label="回答形式"
-              :items="['text', 'checkbox', 'radiobutton']"
-              v-model="newItem.type"
-              :class="$style.textField"
-              variant="outlined"
-            />
-            <div v-if="newItem.type === 'checkbox' || newItem.type === 'radiobutton'">
-              <v-text-field
-                v-model="newOption[newOption.length - 1]"
-                label="選択肢名"
+            <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
+            <div
+              v-for="(question, index) in newItem.questions"
+              :key="index"
+              :class="$style.questionCard"
+            >
+              <v-textarea
+                label="説明"
+                v-model="newItem.questions[index].description"
                 :class="$style.textField"
+                variant="outlined"
+                rows="1"
+                auto-grow
               />
-              <v-btn @click="addOption">選択肢を追加</v-btn>
-              <div
-                v-for="(option, index) in newItem.options"
-                :key="index"
-                :class="$style.addedOption"
-              >
-                {{ option }}
+              <v-select
+                label="回答形式"
+                :items="['text', 'checkbox', 'radiobutton']"
+                v-model="newItem.type"
+                :class="$style.textField"
+                variant="outlined"
+              />
+              <div v-if="newItem.type === 'checkbox' || newItem.type === 'radiobutton'">
+                <v-btn @click="addOption(index)" :class="$style.addOptionButton"
+                  >選択肢を追加</v-btn
+                >
+                <div v-for="(option, optionId) in newItem.questions[index].options" :key="optionId">
+                  <v-textarea
+                    label="選択肢名"
+                    v-model=newItem.questions[index].options[optionId].option
+                    :class="$style.textField"
+                    variant="outlined"
+                    rows="1"
+                    auto-grow
+                  />
+                  <div
+                    v-for="(option, index) in newItem.questions"
+                    :key="index"
+                    :class="$style.addedOption"
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
@@ -92,23 +112,33 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const dialog = ref(false)
-interface Item {
+interface Item {// 連携の時に頑張る　頑張れ
+  id: number
   name: string
   description: string
   deadline: string
   type: string
-  options: string[]
+  questions: question[]
+}
+
+interface options {
+  optioinId : number
+  option : string
+}
+
+interface question {
+  description: string
+  options: options[]
 }
 
 const newItem = ref<Item>({
+  id: 0,
   name: 'aaaaa',
   description: '',
   deadline: '2023-11-23',
   type: 'text',
-  options: [],
+  questions: [{ description: '', options: [{ optioinId: 0, option: '' }] }],
 })
-const newOption = ref<string>('')
-const newOptions = ref<string[]>([])
 
 const goToDetail = (id: number) => {
   // クリック時に詳細ページに移動
@@ -134,29 +164,28 @@ const addItem = () => {
 }
 
 // checkbox, radiobutton のオプションを追加するメソッド
-const addOption = () => {
-  if (newOption.value.trim()) {
-    newItem.value.options.push(newOption.value)
-    newOption.value = ''
-  }
+const addOption = (index: number) => {
+  newItem.value.questions[index].options.push({ optioinId: newItem.value.questions[index].options.length, option: '' })
+}
+
+const addQuestionItem = () => {
+  newItem.value.questions.push({ description: '', options: [{ optioinId: 0, option: '' }] })
 }
 
 const dialogClose = () => {
   dialog.value = false
-  newItem.value = { name: '', deadline: '', description: '', type: 'text', options: [] }
-  newOption.value = ''
+  newItem.value = { id: 0, name: '', deadline: '', description: '', type: 'text', questions: [] }
 }
 
 const decideAddItem = () => {
   // 2024-12-01のような形式かどうかの確認
   if (newItem.value.deadline.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    // questionHeader.value.deadline = newItem.value.deadline
+    items.value.push({ ...newItem.value, id: items.value.length + 1 })
+    dialogClose()
   } else {
     alert('日付の形式が正しくありません (yyyy-mm-dd)')
     return
   }
-
-  dialogClose()
 }
 </script>
 
@@ -197,6 +226,15 @@ const decideAddItem = () => {
   z-index: 2;
   background-color: #eaf3fa;
   font-size: 17px;
+}
+
+.questionCard {
+  background-color: #fefefe;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .typeColumn,/*内容　期限*/
@@ -250,7 +288,7 @@ const decideAddItem = () => {
   width: 50%;
   min-width: 300px;
   margin: auto;
-  max-height: 80vh;
+  max-height: 90vh;
 }
 
 .dialogButtonContainer {
@@ -265,6 +303,8 @@ const decideAddItem = () => {
 .textField {
   resize: none;
   width: 80%;
+  margin: auto;
+  margin-top: 15px;
 }
 
 .addedOption {
@@ -275,7 +315,20 @@ const decideAddItem = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 80%;
+  gap: 20px;
   padding-bottom: 80px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.addOptionButton {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  text-align: center;
+  margin: 0 auto;
+  display: block;
 }
 </style>
