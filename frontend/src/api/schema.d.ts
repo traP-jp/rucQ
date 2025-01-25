@@ -225,7 +225,7 @@ export interface paths {
             cookie?: never;
         };
         /** 自分の回答を取得 */
-        get: operations["getMyAnswers"];
+        get: operations["getMyAnswer"];
         put?: never;
         post?: never;
         delete?: never;
@@ -394,7 +394,7 @@ export interface components {
             content: string;
         };
         Answer: {
-            id: string;
+            id: number;
             question_id: number;
             user_traq_id: string;
             content?: string | null;
@@ -1057,7 +1057,7 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
-    getMyAnswers: {
+    getMyAnswer: {
         parameters: {
             query?: never;
             header: {

@@ -31,7 +31,7 @@ const (
 // Answer defines model for Answer.
 type Answer struct {
 	Content    *string `json:"content"`
-	Id         string  `json:"id"`
+	Id         int     `json:"id"`
 	QuestionId int     `json:"question_id"`
 	UserTraqId string  `json:"user_traq_id"`
 }
@@ -264,8 +264,8 @@ type GetMeParams struct {
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
 
-// GetMyAnswersParams defines parameters for GetMyAnswers.
-type GetMyAnswersParams struct {
+// GetMyAnswerParams defines parameters for GetMyAnswer.
+type GetMyAnswerParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
@@ -412,7 +412,7 @@ type ServerInterface interface {
 	GetMe(ctx echo.Context, params GetMeParams) error
 	// 自分の回答を取得
 	// (GET /api/me/answers/{question_id})
-	GetMyAnswers(ctx echo.Context, questionId QuestionId, params GetMyAnswersParams) error
+	GetMyAnswer(ctx echo.Context, questionId QuestionId, params GetMyAnswerParams) error
 	// 自分の予算を取得
 	// (GET /api/me/budgets)
 	GetMyBudget(ctx echo.Context, params GetMyBudgetParams) error
@@ -877,8 +877,8 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 	return err
 }
 
-// GetMyAnswers converts echo context to params.
-func (w *ServerInterfaceWrapper) GetMyAnswers(ctx echo.Context) error {
+// GetMyAnswer converts echo context to params.
+func (w *ServerInterfaceWrapper) GetMyAnswer(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "question_id" -------------
 	var questionId QuestionId
@@ -889,7 +889,7 @@ func (w *ServerInterfaceWrapper) GetMyAnswers(ctx echo.Context) error {
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetMyAnswersParams
+	var params GetMyAnswerParams
 
 	headers := ctx.Request().Header
 	// ------------- Required header parameter "X-Forwarded-User" -------------
@@ -911,7 +911,7 @@ func (w *ServerInterfaceWrapper) GetMyAnswers(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetMyAnswers(ctx, questionId, params)
+	err = w.Handler.GetMyAnswer(ctx, questionId, params)
 	return err
 }
 
@@ -1307,7 +1307,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/events/:event_id/register", wrapper.UnregisterEvent)
 	router.POST(baseURL+"/api/events/:event_id/register", wrapper.RegisterEvent)
 	router.GET(baseURL+"/api/me", wrapper.GetMe)
-	router.GET(baseURL+"/api/me/answers/:question_id", wrapper.GetMyAnswers)
+	router.GET(baseURL+"/api/me/answers/:question_id", wrapper.GetMyAnswer)
 	router.GET(baseURL+"/api/me/budgets", wrapper.GetMyBudget)
 	router.POST(baseURL+"/api/options", wrapper.PostOption)
 	router.PUT(baseURL+"/api/options/:option_id", wrapper.PutOption)
