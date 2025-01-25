@@ -63,7 +63,7 @@ const htmlContent = computed(() => marked(markdown.value))
 <style>
 .guidebook-markdown {
   padding: 30px;
-  background-color: #f7fafc; /* 背景色  あとで色はちゃんと設定する*/
+  background-color: var(--color-background); /* 背景色  あとで色はちゃんと設定する*/
   max-width: 1000px;
   height: 100%;
   width: 100%;
