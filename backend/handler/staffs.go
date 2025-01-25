@@ -30,7 +30,7 @@ func (s *Server) GetStaffs(e echo.Context) error {
 
 func (s *Server) PostStaff(e echo.Context, params PostStaffParams) error {
 	if os.Getenv("RUCQ_DEBUG") != "true" {
-		loggedInUser, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+		loggedInUser, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
@@ -65,7 +65,7 @@ func (s *Server) PostStaff(e echo.Context, params PostStaffParams) error {
 }
 
 func (s *Server) DeleteStaff(e echo.Context, params DeleteStaffParams) error {
-	loggedInUser, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+	loggedInUser, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)

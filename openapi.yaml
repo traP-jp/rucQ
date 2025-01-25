@@ -623,7 +623,6 @@ components:
       name: X-Forwarded-User
       in: header
       description: ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-      required: true
       schema:
         type: string
     CampId:

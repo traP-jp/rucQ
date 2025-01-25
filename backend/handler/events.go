@@ -8,6 +8,8 @@ import (
 	"github.com/traP-jp/rucQ/backend/model"
 )
 
+const trapTraqID = "traP"
+
 func (s *Server) GetEvents(e echo.Context) error {
 	events, err := s.repo.GetEvents()
 
@@ -46,7 +48,7 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 	organizerTraqID := params.XForwardedUser
 
 	if req.CreateAsStaff {
-		user, err := s.repo.GetOrCreateUser(organizerTraqID)
+		user, err := s.repo.GetOrCreateUser(*organizerTraqID)
 
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
@@ -58,11 +60,12 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 			return e.JSON(http.StatusForbidden, "Forbidden")
 		}
 
-		organizerTraqID = "traP"
+		trapTraqID := "traP"
+		organizerTraqID = &trapTraqID
 		eventModel.ByStaff = true
 	}
 
-	eventModel.OrganizerTraqID = organizerTraqID
+	eventModel.OrganizerTraqID = *organizerTraqID
 
 	if err := s.repo.CreateEvent(&eventModel); err != nil {
 		e.Logger().Errorf("failed to create event: %v", err)

@@ -203,97 +203,97 @@ type NotFound struct {
 // PostCampParams defines parameters for PostCamp.
 type PostCampParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PutCampParams defines parameters for PutCamp.
 type PutCampParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostEventParams defines parameters for PostEvent.
 type PostEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PutEventParams defines parameters for PutEvent.
 type PutEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // UnregisterEventParams defines parameters for UnregisterEvent.
 type UnregisterEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // RegisterEventParams defines parameters for RegisterEvent.
 type RegisterEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // GetMeParams defines parameters for GetMe.
 type GetMeParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // GetMyAnswerParams defines parameters for GetMyAnswer.
 type GetMyAnswerParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PutAnswerParams defines parameters for PutAnswer.
 type PutAnswerParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // GetMyBudgetParams defines parameters for GetMyBudget.
 type GetMyBudgetParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostOptionParams defines parameters for PostOption.
 type PostOptionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PutOptionParams defines parameters for PutOption.
 type PutOptionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostQuestionGroupParams defines parameters for PostQuestionGroup.
 type PostQuestionGroupParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostQuestionParams defines parameters for PostQuestion.
 type PostQuestionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // DeleteQuestionParams defines parameters for DeleteQuestion.
 type DeleteQuestionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PutQuestionParams defines parameters for PutQuestion.
 type PutQuestionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // DeleteStaffParams defines parameters for DeleteStaff.
@@ -302,13 +302,13 @@ type DeleteStaffParams struct {
 	StaffId StaffId `form:"staff_id" json:"staff_id"`
 
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostStaffParams defines parameters for PostStaff.
 type PostStaffParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
-	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostCampJSONRequestBody defines body for PostCamp for application/json ContentType.
@@ -454,7 +454,7 @@ func (w *ServerInterfaceWrapper) PostCamp(ctx echo.Context) error {
 	var params PostCampParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -462,14 +462,12 @@ func (w *ServerInterfaceWrapper) PostCamp(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -517,7 +515,7 @@ func (w *ServerInterfaceWrapper) PutCamp(ctx echo.Context) error {
 	var params PutCampParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -525,14 +523,12 @@ func (w *ServerInterfaceWrapper) PutCamp(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -557,7 +553,7 @@ func (w *ServerInterfaceWrapper) PostEvent(ctx echo.Context) error {
 	var params PostEventParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -565,14 +561,12 @@ func (w *ServerInterfaceWrapper) PostEvent(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -611,7 +605,7 @@ func (w *ServerInterfaceWrapper) PutEvent(ctx echo.Context) error {
 	var params PutEventParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -619,14 +613,12 @@ func (w *ServerInterfaceWrapper) PutEvent(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -665,7 +657,7 @@ func (w *ServerInterfaceWrapper) UnregisterEvent(ctx echo.Context) error {
 	var params UnregisterEventParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -673,14 +665,12 @@ func (w *ServerInterfaceWrapper) UnregisterEvent(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -703,7 +693,7 @@ func (w *ServerInterfaceWrapper) RegisterEvent(ctx echo.Context) error {
 	var params RegisterEventParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -711,14 +701,12 @@ func (w *ServerInterfaceWrapper) RegisterEvent(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -734,7 +722,7 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 	var params GetMeParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -742,14 +730,12 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -772,7 +758,7 @@ func (w *ServerInterfaceWrapper) GetMyAnswer(ctx echo.Context) error {
 	var params GetMyAnswerParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -780,14 +766,12 @@ func (w *ServerInterfaceWrapper) GetMyAnswer(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -810,7 +794,7 @@ func (w *ServerInterfaceWrapper) PutAnswer(ctx echo.Context) error {
 	var params PutAnswerParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -818,14 +802,12 @@ func (w *ServerInterfaceWrapper) PutAnswer(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -841,7 +823,7 @@ func (w *ServerInterfaceWrapper) GetMyBudget(ctx echo.Context) error {
 	var params GetMyBudgetParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -849,14 +831,12 @@ func (w *ServerInterfaceWrapper) GetMyBudget(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -872,7 +852,7 @@ func (w *ServerInterfaceWrapper) PostOption(ctx echo.Context) error {
 	var params PostOptionParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -880,14 +860,12 @@ func (w *ServerInterfaceWrapper) PostOption(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -910,7 +888,7 @@ func (w *ServerInterfaceWrapper) PutOption(ctx echo.Context) error {
 	var params PutOptionParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -918,14 +896,12 @@ func (w *ServerInterfaceWrapper) PutOption(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -950,7 +926,7 @@ func (w *ServerInterfaceWrapper) PostQuestionGroup(ctx echo.Context) error {
 	var params PostQuestionGroupParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -958,14 +934,12 @@ func (w *ServerInterfaceWrapper) PostQuestionGroup(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -990,7 +964,7 @@ func (w *ServerInterfaceWrapper) PostQuestion(ctx echo.Context) error {
 	var params PostQuestionParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -998,14 +972,12 @@ func (w *ServerInterfaceWrapper) PostQuestion(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -1028,7 +1000,7 @@ func (w *ServerInterfaceWrapper) DeleteQuestion(ctx echo.Context) error {
 	var params DeleteQuestionParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -1036,14 +1008,12 @@ func (w *ServerInterfaceWrapper) DeleteQuestion(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -1082,7 +1052,7 @@ func (w *ServerInterfaceWrapper) PutQuestion(ctx echo.Context) error {
 	var params PutQuestionParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -1090,14 +1060,12 @@ func (w *ServerInterfaceWrapper) PutQuestion(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -1119,7 +1087,7 @@ func (w *ServerInterfaceWrapper) DeleteStaff(ctx echo.Context) error {
 	}
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -1127,14 +1095,12 @@ func (w *ServerInterfaceWrapper) DeleteStaff(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -1159,7 +1125,7 @@ func (w *ServerInterfaceWrapper) PostStaff(ctx echo.Context) error {
 	var params PostStaffParams
 
 	headers := ctx.Request().Header
-	// ------------- Required header parameter "X-Forwarded-User" -------------
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
 	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
 		var XForwardedUser XForwardedUser
 		n := len(valueList)
@@ -1167,14 +1133,12 @@ func (w *ServerInterfaceWrapper) PostStaff(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
 		}
 
-		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
 		}
 
-		params.XForwardedUser = XForwardedUser
-	} else {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+		params.XForwardedUser = &XForwardedUser
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
