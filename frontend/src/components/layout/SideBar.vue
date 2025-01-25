@@ -87,6 +87,7 @@ const navItems = [
 .v-navigation-drawer {
   height: 100vh;
   background-color: var(--color-white) !important;
+  border-right: 1.5px solid var(--color-line) !important;
   width: 230px !important;
   padding: 0 !important;
   display: flex;
