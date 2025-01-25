@@ -35,6 +35,29 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
+	question, err := s.repo.GetQuestionByID(uint(questionID))
+
+	if err != nil {
+		e.Logger().Errorf("failed to get question: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if answer.Content != nil {
+		if question.Type == string(QuestionTypeMultiple) {
+			if err := res.Content.FromAnswerContent1(*answer.Content); err != nil {
+				e.Logger().Errorf("failed to convert content: %v", err)
+
+				return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			}
+		} else {
+			if err := res.Content.FromAnswerContent0((*answer.Content)[0]); err != nil {
+				e.Logger().Errorf("failed to convert content: %v", err)
+
+				return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			}
+		}
+	}
 
 	res.UserTraqId = *params.XForwardedUser
 
@@ -67,7 +90,35 @@ func (s *Server) PutAnswer(e echo.Context, questionID QuestionId, params PutAnsw
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	answer.Content = req.Content
+	question, err := s.repo.GetQuestionByID(uint(questionID))
+
+	if err != nil {
+		e.Logger().Errorf("failed to get question: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if req.Content != nil {
+		if question.Type == string(QuestionTypeMultiple) {
+			content, err := req.Content.AsPutAnswerRequestContent1()
+
+			if err != nil {
+				return e.JSON(http.StatusBadRequest, err)
+			}
+
+			contentStrSlice := []string(content)
+			answer.Content = &contentStrSlice
+		} else {
+			content, err := req.Content.AsPutAnswerRequestContent0()
+
+			if err != nil {
+				return e.JSON(http.StatusBadRequest, err)
+			}
+
+			contentStrSlice := []string{string(content)}
+			answer.Content = &contentStrSlice
+		}
+	}
 
 	if err := s.repo.UpdateAnswer(answer); err != nil {
 		e.Logger().Errorf("failed to update answer: %v", err)
@@ -81,6 +132,22 @@ func (s *Server) PutAnswer(e echo.Context, questionID QuestionId, params PutAnsw
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if answer.Content != nil {
+		if question.Type == string(QuestionTypeMultiple) {
+			if err := res.Content.FromAnswerContent1(*answer.Content); err != nil {
+				e.Logger().Errorf("failed to convert content: %v", err)
+
+				return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			}
+		} else {
+			if err := res.Content.FromAnswerContent0((*answer.Content)[0]); err != nil {
+				e.Logger().Errorf("failed to convert content: %v", err)
+
+				return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			}
+		}
 	}
 
 	res.UserTraqId = *params.XForwardedUser

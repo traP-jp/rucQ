@@ -380,10 +380,10 @@ export interface components {
             id: number;
             question_id: number;
             user_traq_id: string;
-            content?: string | null;
+            content?: (string | string[]) | null;
         };
         PutAnswerRequest: {
-            content?: string | null;
+            content?: (string | string[]) | null;
         };
         Budget: {
             id: number;
