@@ -2,11 +2,11 @@
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
-const { mobile } = useDisplay()
+const { xs } = useDisplay()
 </script>
 
 <template>
-    <mobile-header v-if="mobile" title="Chat" />
+  <mobile-header v-if="xs" title="Chat" />
 </template>
 
 <style module></style>
