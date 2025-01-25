@@ -92,12 +92,13 @@ type PostQuestionGroupRequest struct {
 
 // PostQuestionRequest defines model for PostQuestionRequest.
 type PostQuestionRequest struct {
-	Description string                  `json:"description"`
-	IsOpen      bool                    `json:"is_open"`
-	IsPublic    bool                    `json:"is_public"`
-	Options     *[]string               `json:"options"`
-	Title       string                  `json:"title"`
-	Type        PostQuestionRequestType `json:"type"`
+	Description     string                  `json:"description"`
+	IsOpen          bool                    `json:"is_open"`
+	IsPublic        bool                    `json:"is_public"`
+	Options         *[]string               `json:"options"`
+	QuestionGroupId int                     `json:"question_group_id"`
+	Title           string                  `json:"title"`
+	Type            PostQuestionRequestType `json:"type"`
 }
 
 // PostQuestionRequestType defines model for PostQuestionRequest.Type.
@@ -110,13 +111,14 @@ type PostStaffRequest struct {
 
 // Question defines model for Question.
 type Question struct {
-	Description *string      `json:"description"`
-	Id          int          `json:"id"`
-	IsOpen      bool         `json:"is_open"`
-	IsPublic    bool         `json:"is_public"`
-	Options     *[]string    `json:"options"`
-	Title       string       `json:"title"`
-	Type        QuestionType `json:"type"`
+	Description     *string      `json:"description"`
+	Id              int          `json:"id"`
+	IsOpen          bool         `json:"is_open"`
+	IsPublic        bool         `json:"is_public"`
+	Options         *[]string    `json:"options"`
+	QuestionGroupId int          `json:"question_group_id"`
+	Title           string       `json:"title"`
+	Type            QuestionType `json:"type"`
 }
 
 // QuestionType defines model for Question.Type.

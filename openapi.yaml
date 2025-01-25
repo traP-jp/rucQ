@@ -795,6 +795,8 @@ components:
       properties:
         id:
           type: integer
+        question_group_id:
+          type: integer
         title:
           type: string
         description:
@@ -818,6 +820,7 @@ components:
           nullable: true
       required:
         - id
+        - question_group_id
         - title
         - description
         - type
@@ -826,6 +829,8 @@ components:
     PostQuestionRequest:
       type: object
       properties:
+        question_group_id:
+          type: integer
         title:
           type: string
         description:
@@ -847,6 +852,7 @@ components:
             type: string
           nullable: true
       required:
+        - question_group_id
         - title
         - description
         - type
