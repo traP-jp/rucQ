@@ -9,8 +9,8 @@ const { mobile } = useDisplay()
 </script>
 
 <template>
-  <v-app>
-    <side-bar v-if=!mobile />
+  <v-app style="background: var(--color-background)">
+    <side-bar v-if="!mobile" />
     <mobile-header v-if="mobile" />
     <v-main>
       <router-view />
