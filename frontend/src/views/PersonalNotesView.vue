@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
 import EditPreviewButton from '@/components/EditPreviewButton.vue'
