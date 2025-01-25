@@ -6,10 +6,40 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/traP-jp/rucQ/backend/model"
+	"github.com/traP-jp/rucQ/backend/repository"
 )
 
 func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMyAnswerParams) error {
-	return nil
+	user, err := s.repo.GetOrCreateUser(params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	answer, err := s.repo.GetOrCreateAnswer(&repository.GetAnswerQuery{
+		QuestionID: uint(questionID),
+		UserID:     user.ID,
+	})
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create answer: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var res Answer
+
+	if err := copier.Copy(&res, &answer); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	res.UserTraqId = params.XForwardedUser
+
+	return e.JSON(http.StatusOK, res)
 }
 
 func (s *Server) PostAnswer(e echo.Context, params PostAnswerParams) error {

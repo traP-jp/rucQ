@@ -9,3 +9,24 @@ func (r *Repository) CreateAnswer(answer *model.Answer) error {
 
 	return nil
 }
+
+type GetAnswerQuery struct {
+	QuestionID uint
+	UserID     uint
+}
+
+func (r *Repository) GetOrCreateAnswer(query *GetAnswerQuery) (*model.Answer, error) {
+	var answer model.Answer
+
+	if err := r.db.
+		Where(&model.Answer{
+			QuestionID: query.QuestionID,
+			UserID:     query.UserID,
+		}).
+		FirstOrCreate(&answer).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return &answer, nil
+}

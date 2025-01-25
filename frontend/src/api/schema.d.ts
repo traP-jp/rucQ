@@ -1078,7 +1078,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Answer"][];
+                    "application/json": components["schemas"]["Answer"];
                 };
             };
             500: components["responses"]["InternalServerError"];
