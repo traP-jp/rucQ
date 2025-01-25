@@ -183,6 +183,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 選択肢を作成 */
+        post: operations["postOption"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/options/{option_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 選択肢を更新 */
+        put: operations["putOption"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/answers/{question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 自分の回答を取得 */
+        get: operations["getMyAnswer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/answers": {
         parameters: {
             query?: never;
@@ -213,6 +264,23 @@ export interface paths {
         post?: never;
         /** 回答を削除 */
         delete: operations["deleteAnswer"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 自分の予算を取得 */
+        get: operations["getMyBudget"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -305,7 +373,7 @@ export interface components {
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             is_open: boolean;
-            options?: string[] | null;
+            options?: components["schemas"]["Option"][] | null;
         };
         PostQuestionRequest: {
             question_group_id: number;
@@ -315,10 +383,18 @@ export interface components {
             type: "single" | "multiple" | "free_text" | "free_number";
             is_public: boolean;
             is_open: boolean;
-            options?: string[] | null;
+        };
+        Option: {
+            id: number;
+            question_id: number;
+            content: string;
+        };
+        PostOptionRequest: {
+            question_id: number;
+            content: string;
         };
         Answer: {
-            id: string;
+            id: number;
             question_id: number;
             user_traq_id: string;
             content?: string | null;
@@ -326,6 +402,11 @@ export interface components {
         PostAnswerRequest: {
             question_id: number;
             content: string;
+        };
+        Budget: {
+            id: number;
+            camp_id: number;
+            amount?: number | null;
         };
         PostStaffRequest: {
             traq_id: string;
@@ -405,6 +486,8 @@ export interface components {
         EventId: number;
         /** @description 質問ID */
         QuestionId: number;
+        /** @description 選択肢ID */
+        OptionId: number;
         /** @description 回答ID */
         AnswerId: number;
         /** @description 合宿係のtraQ ID */
@@ -910,6 +993,97 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
+    postOption: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostOptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Option"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    putOption: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 選択肢ID */
+                option_id: components["parameters"]["OptionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostOptionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Option"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getMyAnswer: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
+            500: components["responses"]["InternalServerError"];
+        };
+    };
     postAnswer: {
         parameters: {
             query?: never;
@@ -992,6 +1166,30 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getMyBudget: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User": components["parameters"]["X-Forwarded-User"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Budget"];
+                };
+            };
             500: components["responses"]["InternalServerError"];
         };
     };

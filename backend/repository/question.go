@@ -16,7 +16,7 @@ func (r *Repository) CreateQuestion(question *model.Question) error {
 func (r *Repository) GetQuestions() ([]model.Question, error) {
 	var questions []model.Question
 
-	if err := r.db.Find(&questions).Error; err != nil {
+	if err := r.db.Preload("Options").Find(&questions).Error; err != nil {
 		return nil, err
 	}
 
@@ -26,7 +26,7 @@ func (r *Repository) GetQuestions() ([]model.Question, error) {
 func (r *Repository) GetQuestionByID(id uint) (*model.Question, error) {
 	var question model.Question
 
-	if err := r.db.First(&question, id).Error; err != nil {
+	if err := r.db.Preload("Options").First(&question, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -46,9 +46,17 @@ func (r *Repository) UpdateQuestion(questionID uint, question *model.Question) e
 		Model: gorm.Model{
 			ID: questionID,
 		},
-	}).Updates(question).Error; err != nil {
+	}).Omit("Options").Updates(question).Error; err != nil {
 		return err
 	}
+
+	options, err := r.GetOptions(&GetOptionsQuery{QuestionID: &questionID})
+
+	if err != nil {
+		return err
+	}
+
+	question.Options = options
 
 	return nil
 }

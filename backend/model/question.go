@@ -10,12 +10,6 @@ type Question struct {
 	Type            string
 	IsPublic        bool
 	IsOpen          bool
-	Options         *[]string `gorm:"serializer:json"`
-}
-
-type Answer struct {
-	gorm.Model
-	QuestionID uint
-	UserID     uint
-	Body       *string
+	Options         []Option
+	Answers         []Answer
 }

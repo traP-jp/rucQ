@@ -13,7 +13,11 @@ func (r *Repository) CreateQuestionGroup(questionGroup *model.QuestionGroup) err
 func (r *Repository) GetQuestionGroups() ([]model.QuestionGroup, error) {
 	var questionGroups []model.QuestionGroup
 
-	if err := r.db.Preload("Questions").Find(&questionGroups).Error; err != nil {
+	if err := r.db.
+		Preload("Questions").
+		Preload("Questions.Options").
+		Find(&questionGroups).
+		Error; err != nil {
 		return nil, err
 	}
 

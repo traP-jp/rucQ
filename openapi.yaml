@@ -418,6 +418,81 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/options:
+    post:
+      summary: 選択肢を作成
+      tags:
+        - Questions
+      operationId: postOption
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOptionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Option'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/options/{option_id}:
+    put:
+      summary: 選択肢を更新
+      tags:
+        - Questions
+      operationId: putOption
+      parameters:
+        - $ref: '#/components/parameters/OptionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOptionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Option'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/me/answers/{question_id}:
+    get:
+      summary: 自分の回答を取得
+      tags:
+        - Questions
+      operationId: getMyAnswer
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/answers:
     post:
       summary: 回答を作成
@@ -490,6 +565,23 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/me/budgets:
+    get:
+      summary: 自分の予算を取得
+      tags:
+        - Budgets
+      operationId: getMyBudget
+      parameters:
+        - $ref: '#/components/parameters/X-Forwarded-User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/staffs:
@@ -580,6 +672,13 @@ components:
       name: question_id
       in: path
       description: 質問ID
+      required: true
+      schema:
+        type: integer
+    OptionId:
+      name: option_id
+      in: path
+      description: 選択肢ID
       required: true
       schema:
         type: integer
@@ -816,7 +915,7 @@ components:
         options:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Option'
           nullable: true
       required:
         - id
@@ -846,11 +945,6 @@ components:
           type: boolean
         is_open:
           type: boolean
-        options:
-          type: array
-          items:
-            type: string
-          nullable: true
       required:
         - question_group_id
         - title
@@ -858,11 +952,34 @@ components:
         - type
         - is_public
         - is_open
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+        question_id:
+          type: integer
+        content:
+          type: string
+      required:
+        - id
+        - question_id
+        - content
+    PostOptionRequest:
+      type: object
+      properties:
+        question_id:
+          type: integer
+        content:
+          type: string
+      required:
+        - question_id
+        - content
     Answer:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         question_id:
           type: integer
         user_traq_id:
@@ -884,6 +1001,19 @@ components:
       required:
         - question_id
         - content
+    Budget:
+      type: object
+      properties:
+        id:
+          type: integer
+        camp_id:
+          type: integer
+        amount:
+          type: integer
+          nullable: true
+      required:
+        - id
+        - camp_id
     PostStaffRequest:
       type: object
       properties:
@@ -901,5 +1031,7 @@ tags:
     description: User API
   - name: Questions
     description: Question API
+  - name: Budgets
+    description: Budget API
   - name: Staffs
     description: Staff API
