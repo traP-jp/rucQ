@@ -66,7 +66,7 @@
               />
               <v-select
                 label="回答形式"
-                :items="['text', 'checkbox', 'radiobutton']"
+                :items="['checkbox', 'text', 'radiobutton']"
                 v-model="newItem.type"
                 :class="$style.textField"
                 variant="outlined"
@@ -75,20 +75,30 @@
                 <v-btn @click="addOption(index)" :class="$style.addOptionButton"
                   >選択肢を追加</v-btn
                 >
-                <div v-for="(option, optionId) in newItem.questions[index].options" :key="optionId">
-                  <v-textarea
-                    label="選択肢名"
-                    v-model=newItem.questions[index].options[optionId].option
-                    :class="$style.textField"
-                    variant="outlined"
-                    rows="1"
-                    auto-grow
-                  />
-                  <div
-                    v-for="(option, index) in newItem.questions"
-                    :key="index"
-                    :class="$style.addedOption"
-                  ></div>
+                <div
+                  v-for="(option, optionId) in newItem.questions[index].options"
+                  :key="optionId"
+                  :class="$style.optionContainer"
+                >
+                  <div :class="$style.optionRow">
+                    <v-textarea
+                      label="選択肢名"
+                      v-model="newItem.questions[index].options[optionId].option"
+                      :class="$style.textOptionField"
+                      variant="outlined"
+                      rows="1"
+                      hide-details
+                      auto-grow
+                    />
+
+                    <!-- ここにバツボタン -->
+                    <v-btn
+                      @click="deleteOption(index, optionId)"
+                      color="red-darken-1"
+                      :class="$style.deleteButton"
+                      >削除
+                    </v-btn>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,7 +122,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const dialog = ref(false)
-interface Item {// 連携の時に頑張る　頑張れ
+interface Item {
+  // 連携の時に頑張る　頑張れ
   id: number
   name: string
   description: string
@@ -122,8 +133,8 @@ interface Item {// 連携の時に頑張る　頑張れ
 }
 
 interface options {
-  optioinId : number
-  option : string
+  optioinId: number
+  option: string
 }
 
 interface question {
@@ -136,9 +147,13 @@ const newItem = ref<Item>({
   name: 'aaaaa',
   description: '',
   deadline: '2023-11-23',
-  type: 'text',
+  type: 'checkbox',
   questions: [{ description: '', options: [{ optioinId: 0, option: '' }] }],
 })
+
+const deleteOption = (questionIndex: number, optionId: number) => {
+  newItem.value.questions[questionIndex].options.splice(optionId, 1)
+}
 
 const goToDetail = (id: number) => {
   // クリック時に詳細ページに移動
@@ -165,7 +180,10 @@ const addItem = () => {
 
 // checkbox, radiobutton のオプションを追加するメソッド
 const addOption = (index: number) => {
-  newItem.value.questions[index].options.push({ optioinId: newItem.value.questions[index].options.length, option: '' })
+  newItem.value.questions[index].options.push({
+    optioinId: newItem.value.questions[index].options.length,
+    option: '',
+  })
 }
 
 const addQuestionItem = () => {
@@ -232,7 +250,7 @@ const decideAddItem = () => {
   background-color: #fefefe;
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 95%;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -304,7 +322,16 @@ const decideAddItem = () => {
   resize: none;
   width: 80%;
   margin: auto;
+  justify-content: center;
   margin-top: 15px;
+}
+
+.textOptionField {
+  resize: none;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  width: 100%;
 }
 
 .addedOption {
@@ -315,7 +342,7 @@ const decideAddItem = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
+  width: 90%;
   gap: 20px;
   padding-bottom: 80px;
   margin-bottom: 20px;
@@ -325,10 +352,29 @@ const decideAddItem = () => {
 
 .addOptionButton {
   margin-top: 10px;
-  margin-bottom: 10px;
-  display: flex;
+  margin-bottom: 20px !important;
   text-align: center;
   margin: 0 auto;
   display: block;
+}
+
+.optionContainer {
+  margin-top: 10px;
+  width: 80%;
+  display: flex;
+  margin: auto;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: auto;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.deleteButton {
+  margin:auto;
 }
 </style>
