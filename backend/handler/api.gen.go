@@ -39,10 +39,10 @@ type Answer struct {
 // Camp defines model for Camp.
 type Camp struct {
 	Description string `json:"description"`
+	DisplayId   string `json:"display_id"`
 	Id          int    `json:"id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // Event defines model for Event.
@@ -67,9 +67,9 @@ type PostAnswerRequest struct {
 // PostCampRequest defines model for PostCampRequest.
 type PostCampRequest struct {
 	Description string `json:"description"`
+	DisplayId   string `json:"display_id"`
 	IsDraft     bool   `json:"is_draft"`
 	Name        string `json:"name"`
-	Summary     string `json:"summary"`
 }
 
 // PostEventRequest defines model for PostEventRequest.
@@ -83,15 +83,22 @@ type PostEventRequest struct {
 	TimeStart     time.Time `json:"time_start"`
 }
 
+// PostQuestionGroupRequest defines model for PostQuestionGroupRequest.
+type PostQuestionGroupRequest struct {
+	Description *string   `json:"description"`
+	Due         time.Time `json:"due"`
+	Name        string    `json:"name"`
+}
+
 // PostQuestionRequest defines model for PostQuestionRequest.
 type PostQuestionRequest struct {
-	Description string                  `json:"description"`
-	Due         time.Time               `json:"due"`
-	IsOpen      bool                    `json:"is_open"`
-	IsPublic    bool                    `json:"is_public"`
-	Options     *[]string               `json:"options"`
-	Title       string                  `json:"title"`
-	Type        PostQuestionRequestType `json:"type"`
+	Description     string                  `json:"description"`
+	IsOpen          bool                    `json:"is_open"`
+	IsPublic        bool                    `json:"is_public"`
+	Options         *[]string               `json:"options"`
+	QuestionGroupId int                     `json:"question_group_id"`
+	Title           string                  `json:"title"`
+	Type            PostQuestionRequestType `json:"type"`
 }
 
 // PostQuestionRequestType defines model for PostQuestionRequest.Type.
@@ -104,18 +111,27 @@ type PostStaffRequest struct {
 
 // Question defines model for Question.
 type Question struct {
-	Description string       `json:"description"`
-	Due         time.Time    `json:"due"`
-	Id          int          `json:"id"`
-	IsOpen      bool         `json:"is_open"`
-	IsPublic    bool         `json:"is_public"`
-	Options     *[]string    `json:"options"`
-	Title       string       `json:"title"`
-	Type        QuestionType `json:"type"`
+	Description     *string      `json:"description"`
+	Id              int          `json:"id"`
+	IsOpen          bool         `json:"is_open"`
+	IsPublic        bool         `json:"is_public"`
+	Options         *[]string    `json:"options"`
+	QuestionGroupId int          `json:"question_group_id"`
+	Title           string       `json:"title"`
+	Type            QuestionType `json:"type"`
 }
 
 // QuestionType defines model for Question.Type.
 type QuestionType string
+
+// QuestionGroup defines model for QuestionGroup.
+type QuestionGroup struct {
+	Description *string    `json:"description"`
+	Due         time.Time  `json:"due"`
+	Id          int        `json:"id"`
+	Name        string     `json:"name"`
+	Questions   []Question `json:"questions"`
+}
 
 // User defines model for User.
 type User struct {
@@ -226,6 +242,12 @@ type GetMeParams struct {
 	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
 }
 
+// PostQuestionGroupParams defines parameters for PostQuestionGroup.
+type PostQuestionGroupParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser XForwardedUser `json:"X-Forwarded-User"`
+}
+
 // PostQuestionParams defines parameters for PostQuestion.
 type PostQuestionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -276,6 +298,9 @@ type PostEventJSONRequestBody = PostEventRequest
 
 // PutEventJSONRequestBody defines body for PutEvent for application/json ContentType.
 type PutEventJSONRequestBody = PostEventRequest
+
+// PostQuestionGroupJSONRequestBody defines body for PostQuestionGroup for application/json ContentType.
+type PostQuestionGroupJSONRequestBody = PostQuestionGroupRequest
 
 // PostQuestionJSONRequestBody defines body for PostQuestion for application/json ContentType.
 type PostQuestionJSONRequestBody = PostQuestionRequest
@@ -333,6 +358,12 @@ type ServerInterface interface {
 	// 自分の情報を取得
 	// (GET /api/me)
 	GetMe(ctx echo.Context, params GetMeParams) error
+	// 質問グループの一覧を取得
+	// (GET /api/question_groups)
+	GetQuestionGroups(ctx echo.Context) error
+	// 質問グループを作成
+	// (POST /api/question_groups)
+	PostQuestionGroup(ctx echo.Context, params PostQuestionGroupParams) error
 	// 質問の一覧を取得
 	// (GET /api/questions)
 	GetQuestions(ctx echo.Context) error
@@ -782,6 +813,46 @@ func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
 	return err
 }
 
+// GetQuestionGroups converts echo context to params.
+func (w *ServerInterfaceWrapper) GetQuestionGroups(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetQuestionGroups(ctx)
+	return err
+}
+
+// PostQuestionGroup converts echo context to params.
+func (w *ServerInterfaceWrapper) PostQuestionGroup(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostQuestionGroupParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = XForwardedUser
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Forwarded-User is required, but not found"))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostQuestionGroup(ctx, params)
+	return err
+}
+
 // GetQuestions converts echo context to params.
 func (w *ServerInterfaceWrapper) GetQuestions(ctx echo.Context) error {
 	var err error
@@ -1034,6 +1105,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/events/:event_id/register", wrapper.UnregisterEvent)
 	router.POST(baseURL+"/api/events/:event_id/register", wrapper.RegisterEvent)
 	router.GET(baseURL+"/api/me", wrapper.GetMe)
+	router.GET(baseURL+"/api/question_groups", wrapper.GetQuestionGroups)
+	router.POST(baseURL+"/api/question_groups", wrapper.PostQuestionGroup)
 	router.GET(baseURL+"/api/questions", wrapper.GetQuestions)
 	router.POST(baseURL+"/api/questions", wrapper.PostQuestion)
 	router.DELETE(baseURL+"/api/questions/:question_id", wrapper.DeleteQuestion)
