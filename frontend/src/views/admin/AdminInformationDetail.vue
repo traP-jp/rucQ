@@ -51,7 +51,7 @@
       <div v-for="question in questions" :key="question.id">
         <div class="question">
           <div class="questionTitle">
-            {{ question.title }}
+            <div class="questionTitleText">{{ question.title }} </div>
             <div class="buttons">
               <div class="allCopyButton">全体をコピー</div>
               <button class="EditIconContainer" @click="openQuestionDialog(question.id)">
@@ -92,7 +92,7 @@
                     class="text-field"
                   />
                 </div>
-                <v-btn @click="editedOptions.push('')">選択肢を追加</v-btn>
+                <v-btn @click="editedOptions.push('')" class="mb-5">選択肢を追加</v-btn>
                 <div class="dialogButtonContainer">
                   <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
                   <v-btn
@@ -388,6 +388,10 @@ const questions = ref<Question[]>([
   margin: auto;
   margin-top: 30px;
   margin-bottom: 30px;
+}
+
+.questionTitleText{
+  max-width: 80%;
 }
 
 .questionTitle {
