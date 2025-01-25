@@ -1,51 +1,50 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { components } from '@/api/schema'
+type QuestionItem = Question & { content: string | string[], displayContent: string }
 
-defineProps<{
-  question: components["schemas"]["Question"]
-}>()
+const props = defineProps<{ questionItem: QuestionItem }>()
+const answer = defineModel<string | string[]>()
 
-const selectNo = ref('false')
-
-const validateNumber = (value: string) => {
-  return value === 'OK' || value === '' || '数値を入力してください'
-}
+const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
+const selectionItems = props.questionItem.options?.map((option) => option.content) ?? []
 </script>
 
 <template>
-  <div v-if="question.type === 'free_text'" class="d-flex">
-    <v-text-field
-      :disabled="!question.is_open"
-      :label="question.title"
-      :hint="question.description ?? ''"
-      persistent-hint
-      density="comfortable"
-    />
-    <div class="d-flex flex-column align-center">
-      なし
-      <v-checkbox-btn v-model="selectNo" class="flex-grow-0" />
-    </div>
-  </div>
+  <v-text-field
+    v-if="questionItem.type === 'free_text'"
+    v-model="answer"
+    :disabled="!questionItem.is_open"
+    :label="questionItem.title"
+    :hint="hint"
+    persistent-hint
+  />
 
   <v-text-field
-    v-if="question.type === 'free_number'"
-    :disabled="!question.is_open"
-    :label="question.title"
-    :hint="question.description ?? ''"
+    v-if="questionItem.type === 'free_number'"
+    v-model="answer"
+    :disabled="!questionItem.is_open"
+    :label="questionItem.title"
+    :hint="hint"
     persistent-hint
-    density="comfortable"
-    :rules="[validateNumber]"
   />
 
   <v-select
-    v-if="question.type === 'single'"
-    :disabled="!question.is_open"
-    :label="question.title"
-    :items="question.options ?? []"
-    :hint="question.description ?? ''"
+    v-if="questionItem.type === 'single'"
+    v-model="(answer as string)"
+    :disabled="!questionItem.is_open"
+    :label="questionItem.title"
+    :items="selectionItems"
+    :hint="hint"
     persistent-hint
-    density="comfortable"
-    clearable
+  />
+
+  <v-select
+    v-if="questionItem.type === 'multiple'"
+    v-model="(answer as string[])"
+    :disabled="!questionItem.is_open"
+    :label="questionItem.title"
+    :items="selectionItems"
+    :hint="hint"
+    persistent-hint
+    multiple
   />
 </template>
