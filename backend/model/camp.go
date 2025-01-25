@@ -8,4 +8,6 @@ type Camp struct {
 	Name        string
 	Description string
 	IsDraft     bool
+	Budgets     []Budget
+	Events      []Event
 }
