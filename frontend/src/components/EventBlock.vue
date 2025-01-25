@@ -19,6 +19,7 @@ const props = defineProps<{
 .container {
   padding: 4px;
   flex-grow: 0;
+  color: var(--color-exwhite);
 }
 
 .content {

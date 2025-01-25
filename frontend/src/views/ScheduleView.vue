@@ -67,7 +67,7 @@ const onlyPlans = (group: BlockGroup) => {
         >
           <hr
             v-if="!group.Plans.map((p) => epoch(p.At)).includes(timehead.Time)"
-            style="border: 0px; border-top: 1px dashed gray; margin-top: -0.5px"
+            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
           />
         </div>
         <div
@@ -91,10 +91,8 @@ const onlyPlans = (group: BlockGroup) => {
 
 <style module>
 .container {
-  margin: auto;
-  width: 400px;
-  height: 100vh;
-  border: 1px solid black;
+  margin: 20px auto;
+  max-width: 600px;
 }
 
 .blockgroup {
