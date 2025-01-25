@@ -260,7 +260,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 回答を作成 */
+        /**
+         * 回答を作成
+         * @deprecated
+         */
         post: operations["postAnswer"];
         delete?: never;
         options?: never;
@@ -279,7 +282,10 @@ export interface paths {
         /** 回答を更新 */
         put: operations["putAnswer"];
         post?: never;
-        /** 回答を削除 */
+        /**
+         * 回答を削除
+         * @deprecated
+         */
         delete: operations["deleteAnswer"];
         options?: never;
         head?: never;

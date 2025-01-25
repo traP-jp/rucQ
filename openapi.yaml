@@ -513,6 +513,7 @@ paths:
   /api/answers:
     post:
       summary: 回答を作成
+      deprecated: true
       tags:
         - Questions
       operationId: postAnswer
@@ -567,6 +568,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     delete:
       summary: 回答を削除
+      deprecated: true
       tags:
         - Questions
       operationId: deleteAnswer
