@@ -7,7 +7,7 @@
         :key="item.title"
         :value="item.value"
         link
-        @click="value = item.value"
+        @click="navigateTo(item.value)"
       >
         <div class="header-tab">
           <v-icon class="mr-3">{{ value === item.value ? item.iconActive : item.icon }}</v-icon>
@@ -22,34 +22,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, watch } from 'vue'
 
 const router = useRouter()
-const route = useRoute() // 追加
+const route = useRoute()
+
+
+// ナビゲーション関数の簡略化
+const navigateTo = (path: string) => {
+  const segments = route.path.split('/')
+  value.value = path
+  if(path === 'guidebook') {
+    router.push(`/${segments[1]}/`)
+  } else {
+    router.push(`/${segments[1]}/${path}`)
+  } 
+}
+
+// ナビゲーションバインディング
 const value = ref<string>('guidebook')
 
-watch(value, (val: string) => {
-  switch (val) {
-    case 'guidebook':
-      const segments = route.path.split('/')
-      const parentPath = '/' + segments[1] + '/'
-      router.push(parentPath)
-      break
-    case 'schedule':
-      router.push('schedule')
-      break
-    case 'notes':
-      router.push('personal-notes')
-      break
-    case 'chat':
-      router.push('chat')
-      break
-    case 'info':
-      router.push('info')
-      break
-  }
-})
 const navItems = [
   {
     value: 'guidebook',
@@ -58,10 +51,21 @@ const navItems = [
     icon: 'mdi-book-open-blank-variant-outline',
   },
   { value: 'schedule', title: 'スケジュール', iconActive: 'mdi-clock', icon: 'mdi-clock-outline' },
-  { value: 'notes', title: 'ノート', iconActive: 'mdi-book-edit', icon: 'mdi-book-edit-outline' },
+  { value: 'personal-notes', title: 'ノート', iconActive: 'mdi-book-edit', icon: 'mdi-book-edit-outline' },
   { value: 'chat', title: 'チャット', iconActive: 'mdi-chat', icon: 'mdi-chat-outline' },
   { value: 'info', title: '情報', iconActive: 'mdi-information', icon: 'mdi-information-outline' },
+  {
+    value: 'admin',
+    title: '管理者ツール',
+    iconActive: 'mdi-account-cog',
+    icon: 'mdi-account-cog-outline',
+  },
 ]
+
+// 監視してナビゲート
+watch(value, (val: string) => {
+  navigateTo(val)
+})
 </script>
 
 <style scoped>
