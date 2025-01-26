@@ -89,11 +89,11 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
 
   try {
-    const response = await getDefalutCamps()
+    response.value = await getDefalutCamps()
     console.log('API response:', response)
-    
-    if (response && typeof response.description === 'string') {
-      markdown.value = response.description
+
+    if (response && typeof response.value.description === 'string') {
+      markdown.value = response.value.description
     } else {
       console.error('Invalid response format:', response)
     }
@@ -102,27 +102,25 @@ onMounted(async () => {
   }
 })
 
-const res = ref<Camp>(
-  {
-    id: 0,
-    display_id: '',
-    description: '',
-    name: '',
-    is_draft: false,
-  }
-)
+const response = ref<Camp>({
+  id: 0,
+  display_id: '',
+  description: '',
+  name: '',
+  is_draft: false,
+})
 
 // 保存関数
 const saveMarkdown = async () => {
   alert('保存しました')
   isSaved.value = true
-   res.value = await editCamp(res.value.id, {
+  await editCamp(response.value.id, {
     display_id: '24spring',
     description: markdown.value,
     name: '2024年度 春合宿',
     is_draft: false,
   })
-  console.log('API response:', res)
+  console.log('API response:', response.value)
 
   console.log('API responsほぞん:')
 }
@@ -140,7 +138,7 @@ function showPreviewOnly() {
 // 保存関数（blurイベント用）　カーソルが離れたら保存する
 const saveMarkdownAsync = async () => {
   try {
-    const response = await editCamp(res.value.id, {
+    await editCamp(response.value.id, {
       display_id: '24spring',
       description: markdown.value,
       name: '2024年度 春合宿', // この辺は後で決める
