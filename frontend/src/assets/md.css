@@ -44,6 +44,12 @@
   line-height: 0.1px;
 }
 
+.markdown p {
+  font-size: 1em;
+  line-height: 1.4;
+  margin-bottom: 0.3lh;
+}
+
 .markdown a:hover {
   color: #0842e2;
 }
