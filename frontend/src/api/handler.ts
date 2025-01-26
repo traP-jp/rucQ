@@ -17,7 +17,7 @@ export const fetchApi = async (
         textParams[key] = String(option.parameters[key]) // 値を文字列に変換
       }
     }
-    parameterStr = new URLSearchParams(textParams).toString()
+    parameterStr = option?.parameters ? `?${new URLSearchParams(textParams).toString()}` : ''
   }
 
   const request: RequestInit = {
@@ -27,7 +27,6 @@ export const fetchApi = async (
       : { 'X-Forwarded-User': userStore.userId!, 'Content-Type': 'application/json' },
     body: option?.body,
   }
-
   const res = await fetch(`/api${path}${parameterStr}`, request)
   if (res.status === 200) {
     // HTTP ステータスコード。200 は OK, 404 は Not Found の意味
@@ -35,6 +34,23 @@ export const fetchApi = async (
   } else {
     return null
   }
+}
+
+// 合宿のしおり
+export const getDefalutCamps = async () => {
+  return fetchApi('GET', `/camps/default`)
+}
+
+export const getCamps = async (camp_id: number) => {
+  return fetchApi('GET', `/camps/${camp_id}`)
+}
+
+export const newCamp = async (params: CampParams) => {
+  return fetchApi('POST', `/camps`, { parameters: params })
+}
+
+export const editCamp = async (camp_id: number, params: CampParams) => {
+  return fetchApi('PUT', `/camps/${camp_id}`, { parameters: params })
 }
 
 // イベント
