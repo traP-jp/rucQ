@@ -68,7 +68,6 @@ onMounted(() => {
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   background: var(--color-theme-pale);
   font-weight: 400;
-  padding-bottom: 20vh;
 }
 
 .input {

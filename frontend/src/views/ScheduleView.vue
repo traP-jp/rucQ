@@ -11,7 +11,7 @@ import { onMounted, ref, watch } from 'vue'
 
 const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
 
-const popUp = defineModel<number>('popUp')
+const popUp = defineModel<CampEvent | undefined>('popUp')
 
 onMounted(() => {
   days.value = []

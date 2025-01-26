@@ -2,13 +2,16 @@
   <div :class="$style.container" @wheel="handleScroll">
     <div :class="$style.column">
       <div :class="$style.content">
-        <div :class="$style.head">
+        <div :class="$style.head" :style="`background: #${popUp!.display_color};`">
           <div :class="$style.titles">
-            <h3 :class="$style.name">リアル脱出ゲーム</h3>
-            <h6 :class="$style.info">2日目 22:00 ~ 23:30 @会議室</h6>
+            <h3 :class="$style.name">{{ popUp!.name }}</h3>
+            <h6 :class="$style.info">{{ makeInfo(popUp!) }}</h6>
           </div>
-          <EditPreviewButton :class="$style.epbutton" v-model:isPreview="isPreview" />
-          <button :class="$style.clbutton">
+          <button v-if="isPreview" :class="$style.epbutton" @click="isPreview = false">
+            <v-icon icon="mdi-square-edit-outline" :class="$style.icon"></v-icon>
+          </button>
+          <!-- <EditPreviewButton :class="$style.epbutton" v-model:isPreview="isPreview" /> -->
+          <button :class="$style.clbutton" @click="popUp = undefined">
             <v-icon icon="mdi-close" :class="$style.icon"></v-icon>
           </button>
         </div>
@@ -23,19 +26,25 @@
 import { ref } from 'vue'
 import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
-import EditPreviewButton from './EditPreviewButton.vue'
+import { getTimeString } from '@/lib/date'
+
+const popUp = defineModel<CampEvent | undefined>('popUp')
 
 const handleScroll = (event: WheelEvent) => {
   event.preventDefault()
 }
 
-const isPreview = ref(false)
+const isPreview = ref(true)
 const text = ref('')
+
+const makeInfo = (event: CampEvent) => {
+  return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
+}
 </script>
 
 <style module>
 .container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -67,7 +76,6 @@ const text = ref('')
   position: relative;
   height: 80px;
   display: flex;
-  background: var(--color-green);
   align-items: top;
   justify-content: space-between;
 }
@@ -97,6 +105,10 @@ const text = ref('')
   top: 10px;
   right: 10px;
   color: var(--color-background);
+}
+
+.icon {
+  font-size: 24px;
 }
 </style>
 

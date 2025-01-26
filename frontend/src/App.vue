@@ -6,7 +6,7 @@ import MobileFooter from '@/components/layout/MobileFooter.vue'
 import EventPopUp from './components/EventPopUp.vue'
 
 import { ref } from 'vue'
-const popUp = ref(1)
+const popUp = ref<CampEvent | undefined>(undefined)
 
 const { xs } = useDisplay()
 </script>
@@ -17,10 +17,10 @@ const { xs } = useDisplay()
     <mobile-header v-if="xs" />
 
     <v-main>
-      <router-view />
+      <router-view v-model:popUp="popUp" />
     </v-main>
     <mobile-footer v-if="xs" />
   </v-app>
-  <event-pop-up v-if="popUp !== 0" v-model:popUp="popUp" />
+  <event-pop-up v-if="popUp" v-model:popUp="popUp" />
   <!-- なんで 1004 なんですか… -->
 </template>
