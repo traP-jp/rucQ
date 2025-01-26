@@ -4,6 +4,16 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      name: 'Root',
+      component: () => import('@/views/RootView.vue'),
+    },
+    {
+      path: '/camps',
+      name: 'Camps',
+      component: () => import('@/views/CampSelectView.vue'),
+    },
+    {
       path: '/:campname',
       children: [
         {
