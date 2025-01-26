@@ -1,14 +1,4 @@
-<script setup lang="ts">
-import { onMounted } from 'vue'
-import { newEvent } from '@/api/handler'
-import { events } from '@/lib/sample-data'
-
-onMounted(() => {
-  for (const event of events) {
-    newEvent(event)
-  }
-})
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div :class="$style.container">
