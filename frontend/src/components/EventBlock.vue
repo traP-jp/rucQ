@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import type { EventBlock } from '@/lib/event-layout'
+import type { DurationBlock } from '@/lib/event-layout'
 
 const props = defineProps<{
-  event: EventBlock
+  event: DurationBlock
 }>()
+const popUp = defineModel<CampEvent | undefined>('popUp')
 </script>
 
 <template>
-  <div :class="$style.container">
-    <div :class="$style.content" :style="`background-color: #${event.Color}`">
-      <h3 style="font-weight: 700">{{ props.event.Title }}</h3>
-      <h5 style="font-weight: 500">{{ props.event.Place }}</h5>
+  <button :class="$style.container" @click="popUp = event">
+    <div :class="$style.content" :style="`background-color: #${event.display_color}`">
+      <h3 style="font-weight: 700">{{ props.event.name }}</h3>
+      <h5 style="font-weight: 500">{{ props.event.location }}</h5>
     </div>
-  </div>
+  </button>
 </template>
 
 <style module>

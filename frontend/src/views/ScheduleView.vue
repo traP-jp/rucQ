@@ -5,16 +5,18 @@ import { useDisplay } from 'vuetify'
 const { xs } = useDisplay()
 import { getTimeStringNoPad, getDayString } from '@/lib/date'
 import { getLayout, epoch, type BlockGroup } from '@/lib/event-layout'
-import { events, plans } from '@/lib/sample-data'
+import { events } from '@/lib/sample-data'
 import EventBlock from '@/components/EventBlock.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
+
+const popUp = defineModel<CampEvent | undefined>('popUp')
 
 onMounted(() => {
   days.value = []
   const dayStrings: string[] = []
-  for (const group of getLayout(events, plans)) {
+  for (const group of getLayout(events)) {
     const date = new Date(group.TimeTable[0].Time)
     const index = dayStrings.indexOf(getDayString(date))
     if (index === -1) {
@@ -27,10 +29,18 @@ onMounted(() => {
 })
 
 const onlyPlans = (group: BlockGroup) => {
-  return group.Events.filter((event) => event.Column === 0).length === 0
+  return group.Durations.filter((duration) => duration.Column === 0).length === 0
   // 1 行目に表示されるイベントが存在しないか、そもそもイベントが存在しない場合 true が返る
   // true の場合はプランの横幅を可変にし、最大長をもとの長さにする
 }
+
+watch(
+  () => popUp.value,
+  () => {
+    console.log(popUp.value)
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -73,31 +83,36 @@ const onlyPlans = (group: BlockGroup) => {
           :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 2} / ${(timehead.Line - group.Start) * 2 + 3}; grid-column: 2 / 100;`"
         >
           <hr
-            v-if="!group.Plans.map((p) => epoch(p.At)).includes(timehead.Time)"
+            v-if="!group.Moments.map((p) => epoch(p.time_start)).includes(timehead.Time)"
             style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
           />
         </div>
         <div
-          v-for="plan in group.Plans"
-          :key="plan.ID"
+          v-for="moment in group.Moments"
+          :key="moment.id"
           :class="$style.plan"
-          :style="`grid-row: ${(plan.Row - group.Start) * 2 + 1} / ${(plan.Row - group.Start) * 2 + 2}; grid-column: 2;`"
+          :style="`grid-row: ${(moment.Row - group.Start) * 2 + 1} / ${(moment.Row - group.Start) * 2 + 2}; grid-column: 2;`"
         >
-          <h5 style="font-weight: 500">{{ plan.Text }}</h5>
+          <h5 style="font-weight: 500">{{ moment.name }}</h5>
         </div>
         <EventBlock
-          v-for="event in group.Events"
-          :key="event.ID"
-          :event="event"
-          :style="`grid-row: ${(event.Start - group.Start) * 2 + 2} / ${(event.End - group.Start) * 2 + 1}; grid-column: ${event.Column + 2}`"
+          v-for="duration in group.Durations"
+          :key="duration.id"
+          :event="duration"
+          :style="`grid-row: ${(duration.Start - group.Start) * 2 + 2} / ${(duration.End - group.Start) * 2 + 1}; grid-column: ${duration.Column + 2}`"
+          v-model:popUp="popUp"
         />
       </div>
     </div>
+    <!-- <EventPopUp v-if="popUp !== 0" v-model:popUp="popUp" /> -->
   </div>
 </template>
 
 <style module>
 .container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
   margin: auto;
   padding: 20px 10px;
   max-width: 600px;

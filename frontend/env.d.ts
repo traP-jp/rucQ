@@ -27,7 +27,7 @@ type EventParams = {
   display_color: string
 }
 
-type Event = {
+type CampEvent = {
   id: number
   name: string
   description: string

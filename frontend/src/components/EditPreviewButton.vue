@@ -13,7 +13,6 @@ const isPreview = defineModel<boolean>('isPreview')
 
 <style module>
 .icon {
-  font-size: 30px;
-  color: var(--color-theme);
+  font-size: 24px;
 }
 </style>
