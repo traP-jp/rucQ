@@ -10,6 +10,17 @@ const { xs } = useDisplay()
 
 const questionGroups = ref<QuestionGroup[]>([])
 
+// import createClient from 'openapi-fetch'
+// import type { paths } from '@/api/schema'
+
+// const client = createClient<paths>({ baseUrl: 'https://rucq.trap.show/api' })
+
+// const { data, error } = await client.GET('/api/me')
+// const traqId = data!.traq_id
+// const iconUrl = `https://q.trap.jp/api/v3/public/icon/${traqId}`
+
+
+
 onMounted(async () => {
   try {
     const response = await getQuestionGroups()
@@ -24,7 +35,13 @@ onMounted(async () => {
 <template>
   <mobile-header v-if="xs" title="User Information" />
   <v-container class="d-flex flex-column ga-4">
-    <!-- <room-information-panel /> -->
+    <!-- <div class="d-flex justify-center align-center">
+      <v-avatar v-for="i in 5" :key="i" :size="32">
+        <v-img :src="iconUrl" />
+      </v-avatar>
+      {{ traqId }}
+    </div>
+    <room-information-panel /> -->
     <payment-information-panel />
     <information-group-item
       v-for="questionGroup in questionGroups"
