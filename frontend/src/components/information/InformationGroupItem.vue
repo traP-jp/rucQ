@@ -78,7 +78,7 @@ const submit = async () => {
         <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-        <v-btn v-if="editMode" icon variant="plain" size="small" @click="cancel">
+        <v-btn v-else icon variant="plain" size="small" @click="cancel">
           <v-icon>mdi-file-undo</v-icon>
         </v-btn>
       </div>
