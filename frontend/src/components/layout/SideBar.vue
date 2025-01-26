@@ -28,16 +28,15 @@ import { ref, computed, watch } from 'vue'
 const router = useRouter()
 const route = useRoute()
 
-
 // ナビゲーション関数の簡略化
 const navigateTo = (path: string) => {
   const segments = route.path.split('/')
   value.value = path
-  if(path === 'guidebook') {
+  if (path === 'guidebook') {
     router.push(`/${segments[1]}/`)
   } else {
     router.push(`/${segments[1]}/${path}`)
-  } 
+  }
 }
 
 // ナビゲーションバインディング
@@ -51,7 +50,12 @@ const navItems = [
     icon: 'mdi-book-open-blank-variant-outline',
   },
   { value: 'schedule', title: 'スケジュール', iconActive: 'mdi-clock', icon: 'mdi-clock-outline' },
-  { value: 'personal-notes', title: 'ノート', iconActive: 'mdi-book-edit', icon: 'mdi-book-edit-outline' },
+  {
+    value: 'personal-notes',
+    title: 'ノート',
+    iconActive: 'mdi-book-edit',
+    icon: 'mdi-book-edit-outline',
+  },
   { value: 'chat', title: 'チャット', iconActive: 'mdi-chat', icon: 'mdi-chat-outline' },
   { value: 'info', title: '情報', iconActive: 'mdi-information', icon: 'mdi-information-outline' },
   {

@@ -1,5 +1,9 @@
 <script setup lang="ts">
-type QuestionItem = Question & { content: string | string[]; displayContent: string }
+type QuestionItem = Question & {
+  content: string | string[]
+  contentNew: string | string[]
+  displayContent: string
+}
 
 const props = defineProps<{
   questionItem: QuestionItem

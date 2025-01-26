@@ -10,6 +10,4 @@ const { xs } = useDisplay()
   <h1>今後開発予定！！！！！！！</h1>
 </template>
 
-<style>
-
-</style>
+<style></style>

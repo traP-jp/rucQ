@@ -24,7 +24,7 @@ onMounted(async () => {
   try {
     const response = await getCamps(1)
     console.log('API response:', response)
-    
+
     if (response && typeof response.description === 'string') {
       markdown.value = response.description
     } else {

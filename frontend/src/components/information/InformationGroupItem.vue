@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getAnswer, editAnswer } from '@/api/handler'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 
-type QuestionItem = Question & { content: string | string[]; displayContent: string }
+type QuestionItem = Question & {
+  content: string | string[]
+  contentNew: string | string[]
+  displayContent: string
+}
 const headers = [
   { text: 'label', value: 'title' },
   { text: 'answer', value: 'displayContent' },
@@ -12,43 +17,57 @@ const props = defineProps<{
   questionGroup: QuestionGroup
   staff?: boolean
 }>()
-const answers: QuestionAnswer[] = [
-  {
-    id: 353,
-    question_id: 244,
-    user_traq_id: 'ogu_kazemiya',
-    content: 'する',
-  },
-  {
-    id: 354,
-    question_id: 245,
-    user_traq_id: 'ogu_kazemiya',
-    content: '998244353',
-  },
-  {
-    id: 355,
-    question_id: 246,
-    user_traq_id: 'ogu_kazemiya',
-    content: 'まんじゅう',
-  },
-]
+const answers = ref<QuestionAnswer[]>([])
+
+const date = new Date(props.questionGroup.due)
+
+const editMode = ref(false)
+const isValid = computed(() => true)
 
 const questionItems = ref<QuestionItem[]>(
   props.questionGroup.questions.map((question) => {
-    const answer = answers.find((answer) => answer.question_id === question.id)
+    const answer = answers.value.find((answer) => answer.question_id === question.id)
     const content = answer?.content ?? (question.type === 'multiple' ? [] : '')
     const display = Array.isArray(content) ? content.join(', ') : content
     return {
       ...question,
       content: content,
+      contentNew: content,
       displayContent: display,
     } as QuestionItem
-  }),
+  })
 )
 
-const editMode = ref(false)
+onMounted(async () => {
+  for (const questionItem of questionItems.value) {
+    try {
+      const response = await getAnswer(questionItem.id)
+      console.log('API response:', response)
+      answers.value.push(response)
+    } catch (error) {
+      console.error('Failed to fetch question answer:', error)
+    }
+  }
+})
 
-const isValid = computed(() => true)
+const cancel = () => {
+  questionItems.value.forEach((questionItem) => {
+    questionItem.contentNew = questionItem.content
+  })
+  editMode.value = false
+}
+
+const submit = async () => {
+  for (const questionItem of questionItems.value) {
+    try {
+      const response = await editAnswer(questionItem.id, questionItem.contentNew)
+      console.log('API response:', response)
+    } catch (error) {
+      console.error('Failed to edit question answer:', error)
+    }
+  }
+  editMode.value = false
+}
 </script>
 
 <template>
@@ -59,8 +78,11 @@ const isValid = computed(() => true)
         <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
+        <v-btn v-if="!editMode" icon variant="plain" size="small" @click="cancel">
+          <v-icon>mdi-file-undo</v-icon>
+        </v-btn>
       </div>
-      <v-card-subtitle>{{ questionGroup.due }}まで</v-card-subtitle>
+      <v-card-subtitle>{{ (date.getMonth() + 1) }}/{{ date.getDate() }}まで {{ questionGroup.description }}</v-card-subtitle>
     </div>
 
     <v-data-table
@@ -78,9 +100,9 @@ const isValid = computed(() => true)
         v-for="questionItem in questionItems"
         :key="questionItem.id"
         :question-item="questionItem"
-        v-model="questionItem.content"
+        v-model="questionItem.contentNew"
       />
-      <v-btn :disabled="!isValid" type="submit">保存</v-btn>
+      <v-btn :disabled="!isValid" type="submit" @click="submit">保存</v-btn>
     </v-form>
   </v-card>
 </template>
