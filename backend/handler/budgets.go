@@ -34,3 +34,15 @@ func (s *Server) GetMyBudget(e echo.Context, params GetMyBudgetParams) error {
 
 	return e.JSON(http.StatusOK, res)
 }
+
+func (s *Server) GetUserBudget(e echo.Context, traqId TraqId, params GetUserBudgetParams) error {
+	return nil
+}
+
+func (s *Server) PostUserBudget(e echo.Context, traqId TraqId, params PostUserBudgetParams) error {
+	return nil
+}
+
+func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudgetParams) error {
+	return nil
+}

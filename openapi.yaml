@@ -556,6 +556,86 @@ paths:
                 $ref: "#/components/schemas/Budget"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /api/users/{traq_id}/budgets:
+    get:
+      summary: ユーザーの予算を取得
+      tags:
+        - Budgets
+      operationId: getUserBudget
+      parameters:
+        - $ref: "#/components/parameters/TraqId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: ユーザーの予算を設定
+      tags:
+        - Budgets
+      operationId: postUserBudget
+      parameters:
+        - $ref: "#/components/parameters/TraqId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBudgetRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: ユーザーの予算を更新
+      tags:
+        - Budgets
+      operationId: putUserBudget
+      parameters:
+        - $ref: "#/components/parameters/TraqId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBudgetRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -623,6 +703,13 @@ components:
       name: X-Forwarded-User
       in: header
       description: ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+      schema:
+        type: string
+    TraqId:
+      name: traq_id
+      in: path
+      description: traQ ID
+      required: true
       schema:
         type: string
     CampId:
@@ -1000,6 +1087,16 @@ components:
           nullable: true
       required:
         - id
+        - camp_id
+    PostBudgetRequest:
+      type: object
+      properties:
+        camp_id:
+          type: integer
+        amount:
+          type: integer
+          nullable: true
+      required:
         - camp_id
     PostStaffRequest:
       type: object
