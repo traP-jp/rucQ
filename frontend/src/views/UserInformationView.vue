@@ -33,7 +33,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="User Information" />
+  <mobile-header v-if="xs" title="ユーザー情報" />
   <v-container class="d-flex flex-column ga-4">
     <!-- <div class="d-flex justify-center align-center">
       <v-avatar v-for="i in 5" :key="i" :size="32">

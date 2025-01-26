@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.header">User Data</div>
+  <mobile-header v-if="xs" title="ユーザー情報閲覧" />
 
   <div :class="$style.allAnketo">
     <div :class="$style.anketoTitle">項目一覧</div>
@@ -119,8 +119,13 @@
 </template>
 
 <script setup lang="ts">
+import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
+
+const { xs } = useDisplay()
+const headerTitle = 'ユーザー情報閲覧'
 
 const router = useRouter()
 const dialog = ref(false)
