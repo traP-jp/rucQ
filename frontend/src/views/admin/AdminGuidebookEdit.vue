@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { marked } from 'marked'
+import { marked, Marked } from 'marked'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
@@ -13,6 +13,9 @@ import splitIcon from '@/assets/splitIcon.svg'
 import splitIconActive from '@/assets/splitIconActive.svg'
 import eyeIcon from '@/assets/eyeIcon.svg'
 import eyeIconActive from '@/assets/eyeIconActive.svg'
+import { editCamp, getCamps } from '@/api/handler'
+import { markedHighlight } from 'marked-highlight'
+import hljs from 'highlight.js'
 
 const markdown = ref(`# 2024年度 夏合宿
 
@@ -43,41 +46,74 @@ const handleInputChange = () => {
   isSaved.value = false
 }
 
-// ルート離脱時に自動保存 するかは未定
-onBeforeRouteLeave((to, from, next) => {
-  if (!isSaved.value) {
-    saveMarkdown()
-    next()
-  } else {
-    next()
-  }
+// // ルート離脱時に自動保存 するかは未定
+// onBeforeRouteLeave((to, from, next) => {
+//   if (!isSaved.value) {
+//     saveMarkdown()
+//     next()
+//   } else {
+//     next()
+//   }
+// })
+
+// // ウィンドウのリロードやタブを閉じる際に自動保存 するかは未定
+// const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+//   if (!isSaved.value) {
+//     saveMarkdown()
+//     // 一部のブラウザでは以下の設定が必要　by gpt
+//     event.preventDefault()
+//     event.returnValue = ''
+//   }
+// }
+
+marked.setOptions({
+  gfm: true, // GitHub Flavored Markdown を有効にする
+  breaks: true, // 改行を有効にする（純正Markdownでは1段の改行がスペースに変換される決まりだが、それでは困るので）
 })
 
-// ウィンドウのリロードやタブを閉じる際に自動保存 するかは未定
-const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-  if (!isSaved.value) {
-    saveMarkdown()
-    // 一部のブラウザでは以下の設定が必要　by gpt
-    event.preventDefault()
-    event.returnValue = ''
-  }
-}
+marked.use(
+  markedHighlight({
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      if (typeof lang === 'string' && lang.includes(':')) {
+        lang = lang.substring(0, lang.indexOf(':'))
+      }
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+      return hljs.highlight(code, { language }).value
+    },
+  }),
+)
 
-onMounted(() => {
+onMounted(async () => {
   handleResize()
   window.addEventListener('resize', handleResize)
-  window.addEventListener('beforeunload', handleBeforeUnload)
-})
 
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', handleBeforeUnload)
+  try {
+    const response = await getCamps(1)
+    console.log('API response:', response)
+
+    if (response && typeof response.description === 'string') {
+      markdown.value = response.description
+    } else {
+      console.error('Invalid response format:', response)
+    }
+  } catch (error) {
+    console.error('Failed to fetch camps:', error)
+  }
 })
 
 // ダミー保存関数　後でバックエンドと連携する
-const saveMarkdown = () => {
-  alert('保存しました！（バックエンド連携予定）')
+const saveMarkdown = async () => {
+  alert('保存しました')
   isSaved.value = true
-  // navigator.sendBeacon　これを使うとアンロードされるときにリクエストの中断を避けれそう,少し問題もありそう
+  const res = await editCamp(1, {
+    display_id: '24spring',
+    description: markdown.value,
+    name: '2024年度 春合宿',
+    is_draft: false,
+  })
+
+  console.log('API response:', res)
 }
 
 function showEditOnly() {
@@ -92,7 +128,18 @@ function showPreviewOnly() {
 
 // 保存関数（blurイベント用）　カーソルが離れたら保存する
 const saveMarkdownAsync = async () => {
-  isSaved.value = true // あとで書く
+  try {
+    const res = await editCamp(1, {
+      display_id: '24spring',
+      description: markdown.value,
+      name: '2024年度 春合宿', // この辺は後で決める
+      is_draft: false,
+    })
+    isSaved.value = true // 保存に成功した場合
+  } catch (error) {
+    console.error('保存に失敗しました:', error)
+    isSaved.value = false // 保存に失敗した場合
+  }
 }
 
 // blurイベントハンドラー
