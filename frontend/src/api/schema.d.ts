@@ -252,6 +252,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/users/{traq_id}/answers/{question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** ユーザーの回答を取得 */
+        get: operations["getUserAnswer"];
+        /** 回答を更新 */
+        put: operations["putUserAnswer"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/budgets": {
         parameters: {
             query?: never;
@@ -1127,6 +1145,73 @@ export interface operations {
                 "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
             };
             path: {
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getUserAnswer: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description traQ ID */
+                traq_id: components["parameters"]["TraqId"];
+                /** @description 質問ID */
+                question_id: components["parameters"]["QuestionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Answer"];
+                };
+            };
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    putUserAnswer: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description traQ ID */
+                traq_id: components["parameters"]["TraqId"];
                 /** @description 質問ID */
                 question_id: components["parameters"]["QuestionId"];
             };
