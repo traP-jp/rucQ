@@ -15,7 +15,6 @@ type CampParams = {
   description: string
 }
 
-
 type EventParams = {
   name: string
   description: string
@@ -85,7 +84,7 @@ type QuestionGroup = {
   questions: Question[]
 }
 
-type QuestionAnswer =  {
+type QuestionAnswer = {
   id: number
   question_id: number
   user_traq_id: string

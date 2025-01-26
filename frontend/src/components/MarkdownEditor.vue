@@ -63,10 +63,9 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   padding: 10px;
-  display: flex;
-  align-items: flex-start;
-  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   background: var(--color-theme-pale);
+  display: flex;
+  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   font-weight: 400;
 }
 
@@ -74,7 +73,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   resize: none;
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
   border-left: 1px dashed var(--color-theme);
   padding-left: 4px;
 }

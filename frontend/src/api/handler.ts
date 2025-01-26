@@ -16,7 +16,7 @@ export const fetchApi = async (
     body: JSON.stringify(option?.body),
   }
   const res = await fetch(`http://localhost:8080/api${path}`, request)
-  if (res.status === 200) {
+  if (res.status === 200 && method === 'GET') {
     // HTTP ステータスコード。200 は OK, 404 は Not Found の意味
     return await res.json()
   } else {
@@ -141,4 +141,52 @@ export const newStaff = async (traq_id: string) => {
 
 export const deleteStaff = async (traq_id: string) => {
   return fetchApi('DELETE', `/staffs`, { body: { traq_id: traq_id } })
+}
+
+export const makeCampParams = (camp: Camp): CampParams => {
+  return {
+    display_id: camp.display_id,
+    name: camp.name,
+    is_draft: camp.is_draft,
+    description: camp.description,
+  }
+}
+
+export const makeEventParams = (event: CampEvent): EventParams => {
+  return {
+    name: event.name,
+    description: event.description,
+    location: event.location,
+    time_start: event.time_start,
+    time_end: event.time_end,
+    camp_id: event.camp_id,
+    create_as_staff: event.by_staff,
+    display_color: event.display_color,
+  }
+}
+
+export const makeOptionParams = (option: Option): OptionParams => {
+  return {
+    question_id: option.question_id,
+    content: option.content,
+  }
+}
+
+export const makeQuestionParams = (question: Question): QuestionParams => {
+  return {
+    question_group_id: question.question_group_id,
+    title: question.title,
+    description: question.description,
+    type: question.type,
+    is_public: question.is_public,
+    is_open: question.is_open,
+  }
+}
+
+export const makeQuestionGroupParams = (group: QuestionGroup): QuestionGroupParams => {
+  return {
+    name: group.name,
+    description: group.description,
+    due: group.due,
+  }
 }

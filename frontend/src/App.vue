@@ -7,7 +7,6 @@ import EventPopUp from './components/EventPopUp.vue'
 
 import { ref } from 'vue'
 const popUp = ref<CampEvent | undefined>(undefined)
-
 const { xs } = useDisplay()
 </script>
 
