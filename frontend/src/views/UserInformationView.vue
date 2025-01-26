@@ -24,7 +24,7 @@ onMounted(async () => {
 <template>
   <mobile-header v-if="xs" title="User Information" />
   <v-container class="d-flex flex-column ga-4">
-    <room-information-panel />
+    <!-- <room-information-panel /> -->
     <payment-information-panel />
     <information-group-item
       v-for="questionGroup in questionGroups"
