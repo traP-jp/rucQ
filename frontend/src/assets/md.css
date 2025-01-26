@@ -2,21 +2,27 @@
   color: var(--color-secondary);
   margin-bottom: 24px;
   border-bottom: 1px solid #f7ae5a;
-  padding-bottom: 8px;
+  padding-top: 0.5em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
 
 .markdown h2 {
   color: #092c57;
   border-bottom: 1px solid #f7ae5a;
-  margin-top: 24px;
   margin-bottom: 16px;
+  padding-top: 0.5em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
 .markdown h3 {
   color: #092c57;
   line-height: 1;
   font-size: 1.1rem;
-  margin-top: 24px;
-  margin-bottom: 14px;
+  margin-bottom: 5px;
+  padding-top: 0.5em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
 
 .markdown ul,
