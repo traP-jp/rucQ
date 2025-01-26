@@ -7,6 +7,9 @@ const { xs } = useDisplay()
 
 <template>
   <mobile-header v-if="xs" title="Chat" />
+  <h1>今後開発予定！！！！！！！</h1>
 </template>
 
-<style module></style>
+<style>
+
+</style>

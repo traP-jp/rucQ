@@ -16,3 +16,7 @@ func (r *Repository) GetBudgetByUserID(userID uint) (*model.Budget, error) {
 
 	return &budget, nil
 }
+
+func (r *Repository) UpdateBudget(budget *model.Budget) error {
+	return r.db.Save(budget).Error
+}

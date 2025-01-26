@@ -50,9 +50,10 @@ type Answer_Content struct {
 
 // Budget defines model for Budget.
 type Budget struct {
-	Amount *int `json:"amount"`
-	CampId int  `json:"camp_id"`
-	Id     int  `json:"id"`
+	Amount     *int `json:"amount"`
+	AmountPaid int  `json:"amount_paid"`
+	CampId     int  `json:"camp_id"`
+	Id         int  `json:"id"`
 }
 
 // Camp defines model for Camp.
@@ -69,13 +70,13 @@ type Event struct {
 	ByStaff         bool      `json:"by_staff"`
 	CampId          int       `json:"camp_id"`
 	Description     string    `json:"description"`
+	DisplayColor    string    `json:"display_color"`
 	Id              int       `json:"id"`
 	Location        string    `json:"location"`
 	Name            string    `json:"name"`
 	OrganizerTraqId string    `json:"organizer_traq_id"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
-	DisplayColor    string    `json:"display_color"`
 }
 
 // Option defines model for Option.
@@ -83,6 +84,13 @@ type Option struct {
 	Content    string `json:"content"`
 	Id         int    `json:"id"`
 	QuestionId int    `json:"question_id"`
+}
+
+// PostBudgetRequest defines model for PostBudgetRequest.
+type PostBudgetRequest struct {
+	Amount     *int `json:"amount"`
+	AmountPaid int  `json:"amount_paid"`
+	CampId     int  `json:"camp_id"`
 }
 
 // PostCampRequest defines model for PostCampRequest.
@@ -98,11 +106,11 @@ type PostEventRequest struct {
 	CampId        int       `json:"camp_id"`
 	CreateAsStaff bool      `json:"create_as_staff"`
 	Description   string    `json:"description"`
+	DisplayColor  string    `json:"display_color"`
 	Location      string    `json:"location"`
 	Name          string    `json:"name"`
 	TimeEnd       time.Time `json:"time_end"`
 	TimeStart     time.Time `json:"time_start"`
-	DisplayColor  string    `json:"display_color"`
 }
 
 // PostOptionRequest defines model for PostOptionRequest.
@@ -198,6 +206,9 @@ type QuestionId = int
 
 // StaffId defines model for StaffId.
 type StaffId = string
+
+// TraqId defines model for TraqId.
+type TraqId = string
 
 // XForwardedUser defines model for X-Forwarded-User.
 type XForwardedUser = string
@@ -338,6 +349,36 @@ type PostStaffParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// GetUserAnswerParams defines parameters for GetUserAnswer.
+type GetUserAnswerParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// PutUserAnswerParams defines parameters for PutUserAnswer.
+type PutUserAnswerParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// GetUserBudgetParams defines parameters for GetUserBudget.
+type GetUserBudgetParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// PostUserBudgetParams defines parameters for PostUserBudget.
+type PostUserBudgetParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// PutUserBudgetParams defines parameters for PutUserBudget.
+type PutUserBudgetParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // PostCampJSONRequestBody defines body for PostCamp for application/json ContentType.
 type PostCampJSONRequestBody = PostCampRequest
 
@@ -370,6 +411,15 @@ type PutQuestionJSONRequestBody = PostQuestionRequest
 
 // PostStaffJSONRequestBody defines body for PostStaff for application/json ContentType.
 type PostStaffJSONRequestBody = PostStaffRequest
+
+// PutUserAnswerJSONRequestBody defines body for PutUserAnswer for application/json ContentType.
+type PutUserAnswerJSONRequestBody = PutAnswerRequest
+
+// PostUserBudgetJSONRequestBody defines body for PostUserBudget for application/json ContentType.
+type PostUserBudgetJSONRequestBody = PostBudgetRequest
+
+// PutUserBudgetJSONRequestBody defines body for PutUserBudget for application/json ContentType.
+type PutUserBudgetJSONRequestBody = PostBudgetRequest
 
 // AsAnswerContent0 returns the union data inside the Answer_Content as a AnswerContent0
 func (t Answer_Content) AsAnswerContent0() (AnswerContent0, error) {
@@ -581,6 +631,21 @@ type ServerInterface interface {
 	// 合宿係を追加
 	// (POST /api/staffs)
 	PostStaff(ctx echo.Context, params PostStaffParams) error
+	// ユーザーの回答を取得
+	// (GET /api/users/{traq_id}/answers/{question_id})
+	GetUserAnswer(ctx echo.Context, traqId TraqId, questionId QuestionId, params GetUserAnswerParams) error
+	// 回答を更新
+	// (PUT /api/users/{traq_id}/answers/{question_id})
+	PutUserAnswer(ctx echo.Context, traqId TraqId, questionId QuestionId, params PutUserAnswerParams) error
+	// ユーザーの予算を取得
+	// (GET /api/users/{traq_id}/budgets)
+	GetUserBudget(ctx echo.Context, traqId TraqId, params GetUserBudgetParams) error
+	// ユーザーの予算を設定
+	// (POST /api/users/{traq_id}/budgets)
+	PostUserBudget(ctx echo.Context, traqId TraqId, params PostUserBudgetParams) error
+	// ユーザーの予算を更新
+	// (PUT /api/users/{traq_id}/budgets)
+	PutUserBudget(ctx echo.Context, traqId TraqId, params PutUserBudgetParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -1297,6 +1362,202 @@ func (w *ServerInterfaceWrapper) PostStaff(ctx echo.Context) error {
 	return err
 }
 
+// GetUserAnswer converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUserAnswer(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "traq_id" -------------
+	var traqId TraqId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "traq_id", ctx.Param("traq_id"), &traqId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter traq_id: %s", err))
+	}
+
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetUserAnswerParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetUserAnswer(ctx, traqId, questionId, params)
+	return err
+}
+
+// PutUserAnswer converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUserAnswer(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "traq_id" -------------
+	var traqId TraqId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "traq_id", ctx.Param("traq_id"), &traqId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter traq_id: %s", err))
+	}
+
+	// ------------- Path parameter "question_id" -------------
+	var questionId QuestionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_id", ctx.Param("question_id"), &questionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutUserAnswerParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PutUserAnswer(ctx, traqId, questionId, params)
+	return err
+}
+
+// GetUserBudget converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUserBudget(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "traq_id" -------------
+	var traqId TraqId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "traq_id", ctx.Param("traq_id"), &traqId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter traq_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetUserBudgetParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetUserBudget(ctx, traqId, params)
+	return err
+}
+
+// PostUserBudget converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUserBudget(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "traq_id" -------------
+	var traqId TraqId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "traq_id", ctx.Param("traq_id"), &traqId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter traq_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostUserBudgetParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostUserBudget(ctx, traqId, params)
+	return err
+}
+
+// PutUserBudget converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUserBudget(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "traq_id" -------------
+	var traqId TraqId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "traq_id", ctx.Param("traq_id"), &traqId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter traq_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutUserBudgetParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PutUserBudget(ctx, traqId, params)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -1353,5 +1614,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/staffs", wrapper.DeleteStaff)
 	router.GET(baseURL+"/api/staffs", wrapper.GetStaffs)
 	router.POST(baseURL+"/api/staffs", wrapper.PostStaff)
+	router.GET(baseURL+"/api/users/:traq_id/answers/:question_id", wrapper.GetUserAnswer)
+	router.PUT(baseURL+"/api/users/:traq_id/answers/:question_id", wrapper.PutUserAnswer)
+	router.GET(baseURL+"/api/users/:traq_id/budgets", wrapper.GetUserBudget)
+	router.POST(baseURL+"/api/users/:traq_id/budgets", wrapper.PostUserBudget)
+	router.PUT(baseURL+"/api/users/:traq_id/budgets", wrapper.PutUserBudget)
 
 }
