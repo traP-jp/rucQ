@@ -50,9 +50,10 @@ type Answer_Content struct {
 
 // Budget defines model for Budget.
 type Budget struct {
-	Amount *int `json:"amount"`
-	CampId int  `json:"camp_id"`
-	Id     int  `json:"id"`
+	Amount     *int `json:"amount"`
+	AmountPaid int  `json:"amount_paid"`
+	CampId     int  `json:"camp_id"`
+	Id         int  `json:"id"`
 }
 
 // Camp defines model for Camp.
@@ -87,8 +88,9 @@ type Option struct {
 
 // PostBudgetRequest defines model for PostBudgetRequest.
 type PostBudgetRequest struct {
-	Amount *int `json:"amount"`
-	CampId int  `json:"camp_id"`
+	Amount     *int `json:"amount"`
+	AmountPaid int  `json:"amount_paid"`
+	CampId     int  `json:"camp_id"`
 }
 
 // PostCampRequest defines model for PostCampRequest.

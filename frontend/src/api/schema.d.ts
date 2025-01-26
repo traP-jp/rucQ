@@ -412,10 +412,12 @@ export interface components {
             id: number;
             camp_id: number;
             amount?: number | null;
+            amount_paid: number;
         };
         PostBudgetRequest: {
             camp_id: number;
             amount?: number | null;
+            amount_paid: number;
         };
         PostStaffRequest: {
             traq_id: string;

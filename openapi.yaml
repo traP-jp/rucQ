@@ -1085,9 +1085,12 @@ components:
         amount:
           type: integer
           nullable: true
+        amount_paid:
+          type: integer
       required:
         - id
         - camp_id
+        - amount_paid
     PostBudgetRequest:
       type: object
       properties:
@@ -1096,8 +1099,11 @@ components:
         amount:
           type: integer
           nullable: true
+        amount_paid:
+          type: integer
       required:
         - camp_id
+        - amount_paid
     PostStaffRequest:
       type: object
       properties:
