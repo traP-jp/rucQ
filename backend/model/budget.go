@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 type Budget struct {
 	gorm.Model
-	UserID uint
-	CampID uint
-	Amount *uint
+	UserID     uint
+	CampID     uint
+	Amount     *uint
+	AmountPaid uint
 }
