@@ -1,60 +1,28 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { getQuestionGroups } from '@/api/handler'
+import { useDisplay } from 'vuetify'
+import MobileHeader from '@/components/layout/MobileHeader.vue'
 import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
+const { xs } = useDisplay()
 
-const questionGroups: QuestionGroup[] = [
-  {
-    id: 998,
-    name: '基本情報',
-    description: 'ここに説明を追加',
-    due: '12/27',
-    questions: [
-      {
-        id: 244,
-        question_group_id: 998,
-        title: 'スキー',
-        description: 'する場合はレンタル調査にも回答してください',
-        type: 'single',
-        is_public: true,
-        is_open: true,
-        options: [
-          {
-            id: 353,
-            question_id: 244,
-            content: 'する',
-          },
-          {
-            id: 354,
-            question_id: 244,
-            content: 'しない',
-          },
-        ],
-      },
-      {
-        id: 245,
-        question_group_id: 998,
-        title: '身長',
-        description: '1cmきざみ',
-        type: 'free_number',
-        is_public: false,
-        is_open: false,
-      },
-      {
-        id: 246,
-        question_group_id: 998,
-        title: 'アレルギー',
-        description: '食物アレルギー等',
-        type: 'free_text',
-        is_public: false,
-        is_open: true,
-      },
-    ],
-  },
-]
+const questionGroups = ref<QuestionGroup[]>([])
+
+onMounted(async () => {
+  try {
+    const response = await getQuestionGroups()
+    console.log('API response:', response)
+    questionGroups.value = response
+  } catch (error) {
+    console.error('Failed to fetch question groups:', error)
+  }
+})
 </script>
 
 <template>
+  <mobile-header v-if="xs" title="User Information" />
   <v-container class="d-flex flex-column ga-4">
     <room-information-panel />
     <payment-information-panel />

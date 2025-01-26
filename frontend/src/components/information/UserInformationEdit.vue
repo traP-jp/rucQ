@@ -1,9 +1,17 @@
 <script setup lang="ts">
-type QuestionItem = Question & { content: string | string[]; displayContent: string }
+type QuestionItem = Question & {
+  content: string | string[]
+  contentNew: string | string[]
+  displayContent: string
+}
 
-const props = defineProps<{ questionItem: QuestionItem }>()
+const props = defineProps<{
+  questionItem: QuestionItem
+  staff?: boolean
+}>()
 const answer = defineModel<string | string[]>()
 
+const disabled = props.staff || !props.questionItem.is_open
 const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
 const selectionItems = props.questionItem.options?.map((option) => option.content) ?? []
 </script>
@@ -12,7 +20,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
   <v-text-field
     v-if="questionItem.type === 'free_text'"
     v-model="answer"
-    :disabled="!questionItem.is_open"
+    :disabled="disabled"
     :label="questionItem.title"
     :hint="hint"
     persistent-hint
@@ -21,7 +29,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
   <v-text-field
     v-if="questionItem.type === 'free_number'"
     v-model="answer"
-    :disabled="!questionItem.is_open"
+    :disabled="disabled"
     :label="questionItem.title"
     :hint="hint"
     persistent-hint
@@ -30,7 +38,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
   <v-select
     v-if="questionItem.type === 'single'"
     v-model="answer as string"
-    :disabled="!questionItem.is_open"
+    :disabled="disabled"
     :label="questionItem.title"
     :items="selectionItems"
     :hint="hint"
@@ -40,7 +48,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
   <v-select
     v-if="questionItem.type === 'multiple'"
     v-model="answer as string[]"
-    :disabled="!questionItem.is_open"
+    :disabled="disabled"
     :label="questionItem.title"
     :items="selectionItems"
     :hint="hint"

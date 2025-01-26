@@ -7,7 +7,7 @@ export const fetchApi = async (
   method: HttpMethod,
   path: string,
   option?: {
-    body?: Record<string, string | number | boolean>
+    body?: Record<string, string | string[] | number | boolean>
   },
 ) => {
   const request: RequestInit = {
@@ -119,7 +119,7 @@ export const getAnswer = async (question_id: number) => {
   return fetchApi('GET', `/me/answers/${question_id}`)
 }
 
-export const editAnswer = async (question_id: number, content: string) => {
+export const editAnswer = async (question_id: number, content: string | string[]) => {
   return fetchApi('PUT', `/me/answers/${question_id}`, { body: { content: content } })
 }
 

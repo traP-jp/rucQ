@@ -1,6 +1,11 @@
 <template>
   <v-bottom-navigation color="primary" mandatory grow v-model="value">
-    <v-btn v-for="item in navItems" :key="item.value" @click="navigateTo(item.value)" :value=item.value>
+    <v-btn
+      v-for="item in navItems"
+      :key="item.value"
+      @click="navigateTo(item.value)"
+      :value="item.value"
+    >
       <v-icon size="24">{{ value === item.value ? item.iconActive : item.icon }}</v-icon>
     </v-btn>
   </v-bottom-navigation>
