@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, onMounted, ref } from 'vue'
+import { watch, onMounted, onBeforeUnmount, ref } from 'vue'
 const text = defineModel<string>('text')
 const lineCount = ref<number>(1)
 const lineHeights = ref<Record<number, number>>({})
@@ -18,7 +18,9 @@ const updateLine = () => {
     div.style.position = 'absolute'
     div.style.whiteSpace = 'pre-wrap'
     div.style.overflowWrap = 'break-word'
-    div.style.width = `${editor.value!.offsetWidth}px`
+    div.style.width = `${editor.value!.offsetWidth - 8}px`
+    // div.style.borderLeft = '1px dashed black'
+    div.style.paddingLeft = '1px'
     div.style.fontFamily = getComputedStyle(editor.value!).fontFamily
     div.style.fontSize = getComputedStyle(editor.value!).fontSize
     div.textContent = lines[index] || ' '
@@ -31,6 +33,14 @@ const updateLine = () => {
 }
 
 watch(text, updateLine)
+
+onMounted(async () => {
+  window.addEventListener('resize', updateLine)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateLine)
+})
 
 onMounted(() => {
   updateLine()

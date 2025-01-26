@@ -3,8 +3,10 @@ import { RouterView } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import SideBar from '@/components/layout/SideBar.vue'
 import MobileFooter from '@/components/layout/MobileFooter.vue'
+import EventPopUp from './components/EventPopUp.vue'
 
-//初期のページタイトルを定義
+import { ref } from 'vue'
+const popUp = ref(1)
 
 const { xs } = useDisplay()
 </script>
@@ -19,4 +21,6 @@ const { xs } = useDisplay()
     </v-main>
     <mobile-footer v-if="xs" />
   </v-app>
+  <event-pop-up v-if="popUp !== 0" v-model:popUp="popUp" />
+  <!-- なんで 1004 なんですか… -->
 </template>
