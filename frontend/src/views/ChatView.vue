@@ -6,7 +6,7 @@ const { xs } = useDisplay()
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="Chat" />
+  <mobile-header v-if="xs" title="random" />
   <h1>今後開発予定！！！！！！！</h1>
 </template>
 

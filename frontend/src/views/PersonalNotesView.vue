@@ -14,7 +14,7 @@ const isPreview = ref(false)
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="PersonalNote" />
+  <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
     <MarkdownEditor v-if="!isPreview" v-model:text="text" />
     <MarkdownPreview v-else v-model:text="text" />

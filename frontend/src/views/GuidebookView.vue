@@ -1,5 +1,5 @@
 <template>
-  <mobile-header v-if="xs" title="Guidebook" />
+  <mobile-header v-if="xs" title="合宿のしおり" />
 
   <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
