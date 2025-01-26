@@ -35,7 +35,7 @@ const questionItems = ref<QuestionItem[]>(
       contentNew: content,
       displayContent: display,
     } as QuestionItem
-  })
+  }),
 )
 
 onMounted(async () => {
@@ -82,7 +82,10 @@ const submit = async () => {
           <v-icon>mdi-file-undo</v-icon>
         </v-btn>
       </div>
-      <v-card-subtitle>{{ (date.getMonth() + 1) }}/{{ date.getDate() }}まで {{ questionGroup.description }}</v-card-subtitle>
+      <v-card-subtitle
+        >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
+        {{ questionGroup.description }}</v-card-subtitle
+      >
     </div>
 
     <v-data-table

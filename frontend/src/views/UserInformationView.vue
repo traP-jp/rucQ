@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { getQuestionGroups } from '@/api/handler'
 import { useDisplay } from 'vuetify'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
-import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
+// import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 const { xs } = useDisplay()

@@ -38,7 +38,6 @@ const props = defineProps<{
   text-align: center;
 }
 
-
 .page-title {
   font-size: 20px;
   font-weight: bold;

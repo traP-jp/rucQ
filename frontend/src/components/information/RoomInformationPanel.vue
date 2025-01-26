@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import createClient from "openapi-fetch";
-import type { paths } from "@/api/schema";
+import createClient from 'openapi-fetch'
+import type { paths } from '@/api/schema'
 
-const client = createClient<paths>({ baseUrl: "https://rucq.trap.show/api" })
+const client = createClient<paths>({ baseUrl: 'https://rucq.trap.show/api' })
 
-const {
-  data,
-  error,
-} = await client.GET("/api/me")
+const { data, error } = await client.GET('/api/me')
 const traqId = data!.traq_id
 const iconUrl = `https://q.trap.jp/api/v3/public/icon/${traqId}`
 </script>
