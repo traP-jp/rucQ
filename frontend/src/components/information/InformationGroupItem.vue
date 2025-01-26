@@ -10,6 +10,7 @@ const headers = [
 
 const props = defineProps<{
   questionGroup: QuestionGroup
+  staff?: boolean
 }>()
 const answers: QuestionAnswer[] = [
   {
