@@ -46,6 +46,6 @@ onMounted(async () => {
   color: #101620;
   line-height: 1.8;
   margin: 0 auto; /* 中央揃え */
-  padding: 70px 30px 70px 30px; /* 下にフッターの余白を追加 */
+  padding: 30px 30px 70px 30px; /* 下にフッターの余白を追加 */
 }
 </style>
