@@ -1,20 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { newCamp, newStaff, newEvent } from '@/api/handler'
+import { newEvent } from '@/api/handler'
 import { events } from '@/lib/sample-data'
 
 onMounted(() => {
-  newStaff('kitsne')
-
-  newCamp({
-    display_id: 'camp24',
-    name: 'にーよん',
-    is_draft: false,
-    description: 'がっしゅく',
-  }).catch((error) => {
-    console.error('Failed to:', error)
-  })
-
   for (const event of events) {
     newEvent(event)
   }
