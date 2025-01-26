@@ -3,9 +3,9 @@ import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
+import { getEvents } from '@/api/handler'
 import { getTimeStringNoPad, getDayString } from '@/lib/date'
 import { getLayout, epoch, type BlockGroup } from '@/lib/event-layout'
-import { events } from '@/lib/sample-data'
 import EventBlock from '@/components/EventBlock.vue'
 import { onMounted, ref, watch } from 'vue'
 
@@ -13,10 +13,12 @@ const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
 
 const popUp = defineModel<CampEvent | undefined>('popUp')
 
-onMounted(() => {
+const refresh = async () => {
+  const res = (await getEvents()) as CampEvent[]
+  console.log(res)
   days.value = []
   const dayStrings: string[] = []
-  for (const group of getLayout(events)) {
+  for (const group of getLayout(res)) {
     const date = new Date(group.TimeTable[0].Time)
     const index = dayStrings.indexOf(getDayString(date))
     if (index === -1) {
@@ -26,7 +28,9 @@ onMounted(() => {
       days.value[index].groups.push(group)
     }
   }
-})
+}
+
+onMounted(refresh)
 
 const onlyPlans = (group: BlockGroup) => {
   return group.Durations.filter((duration) => duration.Column === 0).length === 0
@@ -36,8 +40,8 @@ const onlyPlans = (group: BlockGroup) => {
 
 watch(
   () => popUp.value,
-  () => {
-    console.log(popUp.value)
+  async () => {
+    await refresh()
   },
   { deep: true },
 )

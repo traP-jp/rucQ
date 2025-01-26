@@ -15,7 +15,27 @@
             <v-icon icon="mdi-close" :class="$style.icon"></v-icon>
           </button>
         </div>
-        <MarkdownEditor v-if="!isPreview" v-model:text="text" />
+        <div v-if="!isPreview">
+          <MarkdownEditor v-model:text="text" />
+          <div style="width: 100%; padding: 0 10px 15px 10px; background: var(--color-theme-pale)">
+            <button
+              :class="$style.sendbutton"
+              :style="`background: #${popUp!.display_color};`"
+              @click="
+                async () => {
+                  const newEvent = makeEventParams(popUp!)
+                  newEvent.description = text
+                  await editEvent(popUp!.id, newEvent)
+                  popUp = undefined
+                }
+              "
+            >
+              <h3 style="color: var(--color-background); font-weight: bold; padding: 5px">
+                送　信
+              </h3>
+            </button>
+          </div>
+        </div>
         <MarkdownPreview v-else v-model:text="text" style="background: var(--color-background)" />
       </div>
     </div>
@@ -23,7 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { editEvent, makeEventParams } from '@/api/handler'
 import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
 import { getTimeString } from '@/lib/date'
@@ -40,6 +61,10 @@ const text = ref('')
 const makeInfo = (event: CampEvent) => {
   return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
 }
+
+onMounted(() => {
+  text.value = popUp.value!.description
+})
 </script>
 
 <style module>
@@ -109,6 +134,14 @@ const makeInfo = (event: CampEvent) => {
 
 .icon {
   font-size: 24px;
+}
+
+.sendbutton {
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { newCamp, newStaff } from '@/api/handler'
+import { newCamp, newStaff, newEvent } from '@/api/handler'
+import { events } from '@/lib/sample-data'
 
 onMounted(() => {
   newStaff('kitsne')
@@ -13,6 +14,10 @@ onMounted(() => {
   }).catch((error) => {
     console.error('Failed to:', error)
   })
+
+  for (const event of events) {
+    newEvent(event)
+  }
 })
 </script>
 
