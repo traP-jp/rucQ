@@ -13,7 +13,7 @@ import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
-import { getCamps } from '@/api/handler'
+import { getCamps, getDefalutCamps } from '@/api/handler'
 
 const { xs } = useDisplay()
 
@@ -22,7 +22,7 @@ const htmlContent = computed(() => marked(markdown.value))
 
 onMounted(async () => {
   try {
-    const response = await getCamps(1)
+    const response = await getDefalutCamps()
     console.log('API response:', response)
     
     if (response && typeof response.description === 'string') {
