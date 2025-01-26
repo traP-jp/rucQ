@@ -227,6 +227,10 @@ function getdefaultCamps() {
   font-size: 0.8rem;
 }
 
+.admin-header h1 {
+  margin-top: 10px;
+}
+
 .back-button {
   /*仮の戻るボタン　後で消す*/
   position: absolute;
