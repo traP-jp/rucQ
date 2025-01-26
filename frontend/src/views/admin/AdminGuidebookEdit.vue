@@ -13,7 +13,7 @@ import splitIcon from '@/assets/splitIcon.svg'
 import splitIconActive from '@/assets/splitIconActive.svg'
 import eyeIcon from '@/assets/eyeIcon.svg'
 import eyeIconActive from '@/assets/eyeIconActive.svg'
-import { editCamp, getCamps } from '@/api/handler'
+import { editCamp, getCamps, getDefalutCamps } from '@/api/handler'
 import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
 
@@ -89,9 +89,9 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
 
   try {
-    const response = await getCamps(1)
+    const response = await getDefalutCamps()
     console.log('API response:', response)
-
+    
     if (response && typeof response.description === 'string') {
       markdown.value = response.description
     } else {
@@ -102,18 +102,29 @@ onMounted(async () => {
   }
 })
 
-// ダミー保存関数　後でバックエンドと連携する
+const res = ref<Camp>(
+  {
+    id: 0,
+    display_id: '',
+    description: '',
+    name: '',
+    is_draft: false,
+  }
+)
+
+// 保存関数
 const saveMarkdown = async () => {
   alert('保存しました')
   isSaved.value = true
-  const res = await editCamp(1, {
+   res.value = await editCamp(res.value.id, {
     display_id: '24spring',
     description: markdown.value,
     name: '2024年度 春合宿',
     is_draft: false,
   })
-
   console.log('API response:', res)
+
+  console.log('API responsほぞん:')
 }
 
 function showEditOnly() {
@@ -129,7 +140,7 @@ function showPreviewOnly() {
 // 保存関数（blurイベント用）　カーソルが離れたら保存する
 const saveMarkdownAsync = async () => {
   try {
-    const res = await editCamp(1, {
+    const response = await editCamp(res.value.id, {
       display_id: '24spring',
       description: markdown.value,
       name: '2024年度 春合宿', // この辺は後で決める
@@ -147,6 +158,10 @@ const handleBlur = () => {
   if (!isSaved.value) {
     saveMarkdownAsync()
   }
+}
+
+function getdefaultCamps() {
+  throw new Error('Function not implemented.')
 }
 </script>
 
