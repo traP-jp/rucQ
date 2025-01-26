@@ -1,5 +1,5 @@
-import { useUserStore } from '@/store'
-const userStore = useUserStore()
+// import { useUserStore } from '@/store'
+// const userStore = useUserStore()
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
@@ -23,11 +23,11 @@ export const fetchApi = async (
   const request: RequestInit = {
     method: method,
     headers: option?.body
-      ? { 'X-Forwarded-User': userStore.userId! }
-      : { 'X-Forwarded-User': userStore.userId!, 'Content-Type': 'application/json' },
+      ? { 'X-Forwarded-User': 'kitsne' }
+      : { 'X-Forwarded-User': 'kitsne', 'Content-Type': 'application/json' },
     body: option?.body,
   }
-  const res = await fetch(`/api${path}${parameterStr}`, request)
+  const res = await fetch(`http://localhost:8080/api${path}${parameterStr}`, request)
   if (res.status === 200) {
     // HTTP ステータスコード。200 は OK, 404 は Not Found の意味
     return await res.json()
