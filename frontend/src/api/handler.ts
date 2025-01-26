@@ -17,7 +17,7 @@ export const fetchApi = async (
         textParams[key] = String(option.parameters[key]) // 値を文字列に変換
       }
     }
-    const parameterStr = option?.parameters ? `?${new URLSearchParams(textParams).toString()}` : ''
+    parameterStr = option?.parameters ? `?${new URLSearchParams(textParams).toString()}` : ''
   }
 
   const request: RequestInit = {

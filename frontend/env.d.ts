@@ -1,7 +1,14 @@
 /// <reference types="vite/client" />
 
-type CampParams = {
+type Camp = {
   id: number
+  display_id: string
+  name: string
+  is_draft: boolean
+  description: string
+}
+
+type CampParams = {
   display_id: string
   name: string
   is_draft: boolean
