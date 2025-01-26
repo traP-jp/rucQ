@@ -15,7 +15,7 @@ export const fetchApi = async (
     headers: { 'X-Forwarded-User': 'kitsne', 'Content-Type': 'application/json' },
     body: JSON.stringify(option?.body),
   }
-  const res = await fetch(`http://localhost:8080/api${path}`, request)
+  const res = await fetch(`/api${path}`, request)
   if (res.status === 200 && method === 'GET') {
     // HTTP ステータスコード。200 は OK, 404 は Not Found の意味
     return await res.json()
