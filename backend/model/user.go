@@ -7,4 +7,5 @@ type User struct {
 	TraqID  string `gorm:"uniqueIndex"`
 	IsStaff bool   `gorm:"index"`
 	Answers []Answer
+	TraqUuid string
 }
