@@ -4,7 +4,6 @@ package handler
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,14 +28,14 @@ func (s *Server) PostDM(e echo.Context, params PostDMParams) error {
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
-	botToken := os.Getenv("BOT_ACCESS_TOKEN")
+	// botToken := os.Getenv("BOT_ACCESS_TOKEN")
 
-	// 対象ユーザーの取得
-	targetUser, err := s.repo.GetUserByID(req.ToUserTraqId)
-	if err != nil {
-		e.Logger().Errorf("user not found: %v", err)
-		return echo.NewHTTPError(http.StatusNotFound, "ユーザーが見つかりません。")
-	}
+	// // 対象ユーザーの取得
+	// targetUser, err := s.repo.GetUserByID(req.ToUserTraqId)
+	// if err != nil {
+	// 	e.Logger().Errorf("user not found: %v", err)
+	// 	return echo.NewHTTPError(http.StatusNotFound, "ユーザーが見つかりません。")
+	// }
 
 	return nil
 }
