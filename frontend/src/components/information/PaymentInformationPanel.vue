@@ -1,25 +1,32 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { getBudget } from '@/api/handler'
+import { computed } from 'vue'
+import type { components } from '@/api/schema'
 
-const billing = ref('')
+const props = defineProps<{
+  data?: components['schemas']['Budget']
+}>()
 
-onMounted(async () => {
-  try {
-    const response = await getBudget()
-    console.log('API response:', response)
-    billing.value = response.amount
-  } catch (error) {
-    console.error('Failed to fetch budget:', error)
-  }
+const status = computed(() => {
+  if (props.data?.amount == null) return 'none'
+  return props.data.amount === props.data.amount_paid ? 'paid' : 'unpaid'
 })
+
+const billing = computed(() => props.data?.amount ?? 0)
 </script>
 
 <template>
-  <v-card class="bg-red-lighten-4 text-red-accent-3 pa-4">
-    <v-card-title class="text-center text-h4 pa-0">
-      ¥{{ billing }}
-    </v-card-title>
+  <v-card v-if="status === 'paid'" class="bg-green-lighten-4 text-green-darken-3 pa-4">
+    <v-card-title class="text-center text-h4 pa-0"> ¥{{ billing }} </v-card-title>
+    <v-card-text class="text-center pa-0">支払いが完了しています</v-card-text>
+  </v-card>
+
+  <v-card v-if="status === 'unpaid'" class="bg-red-lighten-4 text-red-accent-3 pa-4">
+    <v-card-title class="text-center text-h4 pa-0"> ¥{{ billing }} </v-card-title>
     <v-card-text class="text-center pa-0">支払いが完了していません</v-card-text>
+  </v-card>
+
+  <v-card v-if="status === 'none'" class="bg-grey-lighten-4 text-grey-accent-3 pa-4">
+    <v-card-title class="text-center text-h4 pa-0">情報がありません</v-card-title>
+    <v-card-text class="text-center pa-0">合宿費情報が登録されていません</v-card-text>
   </v-card>
 </template>
