@@ -1,13 +1,12 @@
 package repository
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/traP-jp/rucQ/backend/model"
+	traq "github.com/traPtitech/go-traq"
 )
 
 // APIUser は外部APIから取得するユーザー情報の構造体です。
@@ -20,38 +19,20 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 
 	// まずデータベースを検索
 	if err := r.db.Where("traq_id = ?", traqID).Find(&user).Error; err != nil {
-		return nil, err 
+		return nil, err
 	}
 
 	if user.TraqID != "" {
 		return &user, nil
 	}
 
-	// traQ API にリクエストを送る
-	baseURL := "https://q.trap.jp/api/v3/users"
-	params := url.Values{}
-	params.Add("name", traqID)
-
-	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
-
-	req, err := http.NewRequest("GET", fullURL, nil)
+	configuration := traq.NewConfiguration()
+	apiClient := traq.NewAPIClient(configuration)
+	configuration.AddDefaultHeader("Authorization", "Bearer "+os.Getenv("BOT_ACCESS_TOKEN"))
+	usersUuid, httpResp, err := apiClient.UserApi.GetUsers(context.Background()).Name(traqID).Execute()
 	if err != nil {
-		return nil, err
-	}
-
-	accessToken := os.Getenv("BOT_ACCESS_TOKEN")
-	req.Header.Add("Authorization", "Bearer "+accessToken)
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var usersUuid []APIUser
-	if err := json.NewDecoder(resp.Body).Decode(&usersUuid); err != nil {
-		return nil, err
+		fmt.Fprintf(os.Stderr, "Error when calling `UserApi.GetUsers``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpResp)
 	}
 
 	// traQ API のレスポンスをチェック
@@ -62,7 +43,7 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	// 新しいユーザーをデータベースに作成
 	user = model.User{
 		TraqID:   traqID,
-		TraqUuid: usersUuid[0].ID,
+		TraqUuid: usersUuid[0].Id,
 	}
 	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
@@ -70,7 +51,6 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 
 	return &user, nil
 }
-
 
 func (r *Repository) GetStaffs() ([]model.User, error) {
 	var staffs []model.User

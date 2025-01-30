@@ -1,21 +1,19 @@
-// handler/server.go
-
 package handler
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	traq "github.com/traPtitech/go-traq"
 )
 
 // PostDM は DM を送信するハンドラです。
-func (s *Server) PostDM(e echo.Context, params PostDMParams) error {
-	var req PostDMJSONRequestBody
+func (s *Server) PostDirectMessage(e echo.Context, params PostDirectMessageParams) error {
+	var req PostDirectMessageJSONRequestBody
 	if err := e.Bind(&req); err != nil {
 		e.Logger().Errorf("failed to bind request: %v", err)
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
@@ -33,37 +31,8 @@ func (s *Server) PostDM(e echo.Context, params PostDMParams) error {
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
-	targetUser, err := s.repo.GetOrCreateUser(req.TargetUser)
-	if err != nil {
-		e.Logger().Errorf("failed to get or create user: %v", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	// traQ API にリクエストを送る
-	baseURL := fmt.Sprintf("https://q.trap.jp/api/v3/users/%s/messages", targetUser.TraqUuid)
-
-	// リクエストボディを作成
-	body := map[string]interface{}{
-		"content": req.Content,
-		"embed":   false,
-	}
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		return err
-	}
-
-	httpRequest, err := http.NewRequest("POST", baseURL, bytes.NewBuffer(jsonBody))
-	if err != nil {
-		return err
-	}
-
-	httpRequest.Header.Set("Content-Type", "application/json")
-
-	accessToken := os.Getenv("BOT_ACCESS_TOKEN")
-	httpRequest.Header.Add("Authorization", "Bearer "+accessToken)
-
 	// 指定時刻まで待機してからDMを送信する
-	go func() {
+	go func() error {
 		if req.Sendtime != nil {
 			sendTime := *req.Sendtime
 			duration := time.Until(sendTime)
@@ -72,20 +41,25 @@ func (s *Server) PostDM(e echo.Context, params PostDMParams) error {
 			}
 		}
 
-		// DMを送信する処理
-		httpClient := &http.Client{}
-		resp, err := httpClient.Do(httpRequest)
+		postMessageRequest := *traq.NewPostMessageRequest(req.Content)
+		targetUser, err := s.repo.GetOrCreateUser(req.TargetUser)
 		if err != nil {
-			e.Logger().Errorf("failed to send DM: %v", err)
-			return
+			e.Logger().Errorf("failed to get or create user: %v", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
-		defer resp.Body.Close()
+		configuration := traq.NewConfiguration()
+		configuration.AddDefaultHeader("Authorization", "Bearer "+os.Getenv("BOT_ACCESS_TOKEN"))
+		apiClient := traq.NewAPIClient(configuration)
+		_, r, err := apiClient.MessageApi.PostDirectMessage(context.Background(), targetUser.TraqUuid).PostMessageRequest(postMessageRequest).Execute()
 
-		// APIのレスポンスが成功か確認
-		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-			e.Logger().Errorf("failed to send DM, status: %d", resp.StatusCode)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error when calling `MessageApi.PostDirectMessage``: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 		}
+
+		return nil
 	}()
 
-	return nil
+	return e.NoContent(http.StatusAccepted)
 }

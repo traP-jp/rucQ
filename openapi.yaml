@@ -755,7 +755,7 @@ paths:
       summary: DMを送信
       tags:
         - DM
-      operationId: postDM
+      operationId: postDirectMessage
       parameters:
         - $ref: "#/components/parameters/X-Forwarded-User"
       requestBody:
@@ -1193,7 +1193,7 @@ components:
     PostDMRequest:
       type: object
       properties:
-        target-user:
+        target_user:
           type: string
         content:
           type: string
@@ -1201,7 +1201,7 @@ components:
           type: string
           format: date-time
       required:
-        - target-user
+        - target_user
         - content
 
 tags:

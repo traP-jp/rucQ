@@ -325,6 +325,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/dm': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** DMを送信 */
+    post: operations['postDirectMessage']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -439,6 +456,12 @@ export interface components {
     }
     PostStaffRequest: {
       traq_id: string
+    }
+    PostDMRequest: {
+      target_user: string
+      content: string
+      /** Format: date-time */
+      sendtime?: string
     }
   }
   responses: {
@@ -1417,6 +1440,29 @@ export interface operations {
       cookie?: never
     }
     requestBody?: never
+    responses: {
+      204: components['responses']['NoContent']
+      400: components['responses']['BadRequest']
+      403: components['responses']['Forbidden']
+      404: components['responses']['NotFound']
+      500: components['responses']['InternalServerError']
+    }
+  }
+  postDirectMessage: {
+    parameters: {
+      query?: never
+      header?: {
+        /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+        'X-Forwarded-User'?: components['parameters']['X-Forwarded-User']
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PostDMRequest']
+      }
+    }
     responses: {
       204: components['responses']['NoContent']
       400: components['responses']['BadRequest']
