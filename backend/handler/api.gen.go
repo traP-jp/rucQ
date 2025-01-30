@@ -103,9 +103,9 @@ type PostCampRequest struct {
 
 // PostDMRequest defines model for PostDMRequest.
 type PostDMRequest struct {
-	Content      string     `json:"content"`
-	Sendtime     *time.Time `json:"sendtime,omitempty"`
-	ToUserTraqId string     `json:"to_user_traq_id"`
+	Content    string     `json:"content"`
+	Sendtime   *time.Time `json:"sendtime,omitempty"`
+	TargetUser string     `json:"target-user"`
 }
 
 // PostEventRequest defines model for PostEventRequest.

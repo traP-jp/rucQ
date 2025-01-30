@@ -39,8 +39,8 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 		return nil, err
 	}
 
-	AccessToken := os.Getenv("BOT_ACCESS_TOKEN")
-	req.Header.Add("Authorization", "Bearer "+AccessToken)
+	accessToken := os.Getenv("BOT_ACCESS_TOKEN")
+	req.Header.Add("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

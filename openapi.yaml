@@ -1193,7 +1193,7 @@ components:
     PostDMRequest:
       type: object
       properties:
-        to_user_traq_id:
+        target-user:
           type: string
         content:
           type: string
@@ -1201,7 +1201,7 @@ components:
           type: string
           format: date-time
       required:
-        - to_user_traq_id
+        - target-user
         - content
 
 tags:
