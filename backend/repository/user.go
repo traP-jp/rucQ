@@ -35,12 +35,13 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 		return nil, fmt.Errorf("no users found with name %s", traqID)
 	}
 
-	// 新しいユーザーをデータベースに作成
-	user = model.User{
+	// 追加、更新するユーザーを作成
+	newUser := model.User{
 		TraqID:   traqID,
 		TraqUuid: usersUuid[0].Id,
 	}
-	if err := r.db.Create(&user).Error; err != nil {
+
+	if err := r.db.Save(&newUser).Error; err != nil {
 		return nil, err
 	}
 
