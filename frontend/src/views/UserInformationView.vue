@@ -1,52 +1,63 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { getQuestionGroups } from '@/api/handler'
-import { useDisplay } from 'vuetify'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
+import { ref, onMounted } from 'vue'
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
 // import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
+
+import MobileHeader from '@/components/layout/MobileHeader.vue'
+import { useDisplay } from 'vuetify'
 const { xs } = useDisplay()
 
-const questionGroups = ref<QuestionGroup[]>([])
+// const roomData = ref()
+const paymentData = ref<components['schemas']['Budget']>()
+const questionGroups = ref()
 
-// import createClient from 'openapi-fetch'
-// import type { paths } from '@/api/schema'
+const getPaymentData = async () => {
+  const { data, error } = await apiClient.GET('/api/users/{traq_id}/budgets', {
+    params: { path: { traq_id: 'ogu_kazemiya' } },
+  })
+  if (error) console.error('Failed to fetch payment data:', error.message)
+  return data
+}
 
-// const client = createClient<paths>({ baseUrl: 'https://rucq.trap.show/api' })
-
-// const { data, error } = await client.GET('/api/me')
-// const traqId = data!.traq_id
-// const iconUrl = `https://q.trap.jp/api/v3/public/icon/${traqId}`
-
-
+const getInformationGroups = async () => {
+  const { data, error } = await apiClient.GET('/api/question_groups')
+  if (error) {
+    console.error('Failed to fetch information groups:', error.message)
+    return []
+  }
+  return data
+}
 
 onMounted(async () => {
-  try {
-    const response = await getQuestionGroups()
-    console.log('API response:', response)
-    questionGroups.value = response
-  } catch (error) {
-    console.error('Failed to fetch question groups:', error)
-  }
+  paymentData.value = await getPaymentData()
+  questionGroups.value = await getInformationGroups()
 })
 </script>
 
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
-  <v-container class="d-flex flex-column ga-4">
-    <!-- <div class="d-flex justify-center align-center">
-      <v-avatar v-for="i in 5" :key="i" :size="32">
-        <v-img :src="iconUrl" />
-      </v-avatar>
-      {{ traqId }}
-    </div>
-    <room-information-panel /> -->
-    <payment-information-panel />
-    <information-group-item
-      v-for="questionGroup in questionGroups"
-      :key="questionGroup.id"
-      :questionGroup="questionGroup"
-    />
+  <v-container class="d-flex justify-center">
+    <v-sheet
+      class="d-flex flex-column elevation-2 pa-4"
+      max-width="800"
+      width="100%"
+    >
+      <!-- <div class="d-flex justify-center align-center">
+        <v-avatar v-for="i in 5" :key="i" :size="32">
+          <v-img :src="iconUrl" />
+        </v-avatar>
+        {{ traqId }}
+      </div>
+      <room-information-panel /> -->
+      <payment-information-panel :data="paymentData" />
+      <information-group-item
+        v-for="questionGroup in questionGroups"
+        :key="questionGroup.id"
+        :questionGroup="questionGroup"
+      />
+    </v-sheet>
   </v-container>
 </template>
