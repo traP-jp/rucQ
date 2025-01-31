@@ -24,17 +24,13 @@ const customFilter = (value: string, query: string, item: unknown) => {
   return (item as { raw: PaymentData }).raw.transfer_id.startsWith(query.toUpperCase())
 }
 
-const getPaymentDataList = async () => {
-  const traqUsersData = await fetch('https://q.trap.jp/api/v3/users') // TODO: rucQのAPIを使う
-  if (!traqUsersData.ok) {
-    console.error('Failed to fetch users data:', traqUsersData)
-    return
-  }
-  const traqUsers = await traqUsersData.json()
+// const getUserList = async () => []
+
+const getPaymentDataList = async (userList: string[]) => {
   const res: PaymentData[] = []
-  for (const traqUser of traqUsers) {
+  for (const userId of userList) {
     const { data, error } = await apiClient.GET('/api/users/{traq_id}/budgets', {
-      params: { path: { traq_id: traqUser.name } },
+      params: { path: { traq_id: userId } },
     })
     if (error) {
       console.error('Failed to fetch payment data:', error.message)
@@ -42,9 +38,9 @@ const getPaymentDataList = async () => {
     }
     res.push({
       ...data,
-      user_id: traqUser.name,
-      transfer_id: traqUser.name.toUpperCase().replace(/[-_]/g, ''),
-      avatar: `https://q.trap.jp/api/v3/public/icon/${traqUser.name}`,
+      user_id: userId,
+      transfer_id: userId.toUpperCase().replace(/[-_]/g, ''),
+      avatar: `https://q.trap.jp/api/v3/public/icon/${userId}`,
     })
   }
   return res
@@ -71,9 +67,17 @@ const updatePaymentData = async (paymentData?: PaymentData, amount?: number) => 
   }
 }
 
-onMounted(async () => {
-  paymentDataList.value = (await getPaymentDataList()) ?? []
-})
+// onMounted(async () => {
+//   const userList = (await getUserList()) ?? []
+//   paymentDataList.value = (await getPaymentDataList(userList)) ?? []
+// })
+
+// 一時的な処置
+const userListStr = ref('')
+const setupUserList = async () => {
+  const userList = userListStr.value.split(' ')
+  paymentDataList.value = (await getPaymentDataList(userList)) ?? []
+}
 </script>
 
 <template>
@@ -125,5 +129,13 @@ onMounted(async () => {
         </v-btn>
       </div>
     </v-sheet>
+
+    <!-- 一時的な処置 -->
+     <v-text-field
+      v-model="userListStr"
+      label="traQ ID"
+      placeholder="traQ IDをスペース区切りで入力"
+    />
+    <v-btn @click="setupUserList">セットアップ</v-btn>
   </v-container>
 </template>
