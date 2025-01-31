@@ -79,11 +79,7 @@ onMounted(async () => {
 <template>
   <mobile-header v-if="xs" title="振込み確認" />
   <v-container class="d-flex justify-center">
-    <v-sheet
-      class="d-flex flex-column elevation-2 pa-4"
-      max-width="800"
-      width="100%"
-    >
+    <v-sheet class="d-flex flex-column elevation-2 pa-4" max-width="800" width="100%">
       <v-autocomplete
         v-model="selectedId"
         class="px-4 py-2"
@@ -113,7 +109,9 @@ onMounted(async () => {
       <div class="d-flex align-center justify-center ga-4 px-4">
         <v-btn
           class="flex-grow-1 bg-green-lighten-2"
-          :disabled="selectedData?.amount == null || selectedData.amount_paid === selectedData.amount"
+          :disabled="
+            selectedData?.amount == null || selectedData.amount_paid === selectedData.amount
+          "
           @click="updatePaymentData(selectedData, selectedData?.amount ?? undefined)"
         >
           振込確認

@@ -40,11 +40,7 @@ onMounted(async () => {
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
   <v-container class="d-flex justify-center">
-    <v-sheet
-      class="d-flex flex-column elevation-2 pa-4"
-      max-width="800"
-      width="100%"
-    >
+    <v-sheet class="d-flex flex-column elevation-2 pa-4" max-width="800" width="100%">
       <!-- <div class="d-flex justify-center align-center">
         <v-avatar v-for="i in 5" :key="i" :size="32">
           <v-img :src="iconUrl" />
