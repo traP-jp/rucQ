@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -32,7 +31,7 @@ func (s *Server) PostDirectMessage(e echo.Context, params PostDirectMessageParam
 	}
 
 	// 指定時刻まで待機してからDMを送信する
-	go func() error {
+	go func() {
 		if req.Sendtime != nil {
 			sendTime := *req.Sendtime
 			duration := time.Until(sendTime)
@@ -40,25 +39,19 @@ func (s *Server) PostDirectMessage(e echo.Context, params PostDirectMessageParam
 				time.Sleep(duration) // 指定時刻まで待機
 			}
 		}
-
 		postMessageRequest := *traq.NewPostMessageRequest(req.Content)
 		targetUser, err := s.repo.GetOrCreateUser(req.TargetUser)
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			return
 		}
 		configuration := traq.NewConfiguration()
 		configuration.AddDefaultHeader("Authorization", "Bearer "+os.Getenv("BOT_ACCESS_TOKEN"))
 		apiClient := traq.NewAPIClient(configuration)
 		_, r, err := apiClient.MessageApi.PostDirectMessage(context.Background(), targetUser.TraqUuid).PostMessageRequest(postMessageRequest).Execute()
-
-
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error when calling `MessageApi.PostDirectMessage``: %v\n", err)
-			fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+			e.Logger().Errorf("error when calling MessageApi.PostDirectMessage: %v\nfull HTTP response: %v", err, r)
 		}
-
-		return nil
 	}()
 
 	return e.NoContent(http.StatusAccepted)

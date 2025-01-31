@@ -20,7 +20,7 @@ func main() {
 	if l, ok := e.Logger.(*log.Logger); ok {
 		l.SetHeader("${level}")
 	}
-	
+
 	godotenv.Load(".env", "bot.env")
 
 	user := os.Getenv("NS_MARIADB_USER")
@@ -50,4 +50,5 @@ func main() {
 
 	handler.RegisterHandlers(e, handler.NewServer(db))
 	e.Logger.Fatal(e.Start(os.Getenv("RUCQ_BACKEND_ADDR")))
+
 }

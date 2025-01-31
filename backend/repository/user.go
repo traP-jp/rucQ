@@ -9,10 +9,6 @@ import (
 	traq "github.com/traPtitech/go-traq"
 )
 
-// APIUser は外部APIから取得するユーザー情報の構造体です。
-type APIUser struct {
-	ID string `json:"id"`
-}
 
 func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	var user model.User
@@ -22,7 +18,7 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 		return nil, err
 	}
 
-	if user.TraqID != "" {
+	if user.TraqUuid != "" {
 		return &user, nil
 	}
 
@@ -31,8 +27,7 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	configuration.AddDefaultHeader("Authorization", "Bearer "+os.Getenv("BOT_ACCESS_TOKEN"))
 	usersUuid, httpResp, err := apiClient.UserApi.GetUsers(context.Background()).Name(traqID).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `UserApi.GetUsers``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpResp)
+		return nil, fmt.Errorf("error when calling UserApi.GetUsers: %w\nfull HTTP response: %v", err, httpResp)
 	}
 
 	// traQ API のレスポンスをチェック
