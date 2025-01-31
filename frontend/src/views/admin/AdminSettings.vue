@@ -42,9 +42,9 @@ const adminTools = ref([
     path: 'dm',
   },
   {
-    title: '予算の確認',
+    title: '振込確認',
     icon: 'mdi-cash',
-    path: 'budget',
+    path: 'payments',
   },
   // 必要に応じて他の管理者ツールを追加
 ])
