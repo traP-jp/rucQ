@@ -8,7 +8,7 @@ import InformationGroupItem from '@/components/information/InformationGroupItem.
 
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
-import { useUserStore } from '@/store.ts'
+import { useUserStore } from '@/store'
 const { xs } = useDisplay()
 
 // const roomData = ref()
