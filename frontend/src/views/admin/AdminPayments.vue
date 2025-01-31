@@ -13,7 +13,7 @@ type PaymentData = components['schemas']['Budget'] & {
   transfer_id: string
   avatar: string
 }
-
+const autocompleteRef = ref()
 const paymentDataList = ref<PaymentData[]>([])
 const selectedId = ref<string | null>(null)
 const selectedData = computed(() =>
@@ -47,23 +47,21 @@ const getPaymentDataList = async (userList: string[]) => {
 }
 
 const updatePaymentData = async (paymentData?: PaymentData, amount?: number) => {
-  const autocomplete = document.querySelector('#input') as HTMLInputElement
-  autocomplete.focus()
-  selectedId.value = null
-  console.log('Updated payment data:', paymentData, amount)
-
   if (paymentData == null || amount == null) return
   const { error } = await apiClient.PUT('/api/users/{traq_id}/budgets', {
     params: { path: { traq_id: paymentData.user_id } },
     body: {
       camp_id: paymentData.camp_id,
-      amount: amount,
-      amount_paid: paymentData.amount_paid,
+      amount: paymentData.amount,
+      amount_paid: amount,
     },
   })
   if (error) {
     console.error('Failed to update payment data:', error.message)
     alert('支払い情報の更新に失敗しました')
+  } else {
+    selectedId.value = null
+    autocompleteRef.value?.focus()
   }
 }
 
@@ -87,6 +85,7 @@ const setupUserList = async () => {
       <v-autocomplete
         v-model="selectedId"
         class="px-4 py-2"
+        ref="autocompleteRef"
         :items="paymentDataList"
         item-title="user_id"
         item-value="user_id"
@@ -128,14 +127,15 @@ const setupUserList = async () => {
           拒否
         </v-btn>
       </div>
+      <!-- 一時的な処置 -->
+      <v-sheet class="d-flex flex-column pa-4">
+        <v-text-field
+          v-model="userListStr"
+          label="traQ ID"
+          placeholder="traQ IDをスペース区切りで入力"
+        />
+        <v-btn @click="setupUserList">セットアップ</v-btn>
+      </v-sheet>
     </v-sheet>
-
-    <!-- 一時的な処置 -->
-     <v-text-field
-      v-model="userListStr"
-      label="traQ ID"
-      placeholder="traQ IDをスペース区切りで入力"
-    />
-    <v-btn @click="setupUserList">セットアップ</v-btn>
   </v-container>
 </template>
