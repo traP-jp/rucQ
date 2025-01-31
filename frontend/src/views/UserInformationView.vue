@@ -8,6 +8,7 @@ import InformationGroupItem from '@/components/information/InformationGroupItem.
 
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
+import { useUserStore } from '@/store.ts'
 const { xs } = useDisplay()
 
 // const roomData = ref()
@@ -16,7 +17,7 @@ const questionGroups = ref()
 
 const getPaymentData = async () => {
   const { data, error } = await apiClient.GET('/api/users/{traq_id}/budgets', {
-    params: { path: { traq_id: 'ogu_kazemiya' } },
+    params: { path: { traq_id: useUserStore() } },
   })
   if (error) console.error('Failed to fetch payment data:', error.message)
   return data
