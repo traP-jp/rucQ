@@ -101,6 +101,13 @@ type PostCampRequest struct {
 	Name        string `json:"name"`
 }
 
+// PostDMRequest defines model for PostDMRequest.
+type PostDMRequest struct {
+	Content    string     `json:"content"`
+	Sendtime   *time.Time `json:"sendtime,omitempty"`
+	TargetUser string     `json:"target_user"`
+}
+
 // PostEventRequest defines model for PostEventRequest.
 type PostEventRequest struct {
 	CampId        int       `json:"camp_id"`
@@ -250,6 +257,12 @@ type PutCampParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// PostDirectMessageParams defines parameters for PostDirectMessage.
+type PostDirectMessageParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // PostEventParams defines parameters for PostEvent.
 type PostEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -384,6 +397,9 @@ type PostCampJSONRequestBody = PostCampRequest
 
 // PutCampJSONRequestBody defines body for PutCamp for application/json ContentType.
 type PutCampJSONRequestBody = PostCampRequest
+
+// PostDirectMessageJSONRequestBody defines body for PostDirectMessage for application/json ContentType.
+type PostDirectMessageJSONRequestBody = PostDMRequest
 
 // PostEventJSONRequestBody defines body for PostEvent for application/json ContentType.
 type PostEventJSONRequestBody = PostEventRequest
@@ -562,6 +578,9 @@ type ServerInterface interface {
 	// 合宿を更新
 	// (PUT /api/camps/{camp_id})
 	PutCamp(ctx echo.Context, campId CampId, params PutCampParams) error
+	// DMを送信
+	// (POST /api/dm)
+	PostDirectMessage(ctx echo.Context, params PostDirectMessageParams) error
 	// イベントの一覧を取得
 	// (GET /api/events)
 	GetEvents(ctx echo.Context) error
@@ -749,6 +768,35 @@ func (w *ServerInterfaceWrapper) PutCamp(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PutCamp(ctx, campId, params)
+	return err
+}
+
+// PostDirectMessage converts echo context to params.
+func (w *ServerInterfaceWrapper) PostDirectMessage(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostDirectMessageParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostDirectMessage(ctx, params)
 	return err
 }
 
@@ -1591,6 +1639,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/camps/default", wrapper.GetDefaultCamp)
 	router.GET(baseURL+"/api/camps/:camp_id", wrapper.GetCamp)
 	router.PUT(baseURL+"/api/camps/:camp_id", wrapper.PutCamp)
+	router.POST(baseURL+"/api/dm", wrapper.PostDirectMessage)
 	router.GET(baseURL+"/api/events", wrapper.GetEvents)
 	router.POST(baseURL+"/api/events", wrapper.PostEvent)
 	router.GET(baseURL+"/api/events/:event_id", wrapper.GetEvent)

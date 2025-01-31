@@ -12,6 +12,8 @@ require (
 	gorm.io/gorm v1.25.12
 )
 
+require golang.org/x/oauth2 v0.20.0 // indirect
+
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
@@ -20,6 +22,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/traPtitech/go-traq v0.0.0-20241109062858-3757c489f610
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/crypto v0.31.0 // indirect

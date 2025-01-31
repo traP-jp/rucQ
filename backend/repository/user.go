@@ -1,11 +1,46 @@
 package repository
 
-import "github.com/traP-jp/rucQ/backend/model"
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/traP-jp/rucQ/backend/model"
+	traq "github.com/traPtitech/go-traq"
+)
+
 
 func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	var user model.User
 
-	if err := r.db.FirstOrCreate(&user, model.User{TraqID: traqID}).Error; err != nil {
+	// まずデータベースを検索
+	if err := r.db.Where("traq_id = ?", traqID).Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	if user.TraqUuid != "" {
+		return &user, nil
+	}
+
+	configuration := traq.NewConfiguration()
+	apiClient := traq.NewAPIClient(configuration)
+	configuration.AddDefaultHeader("Authorization", "Bearer "+os.Getenv("BOT_ACCESS_TOKEN"))
+	usersUuid, httpResp, err := apiClient.UserApi.GetUsers(context.Background()).Name(traqID).Execute()
+	if err != nil {
+		return nil, fmt.Errorf("error when calling UserApi.GetUsers: %w\nfull HTTP response: %v", err, httpResp)
+	}
+
+	// traQ API のレスポンスをチェック
+	if len(usersUuid) != 1 {
+		return nil, fmt.Errorf("no users found with name %s", traqID)
+	}
+
+	// 新しいユーザーをデータベースに作成
+	user = model.User{
+		TraqID:   traqID,
+		TraqUuid: usersUuid[0].Id,
+	}
+	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
 	}
 

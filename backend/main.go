@@ -21,7 +21,7 @@ func main() {
 		l.SetHeader("${level}")
 	}
 
-	godotenv.Load()
+	godotenv.Load(".env", "bot.env")
 
 	user := os.Getenv("NS_MARIADB_USER")
 	password := os.Getenv("NS_MARIADB_PASSWORD")
@@ -44,6 +44,11 @@ func main() {
 			"http://localhost:8081", // Swagger UI
 		},
 	}))
+
+	// botがtraQからのイベントを受け取るエンドポイントを設定
+	e.POST("/api/traq-events", handler.TraqEventHandler)
+
 	handler.RegisterHandlers(e, handler.NewServer(db))
 	e.Logger.Fatal(e.Start(os.Getenv("RUCQ_BACKEND_ADDR")))
+
 }

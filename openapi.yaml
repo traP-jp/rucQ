@@ -1,3 +1,4 @@
+---
 openapi: 3.0.3
 
 info:
@@ -749,6 +750,31 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /api/dm:
+    post:
+      summary: DMを送信
+      tags:
+        - DM
+      operationId: postDirectMessage
+      parameters:
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostDMRequest"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   parameters:
@@ -1164,6 +1190,19 @@ components:
           type: string
       required:
         - traq_id
+    PostDMRequest:
+      type: object
+      properties:
+        target_user:
+          type: string
+        content:
+          type: string
+        sendtime:
+          type: string
+          format: date-time
+      required:
+        - target_user
+        - content
 
 tags:
   - name: Camps
