@@ -36,12 +36,10 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	}
 
 	// 追加、更新するユーザーを作成
-	newUser := model.User{
-		TraqID:   traqID,
-		TraqUuid: usersUuid[0].Id,
-	}
+	user.TraqUuid = usersUuid[0].Id
+	user.TraqID= traqID
 
-	if err := r.db.Save(&newUser).Error; err != nil {
+	if err := r.db.Save(&user).Error; err != nil {
 		return nil, err
 	}
 
