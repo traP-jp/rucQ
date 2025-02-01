@@ -40,6 +40,7 @@ func (s *Server) PostDirectMessage(e echo.Context, params PostDirectMessageParam
 			}
 		}
 		postMessageRequest := *traq.NewPostMessageRequest(req.Content)
+		postMessageRequest.SetEmbed(true)
 		targetUser, err := s.repo.GetOrCreateUser(req.TargetUser)
 		if err != nil {
 			e.Logger().Errorf("failed to get or create user: %v", err)
