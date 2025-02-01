@@ -100,7 +100,7 @@ const sendDm = async () => {
   const message =
     selectedData.value.amount_paid === selectedData.value.amount
       ? `合宿係です。\n${selectedData.value.amount}円の振込確認が完了しました。`
-      : `合宿係です。\n振込金額に誤りがあります。@${operatorId}にDMで問い合わせてください。`
+      : `合宿係です。\n振込金額に誤りがあります。@${operatorId ?? ''}にDMで問い合わせてください。`
   const { error } = await apiClient.POST('/api/dm', {
     body: {
       target_user: selectedData.value.user_id,
