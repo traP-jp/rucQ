@@ -174,3 +174,51 @@ func (s *Server) PutCamp(e echo.Context, campID CampId, params PutCampParams) er
 
 	return e.JSON(http.StatusOK, response)
 }
+
+func (s *Server) PostCampParticipant(e echo.Context, campID CampId, params PostCampParticipantParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.AddUserToCamp(uint(campID), user); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
+		if errors.Is(err, model.ErrAlreadyExists) {
+			return echo.NewHTTPError(http.StatusConflict, "User already exists in camp")
+		}
+
+		e.Logger().Errorf("failed to add user to camp: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
+}
+
+func (s *Server) DeleteCampParticipant(e echo.Context, campID CampId, params DeleteCampParticipantParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.RemoveUserFromCamp(uint(campID), user); err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
+		e.Logger().Errorf("failed to remove user from camp: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
+}

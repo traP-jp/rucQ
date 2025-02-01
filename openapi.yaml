@@ -121,6 +121,41 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /api/camp/{camp_id}/register:
+    post:
+      summary: 合宿に参加
+      tags:
+        - Camps
+      operationId: postCampParticipant
+      parameters:
+        - $ref: "#/components/parameters/CampId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: 合宿への参加をキャンセル
+      tags:
+        - Camps
+      operationId: deleteCampParticipant
+      parameters:
+        - $ref: "#/components/parameters/CampId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/events:
     get:
       summary: イベントの一覧を取得
