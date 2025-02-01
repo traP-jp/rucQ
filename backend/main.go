@@ -21,7 +21,7 @@ func main() {
 		l.SetHeader("${level}")
 	}
 
-	godotenv.Load(".env", "bot.env")
+	godotenv.Load(".env", "secret.env")
 
 	user := os.Getenv("NS_MARIADB_USER")
 	password := os.Getenv("NS_MARIADB_PASSWORD")
