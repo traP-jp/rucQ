@@ -14,7 +14,7 @@ type PaymentData = components['schemas']['Budget'] & {
   transfer_id: string
   avatar: string
 }
-const operatorId = useUserStore().getUserId()
+const operatorId = await useUserStore().getUserId()
 const autocompleteRef = ref()
 const paymentDataList = ref<PaymentData[]>([])
 const selectedId = ref<string | null>(null)
