@@ -9,11 +9,6 @@ import './assets/main.css'
 const app = createApp(App)
 const pinia = createPinia()
 
-// pinia
-import { useUserStore } from './store'
-const userStore = useUserStore()
-userStore.initialize()
-
 // Vuetify
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
