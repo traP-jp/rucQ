@@ -19,5 +19,6 @@ func Migrate(db *gorm.DB) error {
 func getAllMigrations() []*gormigrate.Migration {
 	return []*gormigrate.Migration{
 		v1(),
+		v2(),
 	}
 }
