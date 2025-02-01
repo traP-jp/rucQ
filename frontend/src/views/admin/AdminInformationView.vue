@@ -15,7 +15,7 @@
           <td :class="$style.nameCell" @click="goToDetail(item.id)">
             <span>{{ item.name }}</span>
           </td>
-          <td :class="$style.deadline">{{ item.due }}</td>
+          <td :class="$style.deadline">{{ formatISOToDate(item.due) }}</td>
         </tr>
       </tbody>
     </table>
@@ -164,6 +164,22 @@ const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id?: numb
     id: 0,
   },
 ])
+const items = ref<components['schemas']['QuestionGroup'][]>([])
+
+
+const formatISOToDate = (isoString: string) => {
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const formatDateToISO = (dateString : string) => {
+  const date = new Date(dateString);
+  return date.toISOString();
+}
+
 
 const deleteOption = (questionIndex: number, optionId: number) => {
   // 指定された位置の選択肢を削除
@@ -179,7 +195,6 @@ const goToDetail = (id: number) => {
   router.push({ name: 'DetailPage', params: { id } })
 }
 
-const items = ref<components['schemas']['QuestionGroup'][]>([])
 
 onMounted(async () => {
   items.value = await getQuestionGroups()
@@ -221,6 +236,8 @@ const decideAddItem = async () => {
     return
   }
   newQuestionGroup.value.camp_id = campData.id
+  newQuestionGroup.value.due = formatDateToISO(newQuestionGroup.value.due)
+  console.log(newQuestionGroup.value.due)
   let res = await postQuestionGroup(newQuestionGroup.value)
 
   if (res) {
@@ -231,11 +248,15 @@ const decideAddItem = async () => {
       if (questionRes) {
       newOptions.value.forEach(async (option) => {
         option.question_id = questionRes.id
-        await apiClient.POST('/api/options', { body: option })
+        await postOption(option)
       })
     }
     })
+
+    items.value.push(res)
   }
+  
+  
   dialogClose()
 }
 
