@@ -38,7 +38,7 @@ type v2User struct {
 	IsStaff  bool   `gorm:"index"`
 	TraqUuid string
 
-	Budgets []v2NewBudget
+	Budgets []v2NewBudget `gorm:"foreignKey:UserTraqID;references:TraqID"`
 }
 
 func (v2User) TableName() string {
