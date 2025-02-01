@@ -15,7 +15,7 @@
           <td :class="$style.nameCell" @click="goToDetail(item.id)">
             <span>{{ item.name }}</span>
           </td>
-          <td :class="$style.deadline">{{ item.deadline }}</td>
+          <td :class="$style.deadline">{{ item.due }}</td>
         </tr>
       </tbody>
     </table>
@@ -23,12 +23,12 @@
     <!-- アクションボタン -->
     <div :class="$style.actions">
       <button @click="addItem">アンケートの追加</button>
-      <v-dialog v-model="dialog" >
+      <v-dialog v-model="dialog">
         <v-sheet :class="$style.dialogSheet">
           <v-card-title>アンケートを追加</v-card-title>
           <v-textarea
             label="質問タイトル"
-            v-model="newItem.name"
+            v-model="newQuestionGroup.name"
             :class="$style.textField"
             variant="outlined"
             rows="1"
@@ -36,7 +36,7 @@
           />
           <v-textarea
             label="説明"
-            v-model="newItem.description"
+            v-model="newQuestionGroup.description"
             :class="$style.textField"
             variant="outlined"
             rows="2"
@@ -44,7 +44,7 @@
           />
           <v-textarea
             label="回答期限"
-            v-model="newItem.deadline"
+            v-model="newQuestionGroup.due"
             variant="outlined"
             rows="1"
             auto-grow
@@ -54,13 +54,13 @@
           <div :class="$style.selectAnswerStyle">
             <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
             <div
-              v-for="(question, index) in newItem.questions"
+              v-for="(question, index) in newQuestions"
               :key="index"
               :class="$style.questionCard"
             >
               <v-textarea
                 label="説明"
-                v-model="newItem.questions[index].description"
+                v-model="newQuestions[index].description"
                 :class="$style.textField"
                 variant="outlined"
                 rows="1"
@@ -68,24 +68,28 @@
               />
               <v-select
                 label="回答形式"
-                :items="['checkbox', 'text', 'radiobutton']"
-                v-model="newItem.type"
+                :items="['single', 'multiple', 'free_text', 'free_number']"
+                v-model="newQuestions[index].type"
                 :class="$style.textField"
                 variant="outlined"
               />
-              <div v-if="newItem.type === 'checkbox' || newItem.type === 'radiobutton'">
+              <div
+                v-if="
+                  newQuestions[index].type == 'single' || newQuestions[index].type == 'multiple'
+                "
+              >
                 <v-btn @click="addOption(index)" :class="$style.addOptionButton"
                   >選択肢を追加</v-btn
                 >
                 <div
-                  v-for="(option, optionId) in newItem.questions[index].options"
+                  v-for="(option, optionId) in newOptions"
                   :key="optionId"
                   :class="$style.optionContainer"
                 >
                   <div :class="$style.optionRow">
                     <v-textarea
                       label="選択肢名"
-                      v-model="newItem.questions[index].options[optionId].option"
+                      v-model="newOptions[optionId].content"
                       :class="$style.textOptionField"
                       variant="outlined"
                       rows="1"
@@ -120,7 +124,9 @@
 
 <script setup lang="ts">
 import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { ref, computed } from 'vue'
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
@@ -129,40 +135,42 @@ const headerTitle = 'ユーザー情報閲覧'
 
 const router = useRouter()
 const dialog = ref(false)
-interface Item {
-  // 連携の時に頑張る　頑張れ
-  id: number
-  name: string
-  description: string
-  deadline: string
-  type: string
-  questions: question[]
-}
 
-interface options {
-  optionId: number
-  option: string
-}
-
-interface question {
-  description: string
-  options: options[]
-}
-
-const newItem = ref<Item>({
-  id: 0,
-  name: 'aaaaa',
+const newQuestionGroup = ref<components['schemas']['PostQuestionGroupRequest']>({
+  // 新規アンケートの追加
+  camp_id: 0,
+  name: '',
+  due: '',
   description: '',
-  deadline: '2023-11-23',
-  type: 'checkbox',
-  questions: [{ description: '', options: [{ optionId: 0, option: '' }] }],
 })
 
+const newQuestions = ref<components['schemas']['PostQuestionRequest'][]>([
+  {
+    // 新規質問の追加
+    question_group_id: 0,
+    title: '',
+    description: '',
+    type: 'single',
+    is_public: false,
+    is_open: false,
+  },
+])
+
+const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id?: number })[]>([
+  {
+    // 新規選択肢の追加
+    question_id: 0,
+    content: '',
+    id: 0,
+  },
+])
+
 const deleteOption = (questionIndex: number, optionId: number) => {
-  newItem.value.questions[questionIndex].options.splice(optionId, 1)
-  // optionIdを再割り当て
-  newItem.value.questions[questionIndex].options.forEach((option, index) => {
-    option.optionId = index
+  // 指定された位置の選択肢を削除
+  newOptions.value.splice(optionId, 1)
+  // 削除後、各要素のidを配列のインデックスに合わせて再設定
+  newOptions.value.forEach((option, index) => {
+    option.id = index
   })
 }
 
@@ -171,50 +179,121 @@ const goToDetail = (id: number) => {
   router.push({ name: 'DetailPage', params: { id } })
 }
 
-const items = ref([
-  { id: 1, type: 'event', name: 'スキーに行きますか', deadline: '2023-12-01' },
-  { id: 2, type: 'event', name: 'スキーで何を借りますか', deadline: '2023-12-15' },
-  { id: 3, type: 'event', name: '何か質問', deadline: '期限切れ' },
-  { id: 4, type: 'room', name: '部屋割りについて', capacity: 20 },
-  { id: 4, type: 'room', name: '予算について', capacity: 20 },
-  { id: 4, type: 'room', name: 'お風呂の時間について', capacity: 20 },
-  // ...他の項目
-])
+const items = ref<components['schemas']['QuestionGroup'][]>([])
 
-const expiredEventsCount = computed(() => {
-  return items.value.filter((item) => item.type === 'event' && item.deadline === '期限切れ').length
+onMounted(async () => {
+  items.value = await getQuestionGroups()
 })
 
 const addItem = () => {
   dialog.value = true
 }
-
-// checkbox, radiobutton のオプションを追加するメソッド
+// addOption 関数内で存在チェックを追加
 const addOption = (index: number) => {
-  newItem.value.questions[index].options.push({
-    optionId: newItem.value.questions[index].options.length,
-    option: '',
+  newOptions.value.push({
+    id: newOptions.value.length,
+    question_id: 0,
+    content: '',
   })
 }
 
+// 新しい質問項目を追加するとき、Question の全必須プロパティを含めるようにします
 const addQuestionItem = () => {
-  newItem.value.questions.push({ description: '', options: [{ optionId: 0, option: '' }] })
+  newQuestions.value.push({
+    title: '',
+    description: '',
+    type: 'single',
+    is_public: false,
+    is_open: false,
+    question_group_id: 0,
+  })
 }
 
+// dialogClose 内でも、プロパティ名が初期値と一致するように（due を使用）修正します
 const dialogClose = () => {
   dialog.value = false
-  newItem.value = { id: 0, name: '', deadline: '', description: '', type: 'text', questions: [] }
 }
 
-const decideAddItem = () => {
-  // 2024-12-01のような形式かどうかの確認
-  if (newItem.value.deadline.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    items.value.push({ ...newItem.value, id: items.value.length + 1 })
-    dialogClose()
-  } else {
-    alert('日付の形式が正しくありません (yyyy-mm-dd)')
+const decideAddItem = async () => {
+  let campData = await getDefaultCamp()
+  if(!campData) {
+    console.error('Failed to fetch default camp')
     return
   }
+  newQuestionGroup.value.camp_id = campData.id
+  let res = await postQuestionGroup(newQuestionGroup.value)
+
+  if (res) {
+    newQuestions.value.forEach(async (question) => {
+      question.question_group_id = res.id
+
+      let questionRes = await postQuestion(question)
+      if (questionRes) {
+      newOptions.value.forEach(async (option) => {
+        option.question_id = questionRes.id
+        await apiClient.POST('/api/options', { body: option })
+      })
+    }
+    })
+  }
+  dialogClose()
+}
+
+// apiに関する関数を追加
+const getDefaultCamp = async () => {
+  const { data, error } = await apiClient.GET('/api/camps/default')
+  if (error) {
+    console.error('Failed to fetch default camp:', error.message)
+    return
+  }
+  return data
+}
+
+const getQuestionGroups = async () => {
+  const { data, error } = await apiClient.GET('/api/question_groups')
+  if (error) {
+    console.error('Failed to fetch information groups:', error.message)
+    return []
+  }
+  return data
+}
+
+const postQuestionGroup = async (
+  questionGroup: components['schemas']['PostQuestionGroupRequest'],
+) => {
+  const { data, error } = await apiClient.POST('/api/question_groups', { body: {
+    camp_id: questionGroup.camp_id,
+    name: questionGroup.name,
+    due: questionGroup.due,
+    description: questionGroup.description,
+  } })
+  if (error) {
+    console.error('Failed to post question group:', error.message)
+    console.log(data)
+    console.log(questionGroup.camp_id)
+    return
+  }
+
+
+  return data
+}
+
+const postQuestion = async (question: components['schemas']['PostQuestionRequest']) => {
+  const { data, error } = await apiClient.POST(`/api/questions`, { body: question })
+  if (error) {
+    console.error('Failed to put question:', error.message)
+    return
+  }
+  return data
+}
+
+const postOption = async (option: components['schemas']['PostOptionRequest']) => {
+  const { data, error } = await apiClient.POST(`/api/options`, { body: option })
+  if (error) {
+    console.error('Failed to put option:', error.message)
+    return
+  }
+  return data
 }
 </script>
 
