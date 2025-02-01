@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/go-gormigrate/gormigrate/v2"
-	"github.com/traP-jp/rucQ/backend/model"
 	"gorm.io/gorm"
 )
 
@@ -37,7 +36,6 @@ type v2User struct {
 	gorm.Model
 	TraqID   string `gorm:"primaryKey"`
 	IsStaff  bool   `gorm:"index"`
-	Answers  []model.Answer
 	TraqUuid string
 
 	Budgets []v2NewBudget
