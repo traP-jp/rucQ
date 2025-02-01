@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useUserStore } from '@/store'
+import { ref, computed } from 'vue'
+// import { useUserStore } from '@/store'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
@@ -14,7 +14,7 @@ type PaymentData = components['schemas']['Budget'] & {
   transfer_id: string
   avatar: string
 }
-const operatorId = await useUserStore().getUserId()
+const operatorId = 'vPhos' // TODO: store使う
 const autocompleteRef = ref()
 const paymentDataList = ref<PaymentData[]>([])
 const selectedId = ref<string | null>(null)
