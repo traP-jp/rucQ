@@ -8,6 +8,7 @@ type Camp struct {
 	Name           string
 	Description    string
 	IsDraft        bool
+	Participants   []User `gorm:"many2many:camp_participants;"`
 	Budgets        []Budget
 	Events         []Event
 	QuestionGroups []QuestionGroup

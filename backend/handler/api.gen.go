@@ -245,6 +245,18 @@ type NotFound struct {
 	Message *string `json:"message,omitempty"`
 }
 
+// DeleteCampParticipantParams defines parameters for DeleteCampParticipant.
+type DeleteCampParticipantParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// PostCampParticipantParams defines parameters for PostCampParticipant.
+type PostCampParticipantParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // PostCampParams defines parameters for PostCamp.
 type PostCampParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -563,6 +575,12 @@ func (t *PutAnswerRequest_Content) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// 合宿への参加をキャンセル
+	// (DELETE /api/camp/{camp_id}/register)
+	DeleteCampParticipant(ctx echo.Context, campId CampId, params DeleteCampParticipantParams) error
+	// 合宿に参加
+	// (POST /api/camp/{camp_id}/register)
+	PostCampParticipant(ctx echo.Context, campId CampId, params PostCampParticipantParams) error
 	// 合宿の一覧を取得
 	// (GET /api/camps)
 	GetCamps(ctx echo.Context) error
@@ -670,6 +688,78 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// DeleteCampParticipant converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteCampParticipant(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", ctx.Param("camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter camp_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteCampParticipantParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteCampParticipant(ctx, campId, params)
+	return err
+}
+
+// PostCampParticipant converts echo context to params.
+func (w *ServerInterfaceWrapper) PostCampParticipant(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", ctx.Param("camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter camp_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostCampParticipantParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostCampParticipant(ctx, campId, params)
+	return err
 }
 
 // GetCamps converts echo context to params.
@@ -1634,6 +1724,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.DELETE(baseURL+"/api/camp/:camp_id/register", wrapper.DeleteCampParticipant)
+	router.POST(baseURL+"/api/camp/:camp_id/register", wrapper.PostCampParticipant)
 	router.GET(baseURL+"/api/camps", wrapper.GetCamps)
 	router.POST(baseURL+"/api/camps", wrapper.PostCamp)
 	router.GET(baseURL+"/api/camps/default", wrapper.GetDefaultCamp)
