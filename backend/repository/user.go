@@ -9,12 +9,18 @@ import (
 	traq "github.com/traPtitech/go-traq"
 )
 
-
 func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	var user model.User
 
 	// まずデータベースを検索
 	if err := r.db.Where("traq_id = ?", traqID).Find(&user).Error; err != nil {
+		// traq_id が traqID であるレコードのうち最初の一件を抽出して user に格納する
+		// Find に []model.User を渡せば該当レコード全てを取得してくれるらしい
+		// 今回は traqID がユーザーを一意に指定できるので、Find には単一の model.User 型変数のポインタが渡されている
+
+		// Where は検索条件の指定であり、まだこの段階ではクエリを実行しているわけではない
+		// クエリの実行は Find の段階。他にも Where.Update などのようにして該当するレコードに対して一括処理を実行できる
+
 		return nil, err
 	}
 
@@ -33,12 +39,14 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	// traQ API のレスポンスをチェック
 	if len(usersUuid) != 1 {
 		return nil, fmt.Errorf("no users found with name %s", traqID)
+		// 2 の場合もあるかもしれないけど、とりあえず普通 0 だよねということで no users found のエラー
 	}
 
 	// 追加、更新するユーザーを作成
 	user.TraqUuid = usersUuid[0].Id
-	user.TraqID= traqID
+	user.TraqID = traqID
 
+	// user をセーブしてはいるが、すでに存在するユーザーの場合はこのクエリを実行しても何も起こらないという感じだろうか
 	if err := r.db.Save(&user).Error; err != nil {
 		return nil, err
 	}

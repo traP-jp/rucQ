@@ -24,3 +24,5 @@ func GetAllModels() []any {
 		&Answer{},
 	}
 }
+
+// model に定義されている全ての構造体のポインタの配列を返す

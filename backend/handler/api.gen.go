@@ -48,6 +48,24 @@ type Answer_Content struct {
 	union json.RawMessage
 }
 
+// json.RawMessage は JSON のパースを段階的に行うために使われるとても便利な型
+// json.RawMessage 型に指定した部分の JSON 文字列は、パースすることなくとっておける
+// たとえば以下のような Response 型があるとして、
+// 
+// type Response struct {
+//     Type string `json:"type"`
+//     Data json.RawMessage `json:"data"`
+// }
+// 
+// ある JSON 文字列を json.Unmarshal() によりパースして Response 型の変数 res に格納したとすると、
+// res.Data にはその部分に対応する未解析の状態の JSON 文字列が入っている
+// パース済みの res.Type の値に応じて res.Data のパース方法を変えたりすることができるようになっている
+
+// そもそも union という属性は Answer_Content と PutAnswerRequest_Content にしか使われていない
+// というか、頭文字が小文字なのでこの定義はファイルを出ない。ここでの一時的な処理のためだけに用意されている
+// 名前から推測するに、union という属性の存在自体が「ユニオン型」であることの定義なのだろうと思われる
+// 
+
 // Budget defines model for Budget.
 type Budget struct {
 	Amount     *int `json:"amount"`
@@ -437,12 +455,37 @@ type PostUserBudgetJSONRequestBody = PostBudgetRequest
 // PutUserBudgetJSONRequestBody defines body for PutUserBudget for application/json ContentType.
 type PutUserBudgetJSONRequestBody = PostBudgetRequest
 
+// これ以降なぜかめっちゃ AnswerContent 関連の関数が出てくる
+// おそらく、openapi.yaml において Answer.Content の型を oneOf にしていることが原因のひとつだと思われる
+// openapi.yaml における Answer.Content の型設定をコピペしてくると、以下の通り
+//
+// content:
+// oneOf:
+//   - type: string
+//   - type: array
+// 	   items:
+// 	       type: string
+// nullable: true
+//
+// つまり、Answer.Content は「string 配列」「string 型配列」「null」のいずれかを受け付ける
+// TypeScript でいえば string | string[] | null というユニオン型で書くべきところ
+// 「何通りかの文字列だけが入る型」「何通りかの型のうち一つである型」は TypeScript では両方ともユニオン型で書くことができるが、
+// openapi.yaml で書く場合は前者を enum、後者を oneOf と書いて区別するらしい
+// 
+// oneOf の設定は openapi.yaml では Answer と PutAnswerRequest にしか登場していないので、
+// それ関連の特殊な対応のために以下インターフェース型の定義が始まるまで長らく関数宣言に紙幅を費やしているのだと思われる
+
+// AnswerContent0 型 = string 型、AnswerContent1 型 = []string 型 である
+// nullable であるところにはあまり触れない？
+
 // AsAnswerContent0 returns the union data inside the Answer_Content as a AnswerContent0
 func (t Answer_Content) AsAnswerContent0() (AnswerContent0, error) {
 	var body AnswerContent0
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
+// Answer_Content 型の変数 content があるとする。content は属性 union を持つ
+// content.AsAnswerContent0() は content.union を AnswerContent0（すなわち string 型）として取り出して返却する関数
 
 // FromAnswerContent0 overwrites any union data inside the Answer_Content as the provided AnswerContent0
 func (t *Answer_Content) FromAnswerContent0(v AnswerContent0) error {
@@ -450,6 +493,11 @@ func (t *Answer_Content) FromAnswerContent0(v AnswerContent0) error {
 	t.union = b
 	return err
 }
+// AnswerContent0 型（すなわち string 型）の変数 v を受け取り、
+// v を t 自身の union に JSON 文字列として代入する。t は v を表現する Answer_Content 型となる
+
+// こういう関数を answers.go（おそらく手書き…？）でも使っているっぽい
+// ぜったい AsString とか FromArrayString とかの言い方にしてくれた方が使いやすいのに…
 
 // MergeAnswerContent0 performs a merge with any union data inside the Answer_Content, using the provided AnswerContent0
 func (t *Answer_Content) MergeAnswerContent0(v AnswerContent0) error {
@@ -678,6 +726,7 @@ func (w *ServerInterfaceWrapper) GetCamps(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetCamps(ctx)
+	// 自身の内部にある Handler の同名関数 GetCamps を実行するだけ
 	return err
 }
 
@@ -729,9 +778,12 @@ func (w *ServerInterfaceWrapper) GetCamp(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter camp_id: %s", err))
 	}
+	// やってることは、渡されたパラメータ（ctx）から "camp_id" の値を取り出して変数 campId に格納する
+	// パラメータの名前 "camp_id" とパラメータの値 ctx.Param("camp_id") を両方引数に取っているところが解せないけど、多分必要なんでしょう
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetCamp(ctx, campId)
+	// でもって、最後に自身の Handler 内にある GetCamp を実行。ctx をそのまま扱うんじゃなくて、campId が別個の引数として与えられて嬉しい
 	return err
 }
 
@@ -1621,6 +1673,17 @@ type EchoRouter interface {
 	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
 }
 
+// EchoRouter というインターフェース型を定義し、その中に CONNECT とか DELETE とかの関数を宣言している
+// その CONNECT とか DELETE とかの関数の定義そのものはリポジトリ内のどこにも書かれていない
+// インターフェース型とはあくまで「異なる型」を「単一の型」のように扱うために「持っている属性の条件」を書いたもの
+
+// main.go では、EchoRouter 型の引数をとる RegisterHandlers（↓）の第一引数には e := echo.New() が取られていた
+// echo.New() は *Echo 型で、確かに CONNECT とか DELETE とかの関数を持っている
+// https://pkg.go.dev/github.com/labstack/echo/v4#Echo.CONNECT
+
+// *Echo 型以外が引数に入ってくるわけないのでこの EchoRouter 型の定義は実用的な意味では不要なのだろうけれど、
+// *Echo 型にはそれ以外にもたくさんの関数があるので、その中の HTTP メソッドに関わるこの部分だけ使いますよ、という列挙の意図があるのかも
+
 // RegisterHandlers adds each server route to the EchoRouter.
 func RegisterHandlers(router EchoRouter, si ServerInterface) {
 	RegisterHandlersWithBaseURL(router, si, "")
@@ -1629,10 +1692,14 @@ func RegisterHandlers(router EchoRouter, si ServerInterface) {
 // Registers handlers, and prepends BaseURL to the paths, so that the paths
 // can be served under a prefix.
 func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL string) {
+	// 直上の RegisterHandlers から呼び出されている通り、baseURL は空文字列
 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
+
+	// 全ての API エンドポイントを登録している
+	// 
 
 	router.GET(baseURL+"/api/camps", wrapper.GetCamps)
 	router.POST(baseURL+"/api/camps", wrapper.PostCamp)
@@ -1669,4 +1736,40 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/api/users/:traq_id/budgets", wrapper.PostUserBudget)
 	router.PUT(baseURL+"/api/users/:traq_id/budgets", wrapper.PutUserBudget)
 
+	// router
 }
+
+
+// この api.gen.go は oapi-codegen というツールによって自動生成されたもの
+// 基本的には openapi.yaml から生成されているっぽい
+// api.gen.go に含まれているものの一覧 ↓
+
+// 1. enum（列挙型）の定義
+//    合宿係からのアンケートについて、各質問の方式を表す QuestionType 型の変数は文字列で、以下の 4 通りの値をもつ
+//       "free_number" | "free_text" | "multiple" | "single"
+//    TypeScript ではユニオン型によってこれらしか取れない変数を簡単に定義できるが、Go ではユニオン型に相当する書き方が存在しない
+//    そこでここに定義されているような方法でそれぞれの値を変数に定義し、いずれかの変数に一致しているかを判定するバリデーション関数を用意する
+//    ...はずなのだが、バリデーション関数は見当たらない
+
+// 2. 型定義
+//    アプリで実際に使用する型を openapi.yaml から読み取り、全て自動で定義する
+//    type CampId = int のような一見不要そうな型も全て実装され、生成されたコードで普通に使われている感じ
+//    BadRequest とか NotFound のようなアプリで実際に扱われている型ではないものがなぜ定義されているのはまだわからない
+
+// 3. oneOf（ユニオン型）の対応
+//    合宿係からのアンケートに対する解答を表す Answer_Content 型は string | string[] を表現しなくてはならない
+//    そこで Answer_Content 型は union という json.RawMessage 型の属性ひとつをもち、
+//    それぞれの型 string と string[] の場合で union の中身を json.Unmarshal によりパースして返却する関数が用意されている
+//    answers.go には Answer 型に載っている QuestionID から QuestionType を得て読み取り方を決めているっぽい記述がある
+
+// 4. 関数
+//    お待ちかね。全て type ServerInterfaceWrapper struct { Handler ServerInterface } という型のメソッドとして定義されている
+//    それぞれの関数には ctx という単一の引数が渡される
+//        これらの関数の存在意義は、ctx の中から（たとえば ctx.Params() の実行により）引数を取り出して使いやすくした上で、
+//        自分自身の内部の Handler に定義されている関数に渡して実行すること
+//    自身の Handler には RegisterHandlers で引数として渡される handler.NewServer(db) が入ってくる
+//    変数とかが使いやすい状態の関数を handler で手書きして、変換の面倒な部分は api.gen.go の自動生成におまかせ、という感じか
+
+// 5. ハンドラ登録
+//    RegisterHandlers が呼び出されたら、引数の router（*Echo 型）に 4 で定義された各関数を装填
+//    ここまでしてようやく API が完成、という感じ

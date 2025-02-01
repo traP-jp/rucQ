@@ -10,6 +10,7 @@ import (
 
 func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMyAnswerParams) error {
 	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+	// s.repo によって repository 内で定義された関数にアクセスする
 
 	if err != nil {
 		e.Logger().Errorf("failed to get or create user: %v", err)
@@ -22,6 +23,8 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 		UserID:     user.ID,
 	})
 
+	// データベースから指定の QuestionID、UserID に対する answer の情報が取り出される
+
 	if err != nil {
 		e.Logger().Errorf("failed to get or create answer: %v", err)
 
@@ -31,6 +34,9 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 	var res Answer
 
 	if err := copier.Copy(&res, &answer); err != nil {
+		// answer の内容が res にコピーされる
+		// ここから先、answer はいじらず、answer の内容をもとに res をいじっているっぽい
+
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -45,12 +51,18 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 
 	if answer.Content != nil {
 		if question.Type == string(QuestionTypeMultiple) {
+			// string(QuestionTypeMultiple) ってつまり文字列 "multiple" じゃないですか…。ややこしい
+			// ここは複数解答可能な質問の実装現場か。おそらく今はボツになっている気がするけど
+
 			if err := res.Content.FromAnswerContent1(*answer.Content); err != nil {
 				e.Logger().Errorf("failed to convert content: %v", err)
 
 				return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 			}
 		} else {
+			// もしそうでなければ（つまりもし question.Type が "free_number" か "free_text" か "single" であるなら）
+			// res.Content に answer.Content の内容を突っ込む
+
 			if err := res.Content.FromAnswerContent0((*answer.Content)[0]); err != nil {
 				e.Logger().Errorf("failed to convert content: %v", err)
 
@@ -60,6 +72,8 @@ func (s *Server) GetMyAnswer(e echo.Context, questionID QuestionId, params GetMy
 	}
 
 	res.UserTraqId = *params.XForwardedUser
+
+	// ここまで揃えて res を返却する
 
 	return e.JSON(http.StatusOK, res)
 }
