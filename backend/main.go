@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/traP-jp/rucQ/backend/handler"
-	"github.com/traP-jp/rucQ/backend/model"
+	"github.com/traP-jp/rucQ/backend/migration"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -21,7 +21,7 @@ func main() {
 		l.SetHeader("${level}")
 	}
 
-	godotenv.Load(".env", "bot.env")
+	godotenv.Load(".env", "secret.env")
 
 	user := os.Getenv("NS_MARIADB_USER")
 	password := os.Getenv("NS_MARIADB_PASSWORD")
@@ -34,7 +34,7 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	if err := db.AutoMigrate(model.GetAllModels()...); err != nil {
+	if err := migration.Migrate(db); err != nil {
 		e.Logger.Fatal(err)
 	}
 

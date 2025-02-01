@@ -50,10 +50,11 @@ type Answer_Content struct {
 
 // Budget defines model for Budget.
 type Budget struct {
-	Amount     *int `json:"amount"`
-	AmountPaid int  `json:"amount_paid"`
-	CampId     int  `json:"camp_id"`
-	Id         int  `json:"id"`
+	Amount     *int   `json:"amount"`
+	AmountPaid int    `json:"amount_paid"`
+	CampId     int    `json:"camp_id"`
+	Id         int    `json:"id"`
+	UserTraqId string `json:"user_traq_id"`
 }
 
 // Camp defines model for Camp.
@@ -202,6 +203,9 @@ type User struct {
 // CampId defines model for CampId.
 type CampId = int
 
+// CampIdQuery defines model for CampIdQuery.
+type CampIdQuery = int
+
 // EventId defines model for EventId.
 type EventId = int
 
@@ -243,6 +247,15 @@ type InternalServerError struct {
 // NotFound defines model for NotFound.
 type NotFound struct {
 	Message *string `json:"message,omitempty"`
+}
+
+// GetBudgetsParams defines parameters for GetBudgets.
+type GetBudgetsParams struct {
+	// CampId 合宿ID
+	CampId *CampIdQuery `form:"camp_id,omitempty" json:"camp_id,omitempty"`
+
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
 // PostCampParams defines parameters for PostCamp.
@@ -563,6 +576,9 @@ func (t *PutAnswerRequest_Content) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// 支払い情報の一覧を取得
+	// (GET /api/budgets)
+	GetBudgets(ctx echo.Context, params GetBudgetsParams) error
 	// 合宿の一覧を取得
 	// (GET /api/camps)
 	GetCamps(ctx echo.Context) error
@@ -670,6 +686,41 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetBudgets converts echo context to params.
+func (w *ServerInterfaceWrapper) GetBudgets(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetBudgetsParams
+	// ------------- Optional query parameter "camp_id" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "camp_id", ctx.QueryParams(), &params.CampId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter camp_id: %s", err))
+	}
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetBudgets(ctx, params)
+	return err
 }
 
 // GetCamps converts echo context to params.
@@ -1634,6 +1685,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/api/budgets", wrapper.GetBudgets)
 	router.GET(baseURL+"/api/camps", wrapper.GetCamps)
 	router.POST(baseURL+"/api/camps", wrapper.PostCamp)
 	router.GET(baseURL+"/api/camps/default", wrapper.GetDefaultCamp)

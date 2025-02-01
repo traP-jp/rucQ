@@ -7,7 +7,7 @@ type Camp struct {
 	DisplayID      string
 	Name           string
 	Description    string
-	IsDraft        bool
+	IsDraft        bool `gorm:"index"`
 	Budgets        []Budget
 	Events         []Event
 	QuestionGroups []QuestionGroup

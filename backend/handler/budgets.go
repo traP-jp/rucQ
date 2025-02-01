@@ -9,15 +9,7 @@ import (
 )
 
 func (s *Server) GetMyBudget(e echo.Context, params GetMyBudgetParams) error {
-	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
-
-	if err != nil {
-		e.Logger().Errorf("failed to get or create user: %v", err)
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	budget, err := s.repo.GetBudgetByUserID(user.ID)
+	budget, err := s.repo.GetBudget(*params.XForwardedUser)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get budget by user id: %v", err)
@@ -49,15 +41,7 @@ func (s *Server) GetUserBudget(e echo.Context, traqId TraqId, params GetUserBudg
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
-	user, err := s.repo.GetOrCreateUser(traqId)
-
-	if err != nil {
-		e.Logger().Errorf("failed to get or create user: %v", err)
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	budget, err := s.repo.GetBudgetByUserID(user.ID)
+	budget, err := s.repo.GetBudget(traqId)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get budget by user id: %v", err)
@@ -113,7 +97,7 @@ func (s *Server) PostUserBudget(e echo.Context, traqId TraqId, params PostUserBu
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	budget.UserID = user.ID
+	budget.UserTraqID = user.TraqID
 
 	if err := s.repo.UpdateBudget(&budget); err != nil {
 		e.Logger().Errorf("failed to update budget: %v", err)
@@ -161,15 +145,7 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	user, err := s.repo.GetOrCreateUser(traqId)
-
-	if err != nil {
-		e.Logger().Errorf("failed to get or create user: %v", err)
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	oldBudget, err := s.repo.GetBudgetByUserID(user.ID)
+	oldBudget, err := s.repo.GetBudget(traqId)
 
 	if err != nil {
 		e.Logger().Errorf("failed to get budget by user id: %v", err)
@@ -178,7 +154,6 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 	}
 
 	budget.ID = oldBudget.ID
-	budget.UserID = user.ID
 
 	if err := s.repo.UpdateBudget(&budget); err != nil {
 		e.Logger().Errorf("failed to update budget: %v", err)
@@ -195,4 +170,52 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 	}
 
 	return e.JSON(http.StatusOK, res)
+}
+
+func (s *Server) GetBudgets(e echo.Context, params GetBudgetsParams) error {
+	operator, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !operator.IsStaff {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	var campID uint
+
+	if params.CampId == nil {
+		defaultCamp, err := s.repo.GetDefaultCamp()
+
+		if err != nil {
+			e.Logger().Errorf("failed to get default camp: %v", err)
+
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		}
+
+		campID = defaultCamp.ID
+	} else {
+		campID = uint(*params.CampId)
+	}
+
+	budgets, err := s.repo.GetBudgets(campID)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get budgets: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response []Budget
+
+	if err := copier.Copy(&response, &budgets); err != nil {
+		e.Logger().Errorf("failed to copy budgets: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
 }
