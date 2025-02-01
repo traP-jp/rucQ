@@ -23,7 +23,7 @@
     <!-- アクションボタン -->
     <div :class="$style.actions">
       <button @click="addItem">アンケートの追加</button>
-      <v-dialog v-model="dialog">
+      <v-dialog v-model="dialog" >
         <v-sheet :class="$style.dialogSheet">
           <v-card-title>アンケートを追加</v-card-title>
           <v-textarea
@@ -287,10 +287,6 @@ const decideAddItem = () => {
   transition: all ease-in 0.3s;
 }
 
-.nameCell:hover {
-  /* color: #150df9; */
-  /* border-bottom: 1px solid #333 */
-}
 .nameCell span {
   border-bottom: 1px solid transparent; /* 初期状態は透明なボーダー */
   transition: border-bottom 0.1s ease-in; /* border-bottom のみにトランジションを適用 */
@@ -324,8 +320,8 @@ const decideAddItem = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
-  min-width: 300px;
+  width: 65%;
+  min-width: 350px;
   margin: auto;
   max-height: 90vh;
 }
