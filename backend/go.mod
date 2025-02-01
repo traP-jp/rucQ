@@ -3,6 +3,7 @@ module github.com/traP-jp/rucQ/backend
 go 1.23.4
 
 require (
+	github.com/go-gormigrate/gormigrate/v2 v2.1.3
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/joho/godotenv v1.5.1
@@ -16,7 +17,6 @@ require (
 
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/go-gormigrate/gormigrate/v2 v2.1.3 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
