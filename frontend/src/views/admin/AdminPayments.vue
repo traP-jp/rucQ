@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useUserStore } from '@/store'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
@@ -13,6 +14,7 @@ type PaymentData = components['schemas']['Budget'] & {
   transfer_id: string
   avatar: string
 }
+const operatorId = useUserStore().userId
 const autocompleteRef = ref()
 const paymentDataList = ref<PaymentData[]>([])
 const selectedId = ref<string | null>(null)
@@ -46,22 +48,67 @@ const getPaymentDataList = async (userList: string[]) => {
   return res
 }
 
-const updatePaymentData = async (paymentData?: PaymentData, amount?: number) => {
-  if (paymentData == null || amount == null) return
+// const confirmPayment_ = async (paymentData?: PaymentData, amount?: number) => {
+//   if (paymentData == null || amount == null) return
+//   const { error } = await apiClient.PUT('/api/users/{traq_id}/budgets', {
+//     params: { path: { traq_id: paymentData.user_id } },
+//     body: {
+//       camp_id: paymentData.camp_id,
+//       amount: paymentData.amount,
+//       amount_paid: amount,
+//     },
+//   })
+//   if (error) {
+//     console.error('Failed to update payment data:', error.message)
+//     alert('支払い情報の更新に失敗しました')
+//   } else {
+//     selectedId.value = null
+//     autocompleteRef.value?.focus()
+//   }
+// }
+
+const confirmPayment = async () => {
+  if (selectedData.value?.amount == null) return
   const { error } = await apiClient.PUT('/api/users/{traq_id}/budgets', {
-    params: { path: { traq_id: paymentData.user_id } },
+    params: { path: { traq_id: selectedData.value.user_id } },
     body: {
-      camp_id: paymentData.camp_id,
-      amount: paymentData.amount,
-      amount_paid: amount,
+      camp_id: selectedData.value.camp_id,
+      amount: selectedData.value.amount,
+      amount_paid: selectedData.value.amount,
     },
   })
   if (error) {
     console.error('Failed to update payment data:', error.message)
     alert('支払い情報の更新に失敗しました')
   } else {
+    selectedData.value.amount_paid = selectedData.value.amount
+    await sendDm()
     selectedId.value = null
     autocompleteRef.value?.focus()
+  }
+}
+
+const rejectPayment = async () => {
+  await sendDm()
+  alert('DMで確認してください')
+  selectedId.value = null
+  autocompleteRef.value?.focus()
+}
+
+const sendDm = async () => {
+  if (selectedData.value == null) return
+  const message =
+    selectedData.value.amount_paid === selectedData.value.amount
+      ? `合宿係です。\n${selectedData.value.amount}円の振込確認が完了しました。`
+      : `合宿係です。\n振込金額に誤りがあります。@${operatorId}にDMで問い合わせてください。`
+  const { error } = await apiClient.POST('/api/dm', {
+    body: {
+      target_user: selectedData.value.user_id,
+      content: message,
+    },
+  })
+  if (error) {
+    console.error('Failed to send DM:', error.message)
   }
 }
 
@@ -115,14 +162,14 @@ const setupUserList = async () => {
           :disabled="
             selectedData?.amount == null || selectedData.amount_paid === selectedData.amount
           "
-          @click="updatePaymentData(selectedData, selectedData?.amount ?? undefined)"
+          @click="confirmPayment"
         >
           振込確認
         </v-btn>
         <v-btn
           class="flex-grow-1 bg-red-lighten-3"
           :disabled="selectedData?.amount == null"
-          @click="updatePaymentData"
+          @click="rejectPayment"
         >
           拒否
         </v-btn>
