@@ -447,7 +447,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 }
 
 .actions button:hover {
-  background-color: #21867a;
+  background-color: #d56d39;
 }
 
 .dialogSheet {
