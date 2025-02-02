@@ -98,9 +98,7 @@
                   >選択肢を追加</v-btn
                 >
                 <div
-                  v-for="(option, optionId) in newQuestionGroup.questions[index].options.filter(
-                    (o) => o.question_id === index,
-                  )"
+                  v-for="(option, optionId) in newQuestionGroup.questions[index].options"
                   :key="optionId"
                   :class="$style.optionContainer"
                 >
@@ -160,7 +158,7 @@ const dialog = ref(false)
 const newQuestionGroup = ref<
   components['schemas']['PostQuestionGroupRequest'] & {
     questions: (components['schemas']['PostQuestionRequest'] & {
-      options: components['schemas']['PostOptionRequest'][]
+      options: (components['schemas']['PostOptionRequest'])[]
     })[]
   }
 >({
@@ -235,7 +233,8 @@ const addOption = (index: number) => {
 }
 
 const addQuestionItem = () => {
-  newQuestionGroup.value.questions.push({// 空のデータを入れる。　親をさすqurstion_idなどは適当に入れておく
+  newQuestionGroup.value.questions.push({
+    // 空のデータを入れる。　親をさすqurstion_idなどは適当に入れておく
     question_group_id: 0,
     title: '',
     description: '',
@@ -393,6 +392,8 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: all ease-in 0.3s;
 }
+
+
 
 .typeColumn,/*内容　期限*/
 .nameColumn {
