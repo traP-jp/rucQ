@@ -54,7 +54,7 @@
           <div :class="$style.selectAnswerStyle">
             <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
             <div
-              v-for="(question, index) in newQuestions"
+              v-for="(question, index) in newQuestionGroup.questions"
               :key="index"
               :class="$style.questionCard"
             >
@@ -75,7 +75,7 @@
               </v-row>
               <v-textarea
                 label="説明"
-                v-model="newQuestions[index].description"
+                v-model="newQuestionGroup.questions[index].description"
                 :class="$style.textField"
                 variant="outlined"
                 rows="1"
@@ -84,27 +84,30 @@
               <v-select
                 label="回答形式"
                 :items="['single', 'multiple', 'free_text', 'free_number']"
-                v-model="newQuestions[index].type"
+                v-model="newQuestionGroup.questions[index].type"
                 :class="$style.textField"
                 variant="outlined"
               />
               <div
                 v-if="
-                  newQuestions[index].type == 'single' || newQuestions[index].type == 'multiple'
+                  newQuestionGroup.questions[index].type == 'single' ||
+                  newQuestionGroup.questions[index].type == 'multiple'
                 "
               >
                 <v-btn @click="addOption(index)" :class="$style.addOptionButton"
                   >選択肢を追加</v-btn
                 >
                 <div
-                  v-for="(option, optionId) in newOptions.filter((o) => o.question_id === index)"
+                  v-for="(option, optionId) in newQuestionGroup.questions[index].options.filter(
+                    (o) => o.question_id === index,
+                  )"
                   :key="optionId"
                   :class="$style.optionContainer"
                 >
                   <div :class="$style.optionRow">
                     <v-textarea
                       label="選択肢名"
-                      v-model="newOptions[option.id].content"
+                      v-model="newQuestionGroup.questions[index].options[optionId].content"
                       :class="$style.textOptionField"
                       variant="outlined"
                       rows="1"
@@ -114,7 +117,7 @@
 
                     <!-- ここにバツボタン -->
                     <v-btn
-                      @click="deleteOption(index, option.id)"
+                      @click="deleteOption(index, optionId)"
                       color="grey-lighten-1"
                       cols="auto"
                       size="x-small"
@@ -154,35 +157,35 @@ const headerTitle = 'ユーザー情報閲覧'
 const router = useRouter()
 const dialog = ref(false)
 
-const newQuestionGroup = ref<components['schemas']['PostQuestionGroupRequest']>({
+const newQuestionGroup = ref<
+  components['schemas']['PostQuestionGroupRequest'] & {
+    questions: (components['schemas']['PostQuestionRequest'] & {
+      options: components['schemas']['PostOptionRequest'][]
+    })[]
+  }
+>({
   // 新規アンケートの追加
   camp_id: 0,
   name: '',
   due: '',
   description: '',
+  questions: [
+    {
+      question_group_id: 0,
+      title: '',
+      description: '',
+      type: 'single',
+      is_public: false,
+      is_open: false,
+      options: [
+        {
+          question_id: 0,
+          content: '',
+        },
+      ],
+    },
+  ],
 })
-
-const newQuestions = ref<(components['schemas']['PostQuestionRequest'] & { id: number })[]>([
-  {
-    // 新規質問の追加
-    question_group_id: 0,
-    title: '',
-    description: '',
-    type: 'single',
-    is_public: false,
-    is_open: false,
-    id: 0, //　削除するときや、選択肢との一時的な紐づけに使う
-  },
-])
-
-const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id: number })[]>([
-  {
-    // 新規選択肢の追加
-    question_id: 0,
-    content: '',
-    id: 0, //　削除するときにつかう
-  },
-])
 
 const items = ref<components['schemas']['QuestionGroup'][]>([])
 
@@ -201,29 +204,14 @@ const formatDateToISO = (dateString: string) => {
 
 const deleteOption = (questionIndex: number, optionId: number) => {
   // 指定された位置の選択肢を削除
-  newOptions.value.splice(optionId, 1)
-  // 削除後、各要素のidを配列のインデックスに合わせて再設定
-  newOptions.value.forEach((option, index) => {
-    option.id = index
-  })
+  newQuestionGroup.value.questions[questionIndex].options.splice(optionId, 1)
 }
 
 const deleteQuestion = (questionIndex: number) => {
   console.log(questionIndex)
 
-  const deletedId = newQuestions.value[questionIndex].id
   // 指定された位置の質問を削除
-  newQuestions.value.splice(questionIndex, 1)
-
-  // 削除された質問に紐づく選択肢も削除
-  newOptions.value = newOptions.value.filter(option => option.question_id !== deletedId)
-
-  // 削除後、各要素のidを配列のインデックスに合わせて再設定
-  newOptions.value.forEach((option, index) => {
-    option.id = index
-  })
-
-  console.log(newQuestions.value)
+  newQuestionGroup.value.questions.splice(questionIndex, 1)
 }
 
 const goToDetail = (id: number) => {
@@ -240,30 +228,26 @@ const addItem = () => {
 }
 // addOption 関数内で存在チェックを追加
 const addOption = (index: number) => {
-  newOptions.value.push({
-    id: newOptions.value.length,
+  newQuestionGroup.value.questions[index].options.push({
     question_id: index,
     content: '',
   })
-
-  console.log(newOptions.value)
 }
 
 const addQuestionItem = () => {
-  newQuestions.value.push({
-    id: newQuestions.value.length,
+  newQuestionGroup.value.questions.push({// 空のデータを入れる。　親をさすqurstion_idなどは適当に入れておく
+    question_group_id: 0,
     title: '',
     description: '',
     type: 'single',
     is_public: false,
     is_open: false,
-    question_group_id: 0,
-  })
-
-  newOptions.value.push({
-    question_id: newQuestions.value.length - 1,
-    content: '',
-    id: newOptions.value.length,
+    options: [
+      {
+        question_id: 0,
+        content: '',
+      },
+    ],
   })
 }
 
@@ -278,17 +262,18 @@ const decideAddItem = async () => {
     return
   }
   newQuestionGroup.value.camp_id = campData.id
+
+  // 2024-12-31みたいな形式を変換
   newQuestionGroup.value.due = formatDateToISO(newQuestionGroup.value.due)
-  console.log(newQuestionGroup.value.due)
   let res = await postQuestionGroup(newQuestionGroup.value)
 
   if (res) {
-    newQuestions.value.forEach(async (question) => {
+    newQuestionGroup.value.questions.forEach(async (question) => {
       question.question_group_id = res.id
 
       let questionRes = await postQuestion(question)
       if (questionRes) {
-        newOptions.value.forEach(async (option) => {
+        question.options.forEach(async (option) => {
           option.question_id = questionRes.id
           await postOption(option)
         })
