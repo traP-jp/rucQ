@@ -710,6 +710,79 @@ paths:
                   $ref: "#/components/schemas/Budget"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /api/rooms:
+    get:
+      summary: 部屋の一覧を取得
+      tags:
+        - Rooms
+      operationId: getRooms
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Room"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: 部屋を作成
+      tags:
+        - Rooms
+      operationId: postRoom
+      parameters:
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostRoomRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: 部屋を更新
+      tags:
+        - Rooms
+      operationId: putRoom
+      parameters:
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostRoomRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/staffs:
     get:
       summary: 合宿係の一覧を取得
@@ -1212,6 +1285,39 @@ components:
       required:
         - camp_id
         - amount_paid
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        camp_id:
+          type: integer
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - id
+        - name
+        - camp_id
+        - members
+    PostRoomRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        camp_id:
+          type: integer
+        members:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - camp_id
+        - members
     PostStaffRequest:
       type: object
       properties:
@@ -1244,5 +1350,7 @@ tags:
     description: Question API
   - name: Budgets
     description: Budget API
+  - name: Rooms
+    description: Room API
   - name: Staffs
     description: Staff API

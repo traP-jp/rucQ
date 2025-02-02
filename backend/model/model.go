@@ -22,5 +22,6 @@ func GetAllModels() []any {
 		&Question{},
 		&Option{},
 		&Answer{},
+		&Room{},
 	}
 }
