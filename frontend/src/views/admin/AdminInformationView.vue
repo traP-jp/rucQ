@@ -379,7 +379,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 .tableHeader {
   border: 3px solid #948d8d !important;
   z-index: 2;
-  background-color: #eaf3fa;
+  background-color: #faf4ea;
   font-size: 17px;
   display: flex;
 }
@@ -438,7 +438,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 
 .actions button {
   padding: 10px 25px;
-  background-color: #2a9d8f;
+  background-color: #f07b41;
   color: #fff;
   border: none;
   border-radius: 4px;
