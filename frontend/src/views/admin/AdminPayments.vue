@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 // import { useUserStore } from '@/store'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
@@ -9,101 +9,89 @@ import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 const { xs } = useDisplay()
 
+const autocompleteRef = ref()
+const confirmButtonRef = ref()
 type PaymentData = components['schemas']['Budget'] & {
-  user_id: string
   transfer_id: string
   avatar: string
 }
-const operatorId = 'vPhos' // TODO: store使う
-const autocompleteRef = ref()
-const paymentDataList = ref<PaymentData[]>([])
-const selectedId = ref<string | null>(null)
-const selectedData = computed(() =>
-  paymentDataList.value.find((data) => data.user_id === selectedId.value),
-)
-
 const customFilter = (value: string, query: string, item: unknown) => {
   return (item as { raw: PaymentData }).raw.transfer_id.startsWith(query.toUpperCase())
 }
 
-// const getUserList = async () => []
-
-const getPaymentDataList = async (userList: string[]) => {
-  const res: PaymentData[] = []
-  for (const userId of userList) {
-    const { data, error } = await apiClient.GET('/api/users/{traq_id}/budgets', {
-      params: { path: { traq_id: userId } },
-    })
-    if (error) {
-      console.error('Failed to fetch payment data:', error.message)
-      continue
-    }
-    res.push({
-      ...data,
-      user_id: userId,
-      transfer_id: userId.toUpperCase().replace(/[-_]/g, ''),
-      avatar: `https://q.trap.jp/api/v3/public/icon/${userId}`,
-    })
+const getPaymentDataList = async () => {
+  const { data, error } = await apiClient.GET('/api/budgets')
+  if (error) {
+    console.error('Failed to fetch payment data list:', error.message)
+    return []
   }
-  return res
+  return data.map((data) => ({
+    ...data,
+    transfer_id: data.user_traq_id.toUpperCase().replace(/[-_]/g, ''),
+    avatar: `https://q.trap.jp/api/v3/public/icon/${data.user_traq_id}`,
+  }))
 }
 
-// const confirmPayment_ = async (paymentData?: PaymentData, amount?: number) => {
-//   if (paymentData == null || amount == null) return
-//   const { error } = await apiClient.PUT('/api/users/{traq_id}/budgets', {
-//     params: { path: { traq_id: paymentData.user_id } },
-//     body: {
-//       camp_id: paymentData.camp_id,
-//       amount: paymentData.amount,
-//       amount_paid: amount,
-//     },
-//   })
-//   if (error) {
-//     console.error('Failed to update payment data:', error.message)
-//     alert('支払い情報の更新に失敗しました')
-//   } else {
-//     selectedId.value = null
-//     autocompleteRef.value?.focus()
-//   }
-// }
+const operatorId = 'vPhos' // TODO: store使う
+const paymentDataList: PaymentData[] = await getPaymentDataList()
+const selectedId = ref<string | null>(null)
+const selectedData = computed(() =>
+  paymentDataList.find((data) => data.user_traq_id === selectedId.value),
+)
+const newPaidAmount = ref<number>()
 
-const confirmPayment = async () => {
+watch(selectedId, () => {
+  if (selectedData.value == null) return
+  newPaidAmount.value = selectedData.value.amount ?? undefined
+})
+
+const settlePayment = async (type: 'confirm' | 'reject') => {
   if (selectedData.value?.amount == null) return
+  const updateSuccess = await updatePaymentData()
+  if (!updateSuccess) return
+  if (type === 'confirm') await sendDm('approve')
+  else {
+    const messageType =
+      selectedData.value.amount_paid === selectedData.value.amount ? 'duplicate' : 'reject'
+    await sendDm(messageType)
+    alert(
+      `振込内容を拒否しました。必ず@${selectedData.value.user_traq_id}にDMでコンタクトをとってください。`,
+    )
+  }
+  selectedId.value = null
+  autocompleteRef.value?.focus()
+}
+
+const updatePaymentData = async () => {
+  if (selectedData.value == null || newPaidAmount.value == null) return
   const { error } = await apiClient.PUT('/api/users/{traq_id}/budgets', {
-    params: { path: { traq_id: selectedData.value.user_id } },
+    params: { path: { traq_id: selectedData.value?.user_traq_id } },
     body: {
       camp_id: selectedData.value.camp_id,
       amount: selectedData.value.amount,
-      amount_paid: selectedData.value.amount,
+      amount_paid: selectedData.value.amount_paid + newPaidAmount.value,
     },
   })
   if (error) {
     console.error('Failed to update payment data:', error.message)
     alert('支払い情報の更新に失敗しました')
   } else {
-    selectedData.value.amount_paid = selectedData.value.amount
-    await sendDm()
-    selectedId.value = null
-    autocompleteRef.value?.focus()
+    selectedData.value.amount_paid += newPaidAmount.value // paymentDataListにも反映される
   }
+  return error == null // 正常に完了したか
 }
 
-const rejectPayment = async () => {
-  await sendDm()
-  alert('DMで確認してください')
-  selectedId.value = null
-  autocompleteRef.value?.focus()
-}
-
-const sendDm = async () => {
+const sendDm = async (type: 'approve' | 'reject' | 'duplicate') => {
   if (selectedData.value == null) return
-  const message =
-    selectedData.value.amount_paid === selectedData.value.amount
-      ? `合宿係です。\n${selectedData.value.amount}円の振込確認が完了しました。`
-      : `合宿係です。\n振込金額に誤りがあります。@${operatorId ?? ''}にDMで問い合わせてください。`
+  const message = {
+    approve: `合宿係です。\n${selectedData.value.amount}円の振込確認が完了しました。`,
+    reject: `合宿係です。\n振込金額に誤りがあります。@${operatorId ?? ''}にDMで問い合わせてください。`,
+    duplicate: `合宿係です。\n振込が重複しています。@${operatorId ?? ''}にDMで問い合わせてください。`,
+  }[type]
+
   const { error } = await apiClient.POST('/api/dm', {
     body: {
-      target_user: selectedData.value.user_id,
+      target_user: selectedData.value.user_traq_id,
       content: message,
     },
   })
@@ -112,16 +100,11 @@ const sendDm = async () => {
   }
 }
 
-// onMounted(async () => {
-//   const userList = (await getUserList()) ?? []
-//   paymentDataList.value = (await getPaymentDataList(userList)) ?? []
-// })
-
-// 一時的な処置
-const userListStr = ref('')
-const setupUserList = async () => {
-  const userList = userListStr.value.split(' ')
-  paymentDataList.value = (await getPaymentDataList(userList)) ?? []
+const handlerKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Tab') {
+    event.preventDefault()
+    confirmButtonRef.value?.focus()
+  }
 }
 </script>
 
@@ -140,6 +123,7 @@ const setupUserList = async () => {
         :custom-filter="customFilter"
         auto-select-first
         hide-details
+        @keydown="handlerKeyDown"
       >
         <template v-slot:item="{ props, item }">
           <v-list-item
@@ -150,39 +134,33 @@ const setupUserList = async () => {
         </template>
       </v-autocomplete>
       <v-card-item
-        :title="selectedData?.user_id ?? 'traQ ID'"
+        :title="selectedData?.user_traq_id ?? 'traQ ID'"
         :prepend-avatar="selectedData?.avatar ?? 'https://q.trap.jp/api/v3/public/icon/traP'"
       />
       <v-card-text>
         <payment-information-panel :data="selectedData" />
       </v-card-text>
+      <v-text-field v-model="newPaidAmount" label="振込金額" hide-details />
       <div class="d-flex align-center justify-center ga-4 px-4">
         <v-btn
           class="flex-grow-1 bg-green-lighten-2"
+          ref="confirmButtonRef"
           :disabled="
-            selectedData?.amount == null || selectedData.amount_paid === selectedData.amount
+            selectedData?.amount == null ||
+            selectedData.amount_paid + (newPaidAmount ?? 0) !== selectedData.amount
           "
-          @click="confirmPayment"
+          @click="settlePayment('confirm')"
         >
           振込確認
         </v-btn>
         <v-btn
           class="flex-grow-1 bg-red-lighten-3"
-          :disabled="selectedData?.amount == null"
-          @click="rejectPayment"
+          :disabled="selectedData?.amount == null || newPaidAmount == null"
+          @click="settlePayment('reject')"
         >
           拒否
         </v-btn>
       </div>
-      <!-- 一時的な処置 -->
-      <v-sheet class="d-flex flex-column pa-4">
-        <v-text-field
-          v-model="userListStr"
-          label="traQ ID"
-          placeholder="traQ IDをスペース区切りで入力"
-        />
-        <v-btn @click="setupUserList">セットアップ</v-btn>
-      </v-sheet>
     </v-sheet>
   </v-container>
 </template>
