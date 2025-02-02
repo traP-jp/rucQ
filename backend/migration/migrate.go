@@ -20,5 +20,6 @@ func getAllMigrations() []*gormigrate.Migration {
 	return []*gormigrate.Migration{
 		v1(),
 		v2(),
+		v3(),
 	}
 }
