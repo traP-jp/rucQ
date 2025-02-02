@@ -82,14 +82,14 @@
                   >選択肢を追加</v-btn
                 >
                 <div
-                  v-for="(option, optionId) in newOptions"
+                  v-for="(option, optionId) in newOptions.filter((o) => o.question_id === index)"
                   :key="optionId"
                   :class="$style.optionContainer"
                 >
                   <div :class="$style.optionRow">
                     <v-textarea
                       label="選択肢名"
-                      v-model="newOptions[optionId].content"
+                      v-model="newOptions[option.id].content"
                       :class="$style.textOptionField"
                       variant="outlined"
                       rows="1"
@@ -99,7 +99,7 @@
 
                     <!-- ここにバツボタン -->
                     <v-btn
-                      @click="deleteOption(index, optionId)"
+                      @click="deleteOption(index, optionI)"
                       color="red-darken-1"
                       :class="$style.deleteButton"
                       >削除
@@ -144,7 +144,7 @@ const newQuestionGroup = ref<components['schemas']['PostQuestionGroupRequest']>(
   description: '',
 })
 
-const newQuestions = ref<components['schemas']['PostQuestionRequest'][]>([
+const newQuestions = ref<(components['schemas']['PostQuestionRequest'] & { id: number } )[]>([
   {
     // 新規質問の追加
     question_group_id: 0,
@@ -153,33 +153,32 @@ const newQuestions = ref<components['schemas']['PostQuestionRequest'][]>([
     type: 'single',
     is_public: false,
     is_open: false,
+    id: 0,//　削除するときや、選択肢との一時的な紐づけに使う
   },
 ])
 
-const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id?: number })[]>([
+const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id: number })[]>([
   {
     // 新規選択肢の追加
     question_id: 0,
     content: '',
-    id: 0,
+    id: 0,//　削除するときにつかう
   },
 ])
 const items = ref<components['schemas']['QuestionGroup'][]>([])
 
-
 const formatISOToDate = (isoString: string) => {
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  const date = new Date(isoString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
-const formatDateToISO = (dateString : string) => {
-  const date = new Date(dateString);
-  return date.toISOString();
+const formatDateToISO = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toISOString()
 }
-
 
 const deleteOption = (questionIndex: number, optionId: number) => {
   // 指定された位置の選択肢を削除
@@ -195,7 +194,6 @@ const goToDetail = (id: number) => {
   router.push({ name: 'DetailPage', params: { id } })
 }
 
-
 onMounted(async () => {
   items.value = await getQuestionGroups()
 })
@@ -207,14 +205,16 @@ const addItem = () => {
 const addOption = (index: number) => {
   newOptions.value.push({
     id: newOptions.value.length,
-    question_id: 0,
+    question_id: index,
     content: '',
   })
+
+  console.log(newOptions.value)
 }
 
-// 新しい質問項目を追加するとき、Question の全必須プロパティを含めるようにします
 const addQuestionItem = () => {
   newQuestions.value.push({
+    id: newQuestions.value.length,
     title: '',
     description: '',
     type: 'single',
@@ -224,14 +224,13 @@ const addQuestionItem = () => {
   })
 }
 
-// dialogClose 内でも、プロパティ名が初期値と一致するように（due を使用）修正します
 const dialogClose = () => {
   dialog.value = false
 }
 
 const decideAddItem = async () => {
   let campData = await getDefaultCamp()
-  if(!campData) {
+  if (!campData) {
     console.error('Failed to fetch default camp')
     return
   }
@@ -246,17 +245,16 @@ const decideAddItem = async () => {
 
       let questionRes = await postQuestion(question)
       if (questionRes) {
-      newOptions.value.forEach(async (option) => {
-        option.question_id = questionRes.id
-        await postOption(option)
-      })
-    }
+        newOptions.value.forEach(async (option) => {
+          option.question_id = questionRes.id
+          await postOption(option)
+        })
+      }
     })
 
     items.value.push(res)
   }
-  
-  
+
   dialogClose()
 }
 
@@ -282,19 +280,20 @@ const getQuestionGroups = async () => {
 const postQuestionGroup = async (
   questionGroup: components['schemas']['PostQuestionGroupRequest'],
 ) => {
-  const { data, error } = await apiClient.POST('/api/question_groups', { body: {
-    camp_id: questionGroup.camp_id,
-    name: questionGroup.name,
-    due: questionGroup.due,
-    description: questionGroup.description,
-  } })
+  const { data, error } = await apiClient.POST('/api/question_groups', {
+    body: {
+      camp_id: questionGroup.camp_id,
+      name: questionGroup.name,
+      due: questionGroup.due,
+      description: questionGroup.description,
+    },
+  })
   if (error) {
     console.error('Failed to post question group:', error.message)
     console.log(data)
     console.log(questionGroup.camp_id)
     return
   }
-
 
   return data
 }
