@@ -15,7 +15,7 @@
           <td :class="$style.nameCell" @click="goToDetail(item.id)">
             <span>{{ item.name }}</span>
           </td>
-          <td :class="$style.deadline">{{ item.deadline }}</td>
+          <td :class="$style.deadline">{{ formatISOToDate(item.due) }}</td>
         </tr>
       </tbody>
     </table>
@@ -25,10 +25,10 @@
       <button @click="addItem">アンケートの追加</button>
       <v-dialog v-model="dialog">
         <v-sheet :class="$style.dialogSheet">
-          <v-card-title>アンケートを追加</v-card-title>
+          <v-card-title class="mt-2">アンケートを追加</v-card-title>
           <v-textarea
             label="質問タイトル"
-            v-model="newItem.name"
+            v-model="newQuestionGroup.name"
             :class="$style.textField"
             variant="outlined"
             rows="1"
@@ -36,7 +36,7 @@
           />
           <v-textarea
             label="説明"
-            v-model="newItem.description"
+            v-model="newQuestionGroup.description"
             :class="$style.textField"
             variant="outlined"
             rows="2"
@@ -44,7 +44,7 @@
           />
           <v-textarea
             label="回答期限"
-            v-model="newItem.deadline"
+            v-model="newQuestionGroup.due"
             variant="outlined"
             rows="1"
             auto-grow
@@ -54,13 +54,28 @@
           <div :class="$style.selectAnswerStyle">
             <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
             <div
-              v-for="(question, index) in newItem.questions"
+              v-for="(question, index) in newQuestionGroup.questions"
               :key="index"
               :class="$style.questionCard"
             >
+              <v-row align="center" justify="center" class="mt-2 position-relative">
+                <v-col cols="auto">
+                  <h3 :class="$style.questionTitle">質問</h3>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn
+                    @click="deleteQuestion(index)"
+                    :class="$style.questionoDeleteButton"
+                    size="x-small"
+                    icon
+                  >
+                    <v-icon color="white">mdi-close</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
               <v-textarea
                 label="説明"
-                v-model="newItem.questions[index].description"
+                v-model="newQuestionGroup.questions[index].description"
                 :class="$style.textField"
                 variant="outlined"
                 rows="1"
@@ -68,24 +83,29 @@
               />
               <v-select
                 label="回答形式"
-                :items="['checkbox', 'text', 'radiobutton']"
-                v-model="newItem.type"
+                :items="['single', 'multiple', 'free_text', 'free_number']"
+                v-model="newQuestionGroup.questions[index].type"
                 :class="$style.textField"
                 variant="outlined"
               />
-              <div v-if="newItem.type === 'checkbox' || newItem.type === 'radiobutton'">
+              <div
+                v-if="
+                  newQuestionGroup.questions[index].type == 'single' ||
+                  newQuestionGroup.questions[index].type == 'multiple'
+                "
+              >
                 <v-btn @click="addOption(index)" :class="$style.addOptionButton"
                   >選択肢を追加</v-btn
                 >
                 <div
-                  v-for="(option, optionId) in newItem.questions[index].options"
+                  v-for="(option, optionId) in newQuestionGroup.questions[index].options"
                   :key="optionId"
                   :class="$style.optionContainer"
                 >
                   <div :class="$style.optionRow">
                     <v-textarea
                       label="選択肢名"
-                      v-model="newItem.questions[index].options[optionId].option"
+                      v-model="newQuestionGroup.questions[index].options[optionId].content"
                       :class="$style.textOptionField"
                       variant="outlined"
                       rows="1"
@@ -96,9 +116,12 @@
                     <!-- ここにバツボタン -->
                     <v-btn
                       @click="deleteOption(index, optionId)"
-                      color="red-darken-1"
-                      :class="$style.deleteButton"
-                      >削除
+                      color="grey-lighten-1"
+                      cols="auto"
+                      size="x-small"
+                      icon
+                    >
+                      <v-icon color="white">mdi-close</v-icon>
                     </v-btn>
                   </div>
                 </div>
@@ -120,7 +143,9 @@
 
 <script setup lang="ts">
 import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { ref, computed } from 'vue'
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
@@ -129,41 +154,62 @@ const headerTitle = 'ユーザー情報閲覧'
 
 const router = useRouter()
 const dialog = ref(false)
-interface Item {
-  // 連携の時に頑張る　頑張れ
-  id: number
-  name: string
-  description: string
-  deadline: string
-  type: string
-  questions: question[]
-}
 
-interface options {
-  optionId: number
-  option: string
-}
-
-interface question {
-  description: string
-  options: options[]
-}
-
-const newItem = ref<Item>({
-  id: 0,
-  name: 'aaaaa',
+const newQuestionGroup = ref<
+  components['schemas']['PostQuestionGroupRequest'] & {
+    questions: (components['schemas']['PostQuestionRequest'] & {
+      options: (components['schemas']['PostOptionRequest'])[]
+    })[]
+  }
+>({
+  // 新規アンケートの追加
+  camp_id: 0,
+  name: '',
+  due: '',
   description: '',
-  deadline: '2023-11-23',
-  type: 'checkbox',
-  questions: [{ description: '', options: [{ optionId: 0, option: '' }] }],
+  questions: [
+    {
+      question_group_id: 0,
+      title: '',
+      description: '',
+      type: 'single',
+      is_public: false,
+      is_open: false,
+      options: [
+        {
+          question_id: 0,
+          content: '',
+        },
+      ],
+    },
+  ],
 })
 
+const items = ref<components['schemas']['QuestionGroup'][]>([])
+
+const formatISOToDate = (isoString: string) => {
+  const date = new Date(isoString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const formatDateToISO = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toISOString()
+}
+
 const deleteOption = (questionIndex: number, optionId: number) => {
-  newItem.value.questions[questionIndex].options.splice(optionId, 1)
-  // optionIdを再割り当て
-  newItem.value.questions[questionIndex].options.forEach((option, index) => {
-    option.optionId = index
-  })
+  // 指定された位置の選択肢を削除
+  newQuestionGroup.value.questions[questionIndex].options.splice(optionId, 1)
+}
+
+const deleteQuestion = (questionIndex: number) => {
+  console.log(questionIndex)
+
+  // 指定された位置の質問を削除
+  newQuestionGroup.value.questions.splice(questionIndex, 1)
 }
 
 const goToDetail = (id: number) => {
@@ -171,50 +217,130 @@ const goToDetail = (id: number) => {
   router.push({ name: 'DetailPage', params: { id } })
 }
 
-const items = ref([
-  { id: 1, type: 'event', name: 'スキーに行きますか', deadline: '2023-12-01' },
-  { id: 2, type: 'event', name: 'スキーで何を借りますか', deadline: '2023-12-15' },
-  { id: 3, type: 'event', name: '何か質問', deadline: '期限切れ' },
-  { id: 4, type: 'room', name: '部屋割りについて', capacity: 20 },
-  { id: 4, type: 'room', name: '予算について', capacity: 20 },
-  { id: 4, type: 'room', name: 'お風呂の時間について', capacity: 20 },
-  // ...他の項目
-])
-
-const expiredEventsCount = computed(() => {
-  return items.value.filter((item) => item.type === 'event' && item.deadline === '期限切れ').length
+onMounted(async () => {
+  items.value = await getQuestionGroups()
 })
 
 const addItem = () => {
   dialog.value = true
 }
-
-// checkbox, radiobutton のオプションを追加するメソッド
+// addOption 関数内で存在チェックを追加
 const addOption = (index: number) => {
-  newItem.value.questions[index].options.push({
-    optionId: newItem.value.questions[index].options.length,
-    option: '',
+  newQuestionGroup.value.questions[index].options.push({
+    question_id: index,
+    content: '',
   })
 }
 
 const addQuestionItem = () => {
-  newItem.value.questions.push({ description: '', options: [{ optionId: 0, option: '' }] })
+  newQuestionGroup.value.questions.push({
+    // 空のデータを入れる。　親をさすqurstion_idなどは適当に入れておく
+    question_group_id: 0,
+    title: '',
+    description: '',
+    type: 'single',
+    is_public: false,
+    is_open: false,
+    options: [
+      {
+        question_id: 0,
+        content: '',
+      },
+    ],
+  })
 }
 
 const dialogClose = () => {
   dialog.value = false
-  newItem.value = { id: 0, name: '', deadline: '', description: '', type: 'text', questions: [] }
 }
 
-const decideAddItem = () => {
-  // 2024-12-01のような形式かどうかの確認
-  if (newItem.value.deadline.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    items.value.push({ ...newItem.value, id: items.value.length + 1 })
-    dialogClose()
-  } else {
-    alert('日付の形式が正しくありません (yyyy-mm-dd)')
+const decideAddItem = async () => {
+  let campData = await getDefaultCamp()
+  if (!campData) {
+    console.error('Failed to fetch default camp')
     return
   }
+  newQuestionGroup.value.camp_id = campData.id
+
+  // 2024-12-31みたいな形式を変換
+  newQuestionGroup.value.due = formatDateToISO(newQuestionGroup.value.due)
+  let res = await postQuestionGroup(newQuestionGroup.value)
+
+  if (res) {
+    newQuestionGroup.value.questions.forEach(async (question) => {
+      question.question_group_id = res.id
+
+      let questionRes = await postQuestion(question)
+      if (questionRes) {
+        question.options.forEach(async (option) => {
+          option.question_id = questionRes.id
+          await postOption(option)
+        })
+      }
+    })
+
+    items.value.push(res)
+  }
+
+  dialogClose()
+}
+
+// apiに関する関数を追加
+const getDefaultCamp = async () => {
+  const { data, error } = await apiClient.GET('/api/camps/default')
+  if (error) {
+    console.error('Failed to fetch default camp:', error.message)
+    return
+  }
+  return data
+}
+
+const getQuestionGroups = async () => {
+  const { data, error } = await apiClient.GET('/api/question_groups')
+  if (error) {
+    console.error('Failed to fetch information groups:', error.message)
+    return []
+  }
+  return data
+}
+
+const postQuestionGroup = async (
+  questionGroup: components['schemas']['PostQuestionGroupRequest'],
+) => {
+  const { data, error } = await apiClient.POST('/api/question_groups', {
+    body: {
+      camp_id: questionGroup.camp_id,
+      name: questionGroup.name,
+      due: questionGroup.due,
+      description: questionGroup.description,
+    },
+  })
+  if (error) {
+    console.error('Failed to post question group:', error.message)
+    console.log(data)
+    console.log(questionGroup.camp_id)
+    return
+  }
+
+  return data
+}
+
+const postQuestion = async (question: components['schemas']['PostQuestionRequest']) => {
+  const { data, error } = await apiClient.POST(`/api/questions`, { body: question })
+  if (error) {
+    console.error('Failed to put question:', error.message)
+    return
+  }
+  return data
+}
+
+const postOption = async (option: components['schemas']['PostOptionRequest']) => {
+  const { data, error } = await apiClient.POST(`/api/options`, { body: option })
+  if (error) {
+    console.error('Failed to put option:', error.message)
+    return
+  }
+  return data
 }
 </script>
 
@@ -264,7 +390,10 @@ const decideAddItem = () => {
   width: 95%;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all ease-in 0.3s;
 }
+
+
 
 .typeColumn,/*内容　期限*/
 .nameColumn {
@@ -287,10 +416,6 @@ const decideAddItem = () => {
   transition: all ease-in 0.3s;
 }
 
-.nameCell:hover {
-  /* color: #150df9; */
-  /* border-bottom: 1px solid #333 */
-}
 .nameCell span {
   border-bottom: 1px solid transparent; /* 初期状態は透明なボーダー */
   transition: border-bottom 0.1s ease-in; /* border-bottom のみにトランジションを適用 */
@@ -324,8 +449,8 @@ const decideAddItem = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
-  min-width: 300px;
+  width: 65%;
+  min-width: 350px;
   margin: auto;
   max-height: 90vh;
 }
@@ -395,7 +520,19 @@ const decideAddItem = () => {
   width: 100%;
 }
 
-.deleteButton {
-  margin: auto;
+.questionoDeleteButton {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50%;
+  z-index: 10;
+  background-color: #bdbdbd;
+}
+
+.questionTitle {
+  font-size: 24px; /* ここで文字サイズを大きくする */
 }
 </style>
