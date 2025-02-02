@@ -40,6 +40,7 @@
             rows="2"
             auto-grow
           />
+          <div>
           <v-textarea
             label="回答期限 (例: 2024-12-31)"
             v-model="newQuestionGroup.due"
@@ -48,6 +49,7 @@
             auto-grow
             :class="$style.textField"
           />
+          </div>
 
           <div :class="$style.selectAnswerStyle">
             <v-btn @click="addQuestionItem" color="primary" class="mt-4">質問項目の追加</v-btn>
@@ -127,9 +129,10 @@
             </div>
           </div>
           <div :class="$style.dialogButtonContainer">
-            <v-btn @click="decideAddItem" color="primary">質問の追加</v-btn>
+            <v-btn @click="decideAddItem" color="primary" size="large">質問の追加</v-btn>
 
             <v-btn @click="dialogClose" color="primary" variant="tonal" :class="$style.closeButton"
+            size="large"
               >キャンセル</v-btn
             >
           </div>
@@ -238,7 +241,7 @@ const addQuestionItem = () => {
     description: '',
     type: 'single',
     is_public: false,
-    is_open: false,
+    is_open: true,
     options: [
       {
         question_id: 0,
@@ -463,8 +466,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 .dialogButtonContainer {
   display: flex;
   justify-content: center;
-  margin-left: auto;
-  margin-right: 20px;
+  margin: auto;
   gap: 20px;
   margin-bottom: 20px;
 }
