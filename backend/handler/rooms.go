@@ -95,7 +95,7 @@ func (s *Server) PostRoom(e echo.Context, params PostRoomParams) error {
 	return e.JSON(http.StatusCreated, res)
 }
 
-func (s *Server) PutRoom(e echo.Context, params PutRoomParams) error {
+func (s *Server) PutRoom(e echo.Context, roomID RoomId, params PutRoomParams) error {
 	operator, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
@@ -114,7 +114,17 @@ func (s *Server) PutRoom(e echo.Context, params PutRoomParams) error {
 		return e.JSON(http.StatusBadRequest, err)
 	}
 
-	var roomModel model.Room
+	roomModel, err := s.repo.GetRoomByID(uint(roomID))
+
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+
+		e.Logger().Errorf("failed to get room: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
 
 	if err := copier.Copy(&roomModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
@@ -154,5 +164,5 @@ func (s *Server) PutRoom(e echo.Context, params PutRoomParams) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, res)
+	return e.JSON(http.StatusOK, res)
 }

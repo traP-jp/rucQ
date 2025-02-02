@@ -230,6 +230,9 @@ type OptionId = int
 // QuestionId defines model for QuestionId.
 type QuestionId = int
 
+// RoomId defines model for RoomId.
+type RoomId = int
+
 // StaffId defines model for StaffId.
 type StaffId = string
 
@@ -697,8 +700,8 @@ type ServerInterface interface {
 	// (POST /api/rooms)
 	PostRoom(ctx echo.Context, params PostRoomParams) error
 	// 部屋を更新
-	// (PUT /api/rooms)
-	PutRoom(ctx echo.Context, params PutRoomParams) error
+	// (PUT /api/rooms/{room_id})
+	PutRoom(ctx echo.Context, roomId RoomId, params PutRoomParams) error
 	// 合宿係を削除
 	// (DELETE /api/staffs)
 	DeleteStaff(ctx echo.Context, params DeleteStaffParams) error
@@ -1471,6 +1474,13 @@ func (w *ServerInterfaceWrapper) PostRoom(ctx echo.Context) error {
 // PutRoom converts echo context to params.
 func (w *ServerInterfaceWrapper) PutRoom(ctx echo.Context) error {
 	var err error
+	// ------------- Path parameter "room_id" -------------
+	var roomId RoomId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "room_id", ctx.Param("room_id"), &roomId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter room_id: %s", err))
+	}
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PutRoomParams
@@ -1493,7 +1503,7 @@ func (w *ServerInterfaceWrapper) PutRoom(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.PutRoom(ctx, params)
+	err = w.Handler.PutRoom(ctx, roomId, params)
 	return err
 }
 
@@ -1823,7 +1833,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/questions/:question_id", wrapper.PutQuestion)
 	router.GET(baseURL+"/api/rooms", wrapper.GetRooms)
 	router.POST(baseURL+"/api/rooms", wrapper.PostRoom)
-	router.PUT(baseURL+"/api/rooms", wrapper.PutRoom)
+	router.PUT(baseURL+"/api/rooms/:room_id", wrapper.PutRoom)
 	router.DELETE(baseURL+"/api/staffs", wrapper.DeleteStaff)
 	router.GET(baseURL+"/api/staffs", wrapper.GetStaffs)
 	router.POST(baseURL+"/api/staffs", wrapper.PostStaff)

@@ -332,10 +332,26 @@ export interface paths {
         };
         /** 部屋の一覧を取得 */
         get: operations["getRooms"];
-        /** 部屋を更新 */
-        put: operations["putRoom"];
+        put?: never;
         /** 部屋を作成 */
         post: operations["postRoom"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rooms/{room_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 部屋を更新 */
+        put: operations["putRoom"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -594,6 +610,8 @@ export interface components {
         OptionId: number;
         /** @description 回答ID */
         AnswerId: number;
+        /** @description 部屋ID */
+        RoomId: number;
         /** @description 合宿係のtraQ ID */
         StaffId: string;
     };
@@ -1480,37 +1498,6 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
-    putRoom: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PostRoomRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Room"];
-                };
-            };
-            400: components["responses"]["BadRequest"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
     postRoom: {
         parameters: {
             query?: never;
@@ -1539,6 +1526,40 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             409: components["responses"]["Conflict"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    putRoom: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 部屋ID */
+                room_id: components["parameters"]["RoomId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostRoomRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Room"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
             500: components["responses"]["InternalServerError"];
         };
     };
