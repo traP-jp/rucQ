@@ -154,6 +154,8 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 	}
 
 	budget.ID = oldBudget.ID
+	budget.UserID = oldBudget.UserID
+	budget.UserTraqID = oldBudget.UserTraqID
 
 	if err := s.repo.UpdateBudget(&budget); err != nil {
 		e.Logger().Errorf("failed to update budget: %v", err)
