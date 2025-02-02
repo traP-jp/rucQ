@@ -43,7 +43,7 @@
             auto-grow
           />
           <v-textarea
-            label="回答期限"
+            label="回答期限 (例: 2024-12-31)"
             v-model="newQuestionGroup.due"
             variant="outlined"
             rows="1"
