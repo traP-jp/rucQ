@@ -23,9 +23,8 @@ func (r *Repository) GetBudget(traqID string) (*model.Budget, error) {
 
 	if err := r.db.
 		Where(&model.Budget{
-			UserID:     user.ID,
-			UserTraqID: traqID,
-			CampID:     defaultCamp.ID,
+			UserID: user.ID,
+			CampID: defaultCamp.ID,
 		}).
 		FirstOrCreate(&budget).
 		Error; err != nil {
