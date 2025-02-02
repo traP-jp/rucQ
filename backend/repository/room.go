@@ -48,6 +48,4 @@ func (r *Repository) CreateRoom(room *model.Room) error {
 
 func (r *Repository) UpdateRoom(room *model.Room) error {
 	return r.db.Save(room).Error
-	// room のなかに roomID の情報を入れ込んで db.Save
-	// あるいは ID: roomID で検索ののち Updates
 }
