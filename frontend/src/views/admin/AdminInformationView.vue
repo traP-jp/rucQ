@@ -9,15 +9,13 @@
           <td :class="$style.typeColumn">内容</td>
           <td :class="$style.nameColumn">期限</td>
         </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.id">
+        <tr :class="$style.tableContents" v-for="item in items" :key="item.id">
           <td :class="$style.nameCell" @click="goToDetail(item.id)">
             <span>{{ item.name }}</span>
           </td>
           <td :class="$style.deadline">{{ formatISOToDate(item.due) }}</td>
         </tr>
-      </tbody>
+      </thead>
     </table>
 
     <!-- アクションボタン -->
@@ -158,7 +156,7 @@ const dialog = ref(false)
 const newQuestionGroup = ref<
   components['schemas']['PostQuestionGroupRequest'] & {
     questions: (components['schemas']['PostQuestionRequest'] & {
-      options: (components['schemas']['PostOptionRequest'])[]
+      options: components['schemas']['PostOptionRequest'][]
     })[]
   }
 >({
@@ -370,6 +368,8 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 }
 
 .anketoTable {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
@@ -381,6 +381,11 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   z-index: 2;
   background-color: #eaf3fa;
   font-size: 17px;
+  display: flex;
+}
+
+.tableContents{
+  display: flex;
 }
 
 .questionCard {
@@ -393,13 +398,12 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   transition: all ease-in 0.3s;
 }
 
-
-
 .typeColumn,/*内容　期限*/
 .nameColumn {
   font-weight: bold;
   color: #333 !important;
   padding: 12px;
+  flex: 1;
   border-bottom: none;
 }
 
@@ -409,6 +413,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   border-bottom: 1px solid #ddd;
   font-size: larger;
   color: #333333;
+  flex: 1;
 }
 
 .nameCell {
