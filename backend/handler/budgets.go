@@ -25,6 +25,8 @@ func (s *Server) GetMyBudget(e echo.Context, params GetMyBudgetParams) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
+	res.UserTraqId = *params.XForwardedUser
+
 	return e.JSON(http.StatusOK, res)
 }
 
@@ -56,6 +58,8 @@ func (s *Server) GetUserBudget(e echo.Context, traqId TraqId, params GetUserBudg
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
+
+	res.UserTraqId = traqId
 
 	return e.JSON(http.StatusOK, res)
 }
@@ -97,7 +101,7 @@ func (s *Server) PostUserBudget(e echo.Context, traqId TraqId, params PostUserBu
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	budget.UserTraqID = user.TraqID
+	budget.UserID = user.ID
 
 	if err := s.repo.UpdateBudget(&budget); err != nil {
 		e.Logger().Errorf("failed to update budget: %v", err)
@@ -112,6 +116,8 @@ func (s *Server) PostUserBudget(e echo.Context, traqId TraqId, params PostUserBu
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
+
+	res.UserTraqId = traqId
 
 	return e.JSON(http.StatusCreated, res)
 }
@@ -154,6 +160,7 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 	}
 
 	budget.ID = oldBudget.ID
+	budget.UserID = oldBudget.UserID
 
 	if err := s.repo.UpdateBudget(&budget); err != nil {
 		e.Logger().Errorf("failed to update budget: %v", err)
@@ -168,6 +175,8 @@ func (s *Server) PutUserBudget(e echo.Context, traqId TraqId, params PutUserBudg
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
+
+	res.UserTraqId = traqId
 
 	return e.JSON(http.StatusOK, res)
 }
@@ -215,6 +224,19 @@ func (s *Server) GetBudgets(e echo.Context, params GetBudgetsParams) error {
 		e.Logger().Errorf("failed to copy budgets: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	// TODO: N+1問題を解決する
+	for i := range budgets {
+		traqID, err := s.repo.GetUserTraqID(budgets[i].UserID)
+
+		if err != nil {
+			e.Logger().Errorf("failed to get user: %v", err)
+
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		}
+
+		response[i].UserTraqId = traqID
 	}
 
 	return e.JSON(http.StatusOK, response)

@@ -52,6 +52,7 @@ func (s *Server) PostStaff(e echo.Context, params PostStaffParams) error {
 	newStaff, err := s.repo.GetOrCreateUser(req.TraqId)
 
 	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
