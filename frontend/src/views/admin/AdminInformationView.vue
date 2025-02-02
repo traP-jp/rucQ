@@ -25,7 +25,7 @@
       <button @click="addItem">アンケートの追加</button>
       <v-dialog v-model="dialog">
         <v-sheet :class="$style.dialogSheet">
-          <v-card-title>アンケートを追加</v-card-title>
+          <v-card-title class="mt-2">アンケートを追加</v-card-title>
           <v-textarea
             label="質問タイトル"
             v-model="newQuestionGroup.name"
@@ -58,6 +58,21 @@
               :key="index"
               :class="$style.questionCard"
             >
+              <v-row align="center" justify="center" class="mt-2 position-relative">
+                <v-col cols="auto">
+                  <h3 :class="$style.questionTitle">質問</h3>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn
+                    @click="deleteQuestion(index)"
+                    :class="$style.questionoDeleteButton"
+                    size="x-small"
+                    icon
+                  >
+                    <v-icon color="white">mdi-close</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
               <v-textarea
                 label="説明"
                 v-model="newQuestions[index].description"
@@ -99,10 +114,13 @@
 
                     <!-- ここにバツボタン -->
                     <v-btn
-                      @click="deleteOption(index, optionI)"
-                      color="red-darken-1"
-                      :class="$style.deleteButton"
-                      >削除
+                      @click="deleteOption(index, option.id)"
+                      color="grey-lighten-1"
+                      cols="auto"
+                      size="x-small"
+                      icon
+                    >
+                      <v-icon color="white">mdi-close</v-icon>
                     </v-btn>
                   </div>
                 </div>
@@ -144,7 +162,7 @@ const newQuestionGroup = ref<components['schemas']['PostQuestionGroupRequest']>(
   description: '',
 })
 
-const newQuestions = ref<(components['schemas']['PostQuestionRequest'] & { id: number } )[]>([
+const newQuestions = ref<(components['schemas']['PostQuestionRequest'] & { id: number })[]>([
   {
     // 新規質問の追加
     question_group_id: 0,
@@ -153,7 +171,7 @@ const newQuestions = ref<(components['schemas']['PostQuestionRequest'] & { id: n
     type: 'single',
     is_public: false,
     is_open: false,
-    id: 0,//　削除するときや、選択肢との一時的な紐づけに使う
+    id: 0, //　削除するときや、選択肢との一時的な紐づけに使う
   },
 ])
 
@@ -162,9 +180,10 @@ const newOptions = ref<(components['schemas']['PostOptionRequest'] & { id: numbe
     // 新規選択肢の追加
     question_id: 0,
     content: '',
-    id: 0,//　削除するときにつかう
+    id: 0, //　削除するときにつかう
   },
 ])
+
 const items = ref<components['schemas']['QuestionGroup'][]>([])
 
 const formatISOToDate = (isoString: string) => {
@@ -187,6 +206,24 @@ const deleteOption = (questionIndex: number, optionId: number) => {
   newOptions.value.forEach((option, index) => {
     option.id = index
   })
+}
+
+const deleteQuestion = (questionIndex: number) => {
+  console.log(questionIndex)
+
+  const deletedId = newQuestions.value[questionIndex].id
+  // 指定された位置の質問を削除
+  newQuestions.value.splice(questionIndex, 1)
+
+  // 削除された質問に紐づく選択肢も削除
+  newOptions.value = newOptions.value.filter(option => option.question_id !== deletedId)
+
+  // 削除後、各要素のidを配列のインデックスに合わせて再設定
+  newOptions.value.forEach((option, index) => {
+    option.id = index
+  })
+
+  console.log(newQuestions.value)
 }
 
 const goToDetail = (id: number) => {
@@ -221,6 +258,12 @@ const addQuestionItem = () => {
     is_public: false,
     is_open: false,
     question_group_id: 0,
+  })
+
+  newOptions.value.push({
+    question_id: newQuestions.value.length - 1,
+    content: '',
+    id: newOptions.value.length,
   })
 }
 
@@ -363,6 +406,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   width: 95%;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all ease-in 0.3s;
 }
 
 .typeColumn,/*内容　期限*/
@@ -490,7 +534,19 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   width: 100%;
 }
 
-.deleteButton {
-  margin: auto;
+.questionoDeleteButton {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50%;
+  z-index: 10;
+  background-color: #bdbdbd;
+}
+
+.questionTitle {
+  font-size: 24px; /* ここで文字サイズを大きくする */
 }
 </style>
