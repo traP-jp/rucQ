@@ -96,5 +96,63 @@ func (s *Server) PostRoom(e echo.Context, params PostRoomParams) error {
 }
 
 func (s *Server) PutRoom(e echo.Context, params PutRoomParams) error {
-	return nil
+	operator, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !operator.IsStaff {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	var req PutRoomJSONRequestBody
+
+	if err := e.Bind(&req); err != nil {
+		return e.JSON(http.StatusBadRequest, err)
+	}
+
+	var roomModel model.Room
+
+	if err := copier.Copy(&roomModel, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	roomModel.Members = make([]model.User, len(req.Members))
+
+	for i := range req.Members {
+		member, err := s.repo.GetOrCreateUser(req.Members[i])
+
+		if err != nil {
+			if errors.Is(err, model.ErrNotFound) {
+				return echo.NewHTTPError(http.StatusNotFound, "User not found")
+			}
+
+			e.Logger().Errorf("failed to get user: %v", err)
+
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		}
+
+		roomModel.Members[i] = *member
+	}
+
+	if err := s.repo.UpdateRoom(&roomModel); err != nil {
+		e.Logger().Errorf("failed to update room: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var res Room
+
+	if err := copier.Copy(&res, &roomModel); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusCreated, res)
 }

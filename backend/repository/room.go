@@ -30,3 +30,7 @@ func (r *Repository) CreateRoom(room *model.Room) error {
 
 	return nil
 }
+
+func (r *Repository) UpdateRoom(room *model.Room) error {
+	return r.db.Save(room).Error
+}
