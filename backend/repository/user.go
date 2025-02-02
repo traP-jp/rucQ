@@ -9,7 +9,6 @@ import (
 	traq "github.com/traPtitech/go-traq"
 )
 
-
 func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 	var user model.User
 
@@ -37,13 +36,23 @@ func (r *Repository) GetOrCreateUser(traqID string) (*model.User, error) {
 
 	// 追加、更新するユーザーを作成
 	user.TraqUuid = usersUuid[0].Id
-	user.TraqID= traqID
+	user.TraqID = traqID
 
 	if err := r.db.Save(&user).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
+}
+
+func (r *Repository) GetUserTraqID(ID uint) (string, error) {
+	var user model.User
+
+	if err := r.db.Where("id = ?", ID).Find(&user).Error; err != nil {
+		return "", err
+	}
+
+	return user.TraqID, nil
 }
 
 func (r *Repository) GetStaffs() ([]model.User, error) {
