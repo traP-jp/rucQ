@@ -23,3 +23,19 @@ func (r *Repository) GetQuestionGroups() ([]model.QuestionGroup, error) {
 
 	return questionGroups, nil
 }
+
+func (r *Repository) GetQuestionGroup(ID uint) (*model.QuestionGroup, error) {
+	var questionGroup model.QuestionGroup
+
+	if err := r.db.
+		Preload("Questions").
+		Preload("Questions.Options").
+		Where("id = ?", ID).
+		Find(&questionGroup).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return &questionGroup, nil
+}
+
