@@ -44,9 +44,10 @@
             label="回答期限 (例: 2024-12-31)"
             v-model="newQuestionGroup.due"
             variant="outlined"
-            rows="1"
-            auto-grow
             :class="$style.textField"
+            rows="1"
+            class="mb-30"
+            auto-grow
           />
 
           <div :class="$style.selectAnswerStyle">
@@ -79,13 +80,22 @@
                 rows="1"
                 auto-grow
               />
-              <v-select
-                label="回答形式"
-                :items="['single', 'multiple', 'free_text', 'free_number']"
-                v-model="newQuestionGroup.questions[index].type"
-                :class="$style.textField"
-                variant="outlined"
-              />
+              <div :class="xs ? $style.ansStyleAndPublic_mobile : $style.ansStyleAndPublic">
+                <v-select
+                  label="回答形式"
+                  :items="['single', 'multiple', 'free_text', 'free_number']"
+                  v-model="newQuestionGroup.questions[index].type"
+                  :class="[$style.textField, xs ? ''  : ['w-50', 'ma-auto']]"
+                  hide-details
+                  
+                  variant="outlined"
+                />
+                <v-checkbox
+                  v-model="newQuestionGroup.questions[index].is_public"
+                  label="公開質問にする"
+                  hide-details
+                ></v-checkbox>
+              </div>
               <div
                 v-if="
                   newQuestionGroup.questions[index].type == 'single' ||
@@ -127,9 +137,14 @@
             </div>
           </div>
           <div :class="$style.dialogButtonContainer">
-            <v-btn @click="decideAddItem" color="primary">質問の追加</v-btn>
+            <v-btn @click="decideAddItem" color="primary" size="large">質問の公開</v-btn>
 
-            <v-btn @click="dialogClose" color="primary" variant="tonal" :class="$style.closeButton"
+            <v-btn
+              @click="dialogClose"
+              color="primary"
+              variant="tonal"
+              :class="$style.closeButton"
+              size="large"
               >キャンセル</v-btn
             >
           </div>
@@ -148,7 +163,6 @@ import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
-const headerTitle = 'ユーザー情報閲覧'
 
 const router = useRouter()
 const dialog = ref(false)
@@ -194,6 +208,7 @@ const formatISOToDate = (isoString: string) => {
 }
 
 const formatDateToISO = (dateString: string) => {
+  // formatがyyyy-mm-ddの形式になっていなければアラート
   const date = new Date(dateString)
   return date.toISOString()
 }
@@ -238,7 +253,7 @@ const addQuestionItem = () => {
     description: '',
     type: 'single',
     is_public: false,
-    is_open: false,
+    is_open: true,
     options: [
       {
         question_id: 0,
@@ -253,6 +268,7 @@ const dialogClose = () => {
 }
 
 const decideAddItem = async () => {
+  // バックエンドにpostする処理
   let campData = await getDefaultCamp()
   if (!campData) {
     console.error('Failed to fetch default camp')
@@ -261,6 +277,10 @@ const decideAddItem = async () => {
   newQuestionGroup.value.camp_id = campData.id
 
   // 2024-12-31みたいな形式を変換
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(newQuestionGroup.value.due)) {
+    alert('日付の形式が正しくありません')
+    return
+  }
   newQuestionGroup.value.due = formatDateToISO(newQuestionGroup.value.due)
   let res = await postQuestionGroup(newQuestionGroup.value)
 
@@ -379,12 +399,12 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 .tableHeader {
   border: 3px solid #948d8d !important;
   z-index: 2;
-  background-color: #eaf3fa;
+  background-color: #faf4ea;
   font-size: 17px;
   display: flex;
 }
 
-.tableContents{
+.tableContents {
   display: flex;
 }
 
@@ -407,6 +427,24 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   border-bottom: none;
 }
 
+.ansStyleAndPublic {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 80%;
+  margin-bottom: 30px !important;
+  margin: auto;
+}
+
+.ansStyleAndPublic_mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 30px !important;
+}
+
 .deadline,
 .nameCell {
   padding: 10px 15px;
@@ -414,6 +452,8 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
   font-size: larger;
   color: #333333;
   flex: 1;
+  white-space: normal; /* 改行させる */
+  word-break: break-all; /* 単語内でも折り返す */
 }
 
 .nameCell {
@@ -438,7 +478,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 
 .actions button {
   padding: 10px 25px;
-  background-color: #2a9d8f;
+  background-color: #f07b41;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -447,7 +487,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 }
 
 .actions button:hover {
-  background-color: #21867a;
+  background-color: #d56d39;
 }
 
 .dialogSheet {
@@ -463,8 +503,7 @@ const postOption = async (option: components['schemas']['PostOptionRequest']) =>
 .dialogButtonContainer {
   display: flex;
   justify-content: center;
-  margin-left: auto;
-  margin-right: 20px;
+  margin: auto;
   gap: 20px;
   margin-bottom: 20px;
 }
