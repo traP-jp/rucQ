@@ -13,10 +13,17 @@ func (r *Repository) GetBudget(traqID string) (*model.Budget, error) {
 		return nil, err
 	}
 
+	user, err := r.GetOrCreateUser(traqID)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create user: %w", err)
+	}
+
 	var budget model.Budget
 
 	if err := r.db.
 		Where(&model.Budget{
+			UserID:     user.ID,
 			UserTraqID: traqID,
 			CampID:     defaultCamp.ID,
 		}).
