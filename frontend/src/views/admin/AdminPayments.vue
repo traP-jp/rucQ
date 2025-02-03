@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-// import { useUserStore } from '@/store'
+import { ref, computed, watch, onMounted } from 'vue'
+// // import { useUserStore } from '@/store'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
@@ -19,24 +19,11 @@ const customFilter = (value: string, query: string, item: unknown) => {
   return (item as { raw: PaymentData }).raw.transfer_id.startsWith(query.toUpperCase())
 }
 
-const getPaymentDataList = async () => {
-  const { data, error } = await apiClient.GET('/api/budgets')
-  if (error) {
-    console.error('Failed to fetch payment data list:', error.message)
-    return []
-  }
-  return data.map((data) => ({
-    ...data,
-    transfer_id: data.user_traq_id.toUpperCase().replace(/[-_]/g, ''),
-    avatar: `https://q.trap.jp/api/v3/public/icon/${data.user_traq_id}`,
-  }))
-}
-
 const operatorId = 'vPhos' // TODO: store使う
-const paymentDataList: PaymentData[] = await getPaymentDataList()
+const paymentDataList = ref<PaymentData[]>([])
 const selectedId = ref<string | null>(null)
 const selectedData = computed(() =>
-  paymentDataList.find((data) => data.user_traq_id === selectedId.value),
+  paymentDataList.value.find((data) => data.user_traq_id === selectedId.value),
 )
 const newPaidAmount = ref<number>()
 
@@ -44,6 +31,19 @@ watch(selectedId, () => {
   if (selectedData.value == null) return
   newPaidAmount.value = selectedData.value.amount ?? undefined
 })
+
+const getPaymentDataList = async () => {
+  const { data, error } = await apiClient.GET('/api/budgets')
+  if (error) {
+    console.error('Failed to fetch payment data list:', error.message)
+    return []
+  }
+  paymentDataList.value = data.map((data) => ({
+    ...data,
+    transfer_id: data.user_traq_id.toUpperCase().replace(/[-_]/g, ''),
+    avatar: `https://q.trap.jp/api/v3/public/icon/${data.user_traq_id}`,
+  }))
+}
 
 const settlePayment = async (type: 'confirm' | 'reject') => {
   if (selectedData.value?.amount == null) return
@@ -53,7 +53,7 @@ const settlePayment = async (type: 'confirm' | 'reject') => {
   else {
     const messageType =
       selectedData.value.amount_paid === selectedData.value.amount ? 'duplicate' : 'reject'
-    await sendDm(messageType)
+    // await sendDm(messageType)
     alert(
       `振込内容を拒否しました。必ず@${selectedData.value.user_traq_id}にDMでコンタクトをとってください。`,
     )
@@ -103,9 +103,11 @@ const sendDm = async (type: 'approve' | 'reject' | 'duplicate') => {
 const handlerKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Tab') {
     event.preventDefault()
-    confirmButtonRef.value?.focus()
+    confirmButtonRef.value?.$el.focus()
   }
 }
+
+onMounted(getPaymentDataList)
 </script>
 
 <template>
@@ -117,8 +119,8 @@ const handlerKeyDown = (event: KeyboardEvent) => {
         class="px-4 py-2"
         ref="autocompleteRef"
         :items="paymentDataList"
-        item-title="user_id"
-        item-value="user_id"
+        item-title="user_traq_id"
+        item-value="user_traq_id"
         label="振込名義ID"
         :custom-filter="customFilter"
         auto-select-first
@@ -140,15 +142,11 @@ const handlerKeyDown = (event: KeyboardEvent) => {
       <v-card-text>
         <payment-information-panel :data="selectedData" />
       </v-card-text>
-      <v-text-field v-model="newPaidAmount" label="振込金額" hide-details />
+      <v-text-field v-model="newPaidAmount" class="pa-4" label="振込金額" hide-details />
       <div class="d-flex align-center justify-center ga-4 px-4">
         <v-btn
           class="flex-grow-1 bg-green-lighten-2"
           ref="confirmButtonRef"
-          :disabled="
-            selectedData?.amount == null ||
-            selectedData.amount_paid + (newPaidAmount ?? 0) !== selectedData.amount
-          "
           @click="settlePayment('confirm')"
         >
           振込確認
