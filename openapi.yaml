@@ -326,6 +326,25 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /api/question_groups/{question_group_id}:
+    get:
+      summary: 質問グループの詳細を取得
+      tags:
+        - Questions
+      operationId: getQuestionGroup
+      parameters:
+        - $ref: "#/components/parameters/QuestionGroupId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionGroup"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/questions:
     get:
       summary: 質問の一覧を取得
@@ -828,6 +847,13 @@ components:
       name: event_id
       in: path
       description: イベントID
+      required: true
+      schema:
+        type: integer
+    QuestionGroupId:
+      name: question_group_id
+      in: path
+      description: 質問グループのID
       required: true
       schema:
         type: integer

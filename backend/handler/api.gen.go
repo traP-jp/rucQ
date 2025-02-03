@@ -212,6 +212,9 @@ type EventId = int
 // OptionId defines model for OptionId.
 type OptionId = int
 
+// QuestionGroupId defines model for QuestionGroupId.
+type QuestionGroupId = int
+
 // QuestionId defines model for QuestionId.
 type QuestionId = int
 
@@ -642,6 +645,9 @@ type ServerInterface interface {
 	// 質問グループを作成
 	// (POST /api/question_groups)
 	PostQuestionGroup(ctx echo.Context, params PostQuestionGroupParams) error
+	// 質問グループの詳細を取得
+	// (GET /api/question_groups/{question_group_id})
+	GetQuestionGroup(ctx echo.Context, questionGroupId QuestionGroupId) error
 	// 質問の一覧を取得
 	// (GET /api/questions)
 	GetQuestions(ctx echo.Context) error
@@ -1262,6 +1268,22 @@ func (w *ServerInterfaceWrapper) PostQuestionGroup(ctx echo.Context) error {
 	return err
 }
 
+// GetQuestionGroup converts echo context to params.
+func (w *ServerInterfaceWrapper) GetQuestionGroup(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_group_id" -------------
+	var questionGroupId QuestionGroupId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_group_id", ctx.Param("question_group_id"), &questionGroupId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_group_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetQuestionGroup(ctx, questionGroupId)
+	return err
+}
+
 // GetQuestions converts echo context to params.
 func (w *ServerInterfaceWrapper) GetQuestions(ctx echo.Context) error {
 	var err error
@@ -1707,6 +1729,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/options/:option_id", wrapper.PutOption)
 	router.GET(baseURL+"/api/question_groups", wrapper.GetQuestionGroups)
 	router.POST(baseURL+"/api/question_groups", wrapper.PostQuestionGroup)
+	router.GET(baseURL+"/api/question_groups/:question_group_id", wrapper.GetQuestionGroup)
 	router.GET(baseURL+"/api/questions", wrapper.GetQuestions)
 	router.POST(baseURL+"/api/questions", wrapper.PostQuestion)
 	router.DELETE(baseURL+"/api/questions/:question_id", wrapper.DeleteQuestion)
