@@ -42,7 +42,11 @@ onMounted(async () => {
         <h1 class="text-h4 text-center">支払い情報</h1>
         <v-btn color="orange" :to="{ name: 'AdminPaymentRegister' }">振込登録ページへ</v-btn>
       </div>
-      <payment-data-table v-if="errorDataList.length > 0" title="振込エラー" :paymentDataList="errorDataList" />
+      <payment-data-table
+        v-if="errorDataList.length > 0"
+        title="振込エラー"
+        :paymentDataList="errorDataList"
+      />
       <payment-data-table title="未払い" :paymentDataList="unpaidDataList" />
       <payment-data-table title="支払済み" :paymentDataList="paidDataList" />
     </v-sheet>

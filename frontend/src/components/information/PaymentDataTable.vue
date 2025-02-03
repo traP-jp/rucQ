@@ -23,7 +23,12 @@ const copyToClipboard = (dataList: PaymentData[]) => {
   <v-container>
     <div class="d-flex align-center justify-space-between w-100">
       <v-card-title>{{ title }}</v-card-title>
-      <v-btn icon="mdi-content-copy" size="small" variant="plain" @click="copyToClipboard(paymentDataList)" />
+      <v-btn
+        icon="mdi-content-copy"
+        size="small"
+        variant="plain"
+        @click="copyToClipboard(paymentDataList)"
+      />
     </div>
     <v-data-table
       :items="paymentDataList"
