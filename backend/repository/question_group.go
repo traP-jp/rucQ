@@ -31,7 +31,7 @@ func (r *Repository) GetQuestionGroup(ID uint) (*model.QuestionGroup, error) {
 		Preload("Questions").
 		Preload("Questions.Options").
 		Where("id = ?", ID).
-		Find(&questionGroup).
+		First(&questionGroup).
 		Error; err != nil {
 		return nil, err
 	}

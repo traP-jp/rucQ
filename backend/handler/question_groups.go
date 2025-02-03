@@ -28,28 +28,28 @@ func (s *Server) GetQuestionGroups(e echo.Context) error {
 	return e.JSON(http.StatusOK, res)
 }
 
-func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID QuestionGroupId) error {
-	questionGroup, err := s.repo.GetQuestionGroup(uint(questionGroupID))
+func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID int, params GetQuestionGroupParams) error {
+    questionGroup, err := s.repo.GetQuestionGroup(uint(questionGroupID))
 
-	if err != nil {
-		e.Logger().Errorf("failed to get question group: %v", err)
+    if err != nil {
+        e.Logger().Errorf("failed to get question group: %v", err)
 
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    }
 
-	if questionGroup == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Not found")
-	}
+    if questionGroup == nil {
+        return echo.NewHTTPError(http.StatusNotFound, "Not found")
+    }
 
-	var res QuestionGroup
+    var res QuestionGroup
 
-	if err := copier.Copy(&res, questionGroup); err != nil {
-		e.Logger().Errorf("failed to copy response body: %v", err)
+    if err := copier.Copy(&res, questionGroup); err != nil {
+        e.Logger().Errorf("failed to copy response body: %v", err)
+		
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    }
 
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	return e.JSON(http.StatusOK, res)
+    return e.JSON(http.StatusOK, res)
 }
 
 func (s *Server) PostQuestionGroup(e echo.Context, params PostQuestionGroupParams) error {
