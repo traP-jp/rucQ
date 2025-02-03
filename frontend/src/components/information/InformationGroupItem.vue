@@ -87,7 +87,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-sheet class="d-flex flex-column rounded elevation-2 pa-4">
+  <v-sheet class="d-flex flex-column rounded elevation-1 pa-4">
     <v-container class="d-flex flex-column">
       <div class="d-flex align-center justify-space-between">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
