@@ -9,8 +9,8 @@ type QuestionItem = components['schemas']['Question'] & {
   contentNew?: string
 }
 const headers = [
-  { title: 'label', value: 'title' },
-  { title: 'answer', value: 'content' },
+  { title: 'label', key: 'title' },
+  { title: 'answer', key: 'content' },
 ]
 const isValid = computed(() => true)
 
@@ -27,7 +27,7 @@ const constructQuestionItems = async () => {
   const res: QuestionItem[] = []
   for (const question of props.questionGroup.questions) {
     const answer = await getAnswer(question.id)
-    questionItems.value.push({
+    res.push({
       ...question,
       content: answer?.content as string,
       contentNew: answer?.content as string,
@@ -87,8 +87,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-sheet class="d-flex flex-column rounded elevation-1 pa-4">
-    <v-container class="d-flex flex-column">
+  <v-sheet class="d-flex flex-column rounded elevation-1 pa-4 ga-2">
+    <div class="d-flex flex-column">
       <div class="d-flex align-center justify-space-between">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
         <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
@@ -102,11 +102,11 @@ onMounted(async () => {
         >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
         {{ questionGroup.description }}</v-card-subtitle
       >
-    </v-container>
+    </div>
 
     <v-data-table
       v-if="!editMode"
-      class="pa-2"
+      class="px-4"
       :headers="headers"
       :items="questionItems"
       density="compact"
