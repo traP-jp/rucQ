@@ -334,7 +334,6 @@ paths:
       operationId: getQuestionGroup
       parameters:
         - $ref: "#/components/parameters/QuestionGroupId"
-        - $ref: "#/components/parameters/X-Forwarded-User"
       responses:
         "200":
           description: OK
