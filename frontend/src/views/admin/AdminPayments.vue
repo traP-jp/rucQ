@@ -146,6 +146,10 @@ onMounted(getPaymentDataList)
       <div class="d-flex align-center justify-center ga-4 px-4">
         <v-btn
           class="flex-grow-1 bg-green-lighten-2"
+          :disabled="
+            selectedData?.amount == null ||
+            selectedData.amount_paid + (newPaidAmount ?? 0) !== selectedData.amount
+          "
           ref="confirmButtonRef"
           @click="settlePayment('confirm')"
         >
