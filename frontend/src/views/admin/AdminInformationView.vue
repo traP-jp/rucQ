@@ -85,9 +85,8 @@
                   label="回答形式"
                   :items="['single', 'multiple', 'free_text', 'free_number']"
                   v-model="newQuestionGroup.questions[index].type"
-                  :class="[$style.textField, xs ? ''  : ['w-50', 'ma-auto']]"
+                  :class="[$style.textField, xs ? '' : ['w-50', 'ma-auto']]"
                   hide-details
-                  
                   variant="outlined"
                 />
                 <v-checkbox
