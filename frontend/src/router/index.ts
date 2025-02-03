@@ -77,6 +77,11 @@ const router = createRouter({
             {
               path: 'payments',
               name: 'AdminPayments',
+              component: () => import('@/views/admin/AdminPaymentsView.vue'),
+            },
+            {
+              path: 'payments/register',
+              name: 'AdminPaymentRegister',
               component: () => import('@/views/admin/AdminPayments.vue'),
             },
           ],

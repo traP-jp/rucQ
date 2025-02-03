@@ -38,7 +38,7 @@ const getPaymentDataList = async () => {
     console.error('Failed to fetch payment data list:', error.message)
     return []
   }
-  paymentDataList.value = data.map((data) => ({
+  return data.map((data) => ({
     ...data,
     transfer_id: data.user_traq_id.toUpperCase().replace(/[-_]/g, ''),
     avatar: `https://q.trap.jp/api/v3/public/icon/${data.user_traq_id}`,
@@ -107,14 +107,14 @@ const handlerKeyDown = (event: KeyboardEvent) => {
   }
 }
 
-onMounted(() => {
-  getPaymentDataList()
+onMounted(async () => {
+  paymentDataList.value = await getPaymentDataList()
 })
 </script>
 
 <template>
   <mobile-header v-if="xs" title="振込み確認" />
-  <v-container class="d-flex justify-center">
+  <v-container class="d-flex flex-column align-center ga-4">
     <v-sheet class="d-flex flex-column elevation-2 pa-4" max-width="800" width="100%">
       <v-autocomplete
         v-model="selectedId"
@@ -159,12 +159,19 @@ onMounted(() => {
         </v-btn>
         <v-btn
           class="flex-grow-1 bg-red-lighten-3"
-          :disabled="selectedData?.amount == null || newPaidAmount == null"
+          :disabled="
+            selectedData?.amount == null ||
+            newPaidAmount == null ||
+            selectedData.amount_paid + (newPaidAmount ?? 0) === selectedData.amount
+          "
           @click="settlePayment('reject')"
         >
           拒否
         </v-btn>
       </div>
     </v-sheet>
+    <router-link class="text-decoration-underline" :to="{ name: 'AdminPayments' }">
+      支払い情報ページに戻る
+    </router-link>
   </v-container>
 </template>
