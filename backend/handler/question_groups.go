@@ -29,7 +29,7 @@ func (s *Server) GetQuestionGroups(e echo.Context) error {
 	return e.JSON(http.StatusOK, res)
 }
 
-func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID QuestionGroupId, params GetQuestionGroupParams) error {
+func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID QuestionGroupId) error {
 	questionGroup, err := s.repo.GetQuestionGroup(uint(questionGroupID))
 
 	if err != nil {
