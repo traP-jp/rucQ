@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type { components } from '@/api/schema'
+
 type QuestionItem = components['schemas']['Question'] & {
-  content: string | string[]
-  contentNew: string | string[]
-  displayContent: string
+  content?: string
+  contentNew?: string
 }
 
 const props = defineProps<{
   questionItem: QuestionItem
-  staff?: boolean
+  staff: boolean
 }>()
 const answer = defineModel<string>()
 
-const disabled = props.staff || !props.questionItem.is_open
+const disabled = !(props.staff || props.questionItem.is_open)
 const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
 const selectionItems = props.questionItem.options?.map((option) => option.content) ?? []
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-// // import { useUserStore } from '@/store'
+// import { useUserStore } from '@/store'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
@@ -53,7 +53,7 @@ const settlePayment = async (type: 'confirm' | 'reject') => {
   else {
     const messageType =
       selectedData.value.amount_paid === selectedData.value.amount ? 'duplicate' : 'reject'
-    // await sendDm(messageType)
+    await sendDm(messageType)
     alert(
       `振込内容を拒否しました。必ず@${selectedData.value.user_traq_id}にDMでコンタクトをとってください。`,
     )
@@ -107,7 +107,9 @@ const handlerKeyDown = (event: KeyboardEvent) => {
   }
 }
 
-onMounted(getPaymentDataList)
+onMounted(() => {
+  getPaymentDataList()
+})
 </script>
 
 <template>

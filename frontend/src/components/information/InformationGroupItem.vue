@@ -1,55 +1,49 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { components } from '@/api/schema'
-import { getAnswer, editAnswer } from '@/api/handler'
+import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 
 type QuestionItem = components['schemas']['Question'] & {
-  content: string
-  contentNew: string
-  displayContent: string
+  content?: string
+  contentNew?: string
 }
 const headers = [
-  { text: 'label', value: 'title' },
-  { text: 'answer', value: 'displayContent' },
+  { title: 'label', value: 'title' },
+  { title: 'answer', value: 'content' },
 ]
+const isValid = computed(() => true)
 
 const props = defineProps<{
   questionGroup: components['schemas']['QuestionGroup']
-  staff?: boolean
+  targetId?: string
 }>()
-const answers = ref<QuestionAnswer[]>([])
-
+const questionItems = ref<QuestionItem[]>([])
 const date = new Date(props.questionGroup.due)
 
 const editMode = ref(false)
-const isValid = computed(() => true)
 
-const questionItems = ref<QuestionItem[]>(
-  props.questionGroup.questions.map((question) => {
-    const answer = answers.value.find((answer) => answer.question_id === question.id)
-    const content = answer?.content ?? (question.type === 'multiple' ? [] : '')
-    const display = Array.isArray(content) ? content.join(', ') : content
-    return {
+const constructQuestionItems = async () => {
+  const res: QuestionItem[] = []
+  for (const question of props.questionGroup.questions) {
+    const answer = await getAnswer(question.id)
+    questionItems.value.push({
       ...question,
-      content: content,
-      contentNew: content,
-      displayContent: display,
-    } as QuestionItem
-  }),
-)
-
-onMounted(async () => {
-  for (const questionItem of questionItems.value) {
-    try {
-      const response = await getAnswer(questionItem.id)
-      console.log('API response:', response)
-      answers.value.push(response)
-    } catch (error) {
-      console.error('Failed to fetch question answer:', error)
-    }
+      content: answer?.content as string,
+      contentNew: answer?.content as string,
+    })
   }
-})
+  return res
+}
+
+const submit = async () => {
+  let submitSuccess = true
+  for (const questionItem of questionItems.value) {
+    const putAnswerSuccess = await putAnswer(questionItem)
+    if (!putAnswerSuccess) submitSuccess = false
+  }
+  if (submitSuccess) editMode.value = false
+}
 
 const cancel = () => {
   questionItems.value.forEach((questionItem) => {
@@ -58,22 +52,43 @@ const cancel = () => {
   editMode.value = false
 }
 
-const submit = async () => {
-  for (const questionItem of questionItems.value) {
-    try {
-      const response = await editAnswer(questionItem.id, questionItem.contentNew)
-      console.log('API response:', response)
-    } catch (error) {
-      console.error('Failed to edit question answer:', error)
-    }
-  }
-  editMode.value = false
+const getAnswer = async (questionId: number) => {
+  const { data, error } =
+    props.targetId == null
+      ? await apiClient.GET('/api/me/answers/{question_id}', {
+          params: { path: { question_id: questionId } },
+        })
+      : await apiClient.GET('/api/users/{traq_id}/answers/{question_id}', {
+          params: { path: { traq_id: props.targetId, question_id: questionId } },
+        })
+  if (error) console.error('Failed to fetch question answer:', error.message)
+  return data
 }
+
+const putAnswer = async (questionItem: QuestionItem) => {
+  const { error } =
+    props.targetId == null
+      ? await apiClient.PUT('/api/me/answers/{question_id}', {
+          params: { path: { question_id: questionItem.id } },
+          body: { content: questionItem.contentNew },
+        })
+      : await apiClient.PUT('/api/users/{traq_id}/answers/{question_id}', {
+          params: { path: { traq_id: props.targetId, question_id: questionItem.id } },
+          body: { content: questionItem.contentNew },
+        })
+  if (error) console.error('Failed to edit question answer:', error.message)
+  else questionItem.content = questionItem.contentNew
+  return error == null
+}
+
+onMounted(async () => {
+  questionItems.value = await constructQuestionItems()
+})
 </script>
 
 <template>
-  <v-card class="d-flex flex-column pa-4">
-    <div class="d-flex flex-column">
+  <v-sheet class="d-flex flex-column rounded elevation-2 pa-4">
+    <v-container class="d-flex flex-column">
       <div class="d-flex align-center justify-space-between">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
         <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
@@ -87,7 +102,7 @@ const submit = async () => {
         >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
         {{ questionGroup.description }}</v-card-subtitle
       >
-    </div>
+    </v-container>
 
     <v-data-table
       v-if="!editMode"
@@ -104,9 +119,10 @@ const submit = async () => {
         v-for="questionItem in questionItems"
         :key="questionItem.id"
         :question-item="questionItem"
+        :staff="targetId != null"
         v-model="questionItem.contentNew"
       />
       <v-btn :disabled="!isValid" type="submit" @click="submit">保存</v-btn>
     </v-form>
-  </v-card>
+  </v-sheet>
 </template>
