@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import type { components } from '@/api/schema'
 import { getAnswer, editAnswer } from '@/api/handler'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 
-type QuestionItem = Question & {
-  content: string | string[]
-  contentNew: string | string[]
+type QuestionItem = components['schemas']['Question'] & {
+  content: string
+  contentNew: string
   displayContent: string
 }
 const headers = [
@@ -14,7 +15,7 @@ const headers = [
 ]
 
 const props = defineProps<{
-  questionGroup: QuestionGroup
+  questionGroup: components['schemas']['QuestionGroup']
   staff?: boolean
 }>()
 const answers = ref<QuestionAnswer[]>([])
