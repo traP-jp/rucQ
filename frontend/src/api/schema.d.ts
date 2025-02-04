@@ -980,10 +980,7 @@ export interface operations {
     getQuestionGroup: {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
-                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
-            };
+            header?: never;
             path: {
                 /** @description 質問グループのID */
                 question_group_id: components["parameters"]["QuestionGroupId"];

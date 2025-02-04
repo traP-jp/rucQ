@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -28,17 +29,15 @@ func (s *Server) GetQuestionGroups(e echo.Context) error {
 	return e.JSON(http.StatusOK, res)
 }
 
-func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID int, params GetQuestionGroupParams) error {
+func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID QuestionGroupId) error {
 	questionGroup, err := s.repo.GetQuestionGroup(uint(questionGroupID))
 
 	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
 		e.Logger().Errorf("failed to get question group: %v", err)
-
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	if questionGroup == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Not found")
 	}
 
 	var res QuestionGroup
@@ -120,8 +119,6 @@ func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID QuestionGroupI
 	}
 
 	var updateQuestionGroup model.QuestionGroup
-
-	
 
 	if err := copier.Copy(&updateQuestionGroup, req); err != nil {
 		e.Logger().Errorf("failed to copy request body: %v", err)
