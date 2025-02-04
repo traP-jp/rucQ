@@ -98,7 +98,7 @@ func (s *Server) PostQuestionGroup(e echo.Context, params PostQuestionGroupParam
 	return e.JSON(http.StatusCreated, res)
 }
 
-func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID int, params PutQuestionGroupParams) error {
+func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID QuestionGroupId, params PutQuestionGroupParams) error {
 	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
 
 	if err != nil {
