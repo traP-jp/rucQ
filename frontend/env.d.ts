@@ -6,6 +6,8 @@ type Camp = {
   name: string
   is_draft: boolean
   description: string
+  start_date: string
+  end_date: string
 }
 
 type CampParams = {
