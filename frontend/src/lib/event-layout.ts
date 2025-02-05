@@ -20,13 +20,13 @@ const sortDayEvents = (events: CampEvent[], camp: Camp) => {
 
   for (const event of sorted) {
     while (epoch(event.time_start) >= newDay.getTime()) {
-      dayEvents.push({ date: newDay, events: [] })
+      dayEvents.push({ date: new Date(newDay), events: [] })
       newDay.setDate(newDay.getDate() + 1)
     }
     dayEvents[dayEvents.length - 1].events.push(event)
   }
   while (epoch(camp.end_date) >= newDay.getTime()) {
-    dayEvents.push({ date: newDay, events: [] })
+    dayEvents.push({ date: new Date(newDay), events: [] })
     newDay.setDate(newDay.getDate() + 1)
   }
 
@@ -144,27 +144,33 @@ const arrangeEvents = (events: CampEvent[]) => {
     stamp: 'start',
     line: true,
   }))
+
   for (let i = 0; i < arranged.length; i++) {
     if (arranged[i].events.length > 0 && arranged[i].events[0] !== null) {
       if (isMoment(arranged[i].events[0]!)) {
         times[i].stamp = 'center'
         times[i].line = false
-        if (i - 1 > 0 && arranged[i - 1].events.length === 0) {
-          times[i - 1].minHeight = 'narrow'
-        }
         if (i + 1 < arranged.length) {
+          times[i + 1].line = false
           if (arranged[i + 1].events.length === 0) {
             times[i + 1].minHeight = 'narrow'
             times[i + 1].stamp = 'none'
-            times[i + 1].line = false
-          } else if (arranged[i + 1].events[0] && !isMoment(arranged[i + 1].events[0]!)) {
+          } else if (arranged[i + 1].events[0] === null) {
             times[i + 1].stamp = 'none'
-            times[i + 1].line = false
+          } else if (isMoment(arranged[i + 1].events[0]!)) {
+            times[i + 1].stamp = 'none'
+          }
+        }
+        if (i - 1 >= 0) {
+          if (arranged[i - 1].events.length === 0) {
+            times[i - 1].minHeight = 'narrow'
           }
         }
       }
     }
   }
+
+  console.log(arranged)
 
   // この日の全ての event の配置の配列とイベントグループの境界番号の配列を返す
   return { events: eventPos, border: groupBorder, times: times }
@@ -185,8 +191,6 @@ export const getLayout = (events: CampEvent[], camp: Camp) => {
     while (assign.length < result.border[result.border.length - 1]) {
       assign.push(assign[assign.length - 1] + (result.border.includes(assign.length) ? 1 : 0))
     }
-
-    console.log(result.events)
 
     // 各イベントグループについて（result.border の各要素はイベントグループの始まりの位置を表す）
     for (let i = 0; i < result.border.length - 1; i++) {

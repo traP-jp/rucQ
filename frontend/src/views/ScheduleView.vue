@@ -12,6 +12,7 @@ const dayGroups = ref<DayGroup[]>([])
 
 onMounted(() => {
   dayGroups.value = getLayout(events, camp)
+  console.log(dayGroups.value)
 })
 </script>
 
@@ -19,13 +20,13 @@ onMounted(() => {
   <mobile-header v-if="xs" title="スケジュール" />
   <div :class="$style.container" v-if="dayGroups.length > 0">
     <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
-      <h2 style="margin-bottom: 20px; font-weight: 700; font-family: 'Avenir Next'">
+      <h2 style="margin: 10px 0; font-weight: 900">
         {{ `Day ${i + 1} - ${getDayStringNoPad(dayGroup.date)}` }}
       </h2>
       <div
         v-for="(eventGroup, j) in dayGroup.eventGroups"
         :key="j"
-        :style="`display: grid; grid-template-columns: 50px repeat(${Math.max(eventGroup.columns, 1)}, 1fr);`"
+        :style="`display: grid; grid-template-columns: 42px repeat(${Math.max(eventGroup.columns, 1)}, 1fr);`"
       >
         <div
           v-for="(space, k) in eventGroup.spaces"
@@ -48,16 +49,16 @@ onMounted(() => {
           :key="k"
           :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
         >
-          <h5 style="font-weight: 500">{{ moment.content.name }}</h5>
+          <h5 style="font-weight: 500; padding-left: 4px">{{ moment.content.name }}</h5>
         </div>
         <div
           v-for="(space, k) in eventGroup.spaces"
           :key="k"
-          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 8}px;`"
+          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 12}px;`"
         >
           <div
             v-if="space.stamp !== 'none'"
-            :style="`height: 100%; display: flex; align-items: ${space.stamp};`"
+            :style="`height: 100%; display: flex; align-items: ${space.stamp}; padding-right: 4px;`"
           >
             <div
               style="
