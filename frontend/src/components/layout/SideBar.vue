@@ -31,8 +31,6 @@ const route = useRoute()
 // URLからアクティブなナビゲーション値を取得する関数
 const getActiveValue = () => {
   const segments = route.path.split('/')
-  console.log(segments)
-  console.log(route.path)
   // 配列に2つ以上ある場合、index 1（例: "/aa/admin" → "admin") を採用
   return segments[2] || 'guidebook'
 }
