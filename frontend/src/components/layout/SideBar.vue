@@ -51,8 +51,7 @@ const navigateTo = (path: string) => {
 
 watch(
   () => route.path,
-  async () => {
-    await nextTick()
+  () => {
     value.value = getActiveValue()
   },
   { immediate: true },
