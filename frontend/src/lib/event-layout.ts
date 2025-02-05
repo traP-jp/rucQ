@@ -1,31 +1,6 @@
-// 「イベントの開始時刻と終了時刻」の配列、そして「プランの時刻」の配列を引数として、
-// それらの x 方向の配置を返す関数
-
-// export type EventBlock = CampEvent & {
-//   Start: number // イベントブロックの始まりが第何行か
-//   End: number // イベントブロックの終わりが第何行か
-//   Column: number // イベントブロックは第何列にいるか
-// }
-
-// export type MomentBlock = CampEvent & {
-//   Row: number // 第何行に書かれているか
-// }
-
-// export type TimeHead = {
-//   Line: number // 第何行の時刻表示か
-//   Time: number // 時刻（UNIX 元期からの経過ミリ秒数）
-// }
-
-// export type BlockGroup = {
-//   events: ventBlock[] // 含まれているイベント
-//   Moments: MomentBlock[] // 含まれているプラン
-//   Start: number // 始まりが第何行か
-//   End: number // 終わりが第何行か
-//   Columns: number // このグループの横幅（整数値）
-//   TimeTable: TimeHead[] // グループに含まれる時刻
-// }
-
 const epoch = (timeString: string) => new Date(timeString).getTime()
+
+const isMoment = (event: CampEvent) => event.time_start === event.time_end
 
 // 日程によって events を仕分け、それぞれ開始日時（等しければ終了日時）でソートする
 const sortDayEvents = (events: CampEvent[], camp: Camp) => {
@@ -65,9 +40,16 @@ export type EventPos = {
   content: CampEvent
 }
 
+export type ScheduleRow = {
+  time: Date
+  minHeight: 'narrow' | 'wide' // その行の高さ
+  stamp: 'none' | 'start' | 'center' // 時間の表示位置
+  line: boolean
+}
+
 export type EventGroup = {
   columns: number // 列数
-  spaces: { time: Date; minHeight: number }[] // 領域ごとの最小の表示高さ
+  spaces: ScheduleRow[] // 領域ごとの最小の表示高さ
   events: EventPos[]
   moments: EventPos[]
 }
@@ -94,7 +76,7 @@ const arrangeEvents = (events: CampEvent[]) => {
   const eventPos: EventPos[] = []
 
   // arranged の瞬間イベントに対応する要素にイベントを追加
-  for (const moment of events.filter((event) => event.time_start === event.time_end)) {
+  for (const moment of events.filter((event) => isMoment(event))) {
     const index = arranged.findIndex((el) => el.time.getTime() === epoch(moment.time_start))
     arranged[index].events.push(moment)
   }
@@ -110,7 +92,7 @@ const arrangeEvents = (events: CampEvent[]) => {
   let groupBorder = [...new Array(arranged.length + 1).keys()]
 
   // arranged の要素数は定まったので、瞬間イベント以外のイベントも配置していく
-  for (const event of events.filter((event) => event.time_start !== event.time_end)) {
+  for (const event of events.filter((event) => !isMoment(event))) {
     let start = arranged.findIndex((el) => el.time.getTime() === epoch(event.time_start))
     if (start < arranged.length - 1 && arranged[start].time === arranged[start + 1].time) {
       start = start + 1
@@ -148,16 +130,44 @@ const arrangeEvents = (events: CampEvent[]) => {
 
   // eventPos に瞬間イベントの情報を追加
   for (let i = 0; i < arranged.length; i++) {
-    const event = arranged[i].events[0]
-    if (event && event.time_start === event.time_end) {
-      eventPos.push({ startRow: i, endRow: i + 1, column: 0, content: event })
+    if (arranged[i].events.length > 0 && arranged[i].events[0] !== null) {
+      if (isMoment(arranged[i].events[0]!)) {
+        eventPos.push({ startRow: i, endRow: i + 1, column: 0, content: arranged[i].events[0]! })
+      }
     }
   }
 
-  console.log(arranged)
+  // それぞれのタイムスタンプの時間の情報を追加
+  const times: ScheduleRow[] = Array.from(arranged, (el) => ({
+    time: el.time,
+    minHeight: 'wide',
+    stamp: 'start',
+    line: true,
+  }))
+  for (let i = 0; i < arranged.length; i++) {
+    if (arranged[i].events.length > 0 && arranged[i].events[0] !== null) {
+      if (isMoment(arranged[i].events[0]!)) {
+        times[i].stamp = 'center'
+        times[i].line = false
+        if (i - 1 > 0 && arranged[i - 1].events.length === 0) {
+          times[i - 1].minHeight = 'narrow'
+        }
+        if (i + 1 < arranged.length) {
+          if (arranged[i + 1].events.length === 0) {
+            times[i + 1].minHeight = 'narrow'
+            times[i + 1].stamp = 'none'
+            times[i + 1].line = false
+          } else if (arranged[i + 1].events[0] && !isMoment(arranged[i + 1].events[0]!)) {
+            times[i + 1].stamp = 'none'
+            times[i + 1].line = false
+          }
+        }
+      }
+    }
+  }
 
   // この日の全ての event の配置の配列とイベントグループの境界番号の配列を返す
-  return { events: eventPos, border: groupBorder }
+  return { events: eventPos, border: groupBorder, times: times }
   // 2 次元配列 arranged はイベントの分布を視覚化するために用いたが、
   // 最終的な返り値はイベントごとに配置の情報がまとまっている方が望ましい
 }
@@ -170,10 +180,13 @@ export const getLayout = (events: CampEvent[], camp: Camp) => {
     const eventGroups: EventGroup[] = []
 
     const result = arrangeEvents(day.events)
+
     const assign: number[] = [0] // この日の第 n 行にあるイベントは第 assign[n] グループに割り当てられる
     while (assign.length < result.border[result.border.length - 1]) {
       assign.push(assign[assign.length - 1] + (result.border.includes(assign.length) ? 1 : 0))
     }
+
+    console.log(result.events)
 
     // 各イベントグループについて（result.border の各要素はイベントグループの始まりの位置を表す）
     for (let i = 0; i < result.border.length - 1; i++) {
@@ -185,7 +198,7 @@ export const getLayout = (events: CampEvent[], camp: Camp) => {
 
       eventGroups.push({
         columns: Math.max(...Array.from(groupEvents, (el) => el.column + 1), 0),
-        spaces: [{ time: new Date(), minHeight: 0 }],
+        spaces: result.times.slice(result.border[i], result.border[i + 1]),
         events: groupEvents.filter((event) => event.content.time_start !== event.content.time_end),
         moments: groupEvents.filter((event) => event.content.time_start === event.content.time_end),
       })

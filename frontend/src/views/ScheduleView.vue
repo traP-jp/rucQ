@@ -1,43 +1,79 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { getLayout } from '@/lib/event-layout'
+import { onMounted, ref } from 'vue'
+import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
+import { getLayout, type DayGroup } from '@/lib/event-layout'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 import EventBlock from '@/components/EventBlock.vue'
 import { events, camp } from '@/lib/sample-data'
 const { xs } = useDisplay()
 
+const dayGroups = ref<DayGroup[]>([])
+
 onMounted(() => {
-  console.log(getLayout(events, camp))
+  dayGroups.value = getLayout(events, camp)
 })
 </script>
 
 <template>
   <mobile-header v-if="xs" title="スケジュール" />
-  <div :class="$style.container">
-    <div :class="$style.day">
+  <div :class="$style.container" v-if="dayGroups.length > 0">
+    <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
       <h2 style="margin-bottom: 20px; font-weight: 700; font-family: 'Avenir Next'">
-        {{ `Day 1 - 9/13` }}
+        {{ `Day ${i + 1} - ${getDayStringNoPad(dayGroup.date)}` }}
       </h2>
-      <!-- その日全体のイベント -->
-      <div :class="$style.dayEvents1">
-        <!-- その日のあるイベントグループ -->
-        <!-- ここに grid-row と grid-column を持った要素を並べる -->
-        <EventBlock :event="events[2]" style="grid-row: 1 / 3; grid-column: 1" />
-        <EventBlock :event="events[5]" style="grid-row: 2 / 4; grid-column: 2" />
-        <EventBlock :event="events[8]" style="grid-row: 3 / 5; grid-column: 3" />
-        <EventBlock :event="events[12]" style="grid-row: 7; grid-column: 1" />
-        <EventBlock :event="events[13]" style="grid-row: 8; grid-column: 1" />
-        <EventBlock :event="events[14]" style="grid-row: 9; grid-column: 1" />
-      </div>
-      <div :class="$style.dayEvents2">
-        <!-- その日のあるイベントグループ -->
-        <EventBlock :event="events[2]" style="grid-row: 1 / 3; grid-column: 1" />
-        <EventBlock :event="events[5]" style="grid-row: 2 / 4; grid-column: 2" />
-        <EventBlock :event="events[8]" style="grid-row: 3 / 5; grid-column: 1" />
-        <EventBlock :event="events[12]" style="grid-row: 7; grid-column: 2" />
-        <EventBlock :event="events[13]" style="grid-row: 8; grid-column: 2" />
-        <EventBlock :event="events[14]" style="grid-row: 9; grid-column: 2" />
+      <div
+        v-for="(eventGroup, j) in dayGroup.eventGroups"
+        :key="j"
+        :style="`display: grid; grid-template-columns: 50px repeat(${Math.max(eventGroup.columns, 1)}, 1fr);`"
+      >
+        <div
+          v-for="(space, k) in eventGroup.spaces"
+          :key="k"
+          :style="`grid-row: ${k + 1}; grid-column: 2 / ${eventGroup.columns + 2};`"
+        >
+          <hr
+            v-if="space.line"
+            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
+          />
+        </div>
+        <EventBlock
+          v-for="(event, k) in eventGroup.events"
+          :key="k"
+          :event="event.content"
+          :style="`grid-row: ${event.startRow + 1} / ${event.endRow + 1}; grid-column: ${event.column + 2}`"
+        />
+        <div
+          v-for="(moment, k) in eventGroup.moments"
+          :key="k"
+          :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
+        >
+          <h5 style="font-weight: 500">{{ moment.content.name }}</h5>
+        </div>
+        <div
+          v-for="(space, k) in eventGroup.spaces"
+          :key="k"
+          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 8}px;`"
+        >
+          <div
+            v-if="space.stamp !== 'none'"
+            :style="`height: 100%; display: flex; align-items: ${space.stamp};`"
+          >
+            <div
+              style="
+                height: 0px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <h5 style="font-weight: 900; width: fit-content">
+                {{ getTimeStringNoPad(space.time) }}
+              </h5>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -52,51 +88,4 @@ onMounted(() => {
   padding: 20px 10px;
   max-width: 600px;
 }
-
-.dayEvents1 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.dayEvents2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-}
-
-/* 
-.blockgroup {
-  display: grid;
-  grid-template-rows: minmax(1fr, 2fr);
-}
-
-.plan {
-  flex-grow: 0;
-  width: fit-content;
-  overflow: visible;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  height: 0px;
-}
-
-.timehead {
-  margin: auto 0;
-  padding-right: 10px;
-  width: 50px;
-  overflow: visible;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 0px;
-}
-
-.line {
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-} */
 </style>
