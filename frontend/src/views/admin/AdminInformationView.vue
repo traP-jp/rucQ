@@ -43,6 +43,7 @@
           <v-textarea
             label="回答期限 (例: 2024-12-31)"
             v-model="newQuestionGroup.due"
+            placeholder="yyyy-mm-dd"
             variant="outlined"
             :class="$style.textField"
             rows="1"
@@ -114,7 +115,7 @@
                       label="選択肢名"
                       v-model="newQuestionGroup.questions[index].options[optionId].content"
                       :class="$style.textOptionField"
-                      variant="outlined"
+                      variant="underlined"
                       rows="1"
                       hide-details
                       auto-grow
@@ -128,7 +129,7 @@
                       size="x-small"
                       icon
                     >
-                      <v-icon color="white">mdi-close</v-icon>
+                      <v-icon color="white" >mdi-close</v-icon>
                     </v-btn>
                   </div>
                 </div>

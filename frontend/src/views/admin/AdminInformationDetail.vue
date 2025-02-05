@@ -86,7 +86,7 @@
                   <v-textarea
                     label="選択肢"
                     v-model="editedOptions[index]"
-                    variant="outlined"
+                    variant="underlined"
                     rows="1"
                     auto-grow
                     class="text-field"
