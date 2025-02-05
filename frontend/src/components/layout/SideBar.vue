@@ -23,24 +23,40 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 
+// URLからアクティブなナビゲーション値を取得する関数
+const getActiveValue = () => {
+  const segments = route.path.split('/')
+  console.log(segments)
+  console.log(route.path)
+  // 配列に2つ以上ある場合、index 1（例: "/aa/admin" → "admin") を採用
+  return segments[2] || 'guidebook'
+}
+
+let value = ref<string | null>(null)
+
 // ナビゲーション関数の簡略化
 const navigateTo = (path: string) => {
-  const segments = route.path.split('/')
   value.value = path
   if (path === 'guidebook') {
-    router.push(`/${segments[1]}/`)
+    router.push(`/${route.params.campname}/`)
   } else {
-    router.push(`/${segments[1]}/${path}`)
+    router.push(`/${route.params.campname}/${path}`)
   }
 }
 
-// ナビゲーションバインディング
-const value = ref<string>('guidebook')
+watch(
+  () => route.path,
+  async () => {
+    await nextTick()
+    value.value = getActiveValue()
+  },
+  { immediate: true },
+)
 
 const navItems = [
   {
@@ -65,11 +81,6 @@ const navItems = [
     icon: 'mdi-account-cog-outline',
   },
 ]
-
-// 監視してナビゲート
-watch(value, (val: string) => {
-  navigateTo(val)
-})
 </script>
 
 <style scoped>
