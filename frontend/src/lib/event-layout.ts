@@ -25,10 +25,19 @@
 //   TimeTable: TimeHead[] // グループに含まれる時刻
 // }
 
-// 日程によってイベントを仕分け、それぞれ開始日時でソートする
+const epoch = (timeString: string) => new Date(timeString).getTime()
+
+// 日程によって events を仕分け、それぞれ開始日時（等しければ終了日時）でソートする
 const sortDayEvents = (events: CampEvent[], camp: Camp) => {
-  const epoch = (timeString: string) => new Date(timeString).getTime()
-  const sorted = [...events].sort((a, b) => epoch(a.time_start) - epoch(b.time_start))
+  const sorted = [...events].sort((a, b) => {
+    if (epoch(a.time_start) > epoch(b.time_start)) {
+      return 1
+    } else if (epoch(a.time_start) < epoch(b.time_start)) {
+      return -1
+    } else {
+      return epoch(a.time_end) - epoch(b.time_end)
+    }
+  })
 
   // 合宿期間中の全ての date に対し、date と events をもつ配列 dayEvents を作成
   const dayEvents: { date: Date; events: CampEvent[] }[] = []
@@ -41,185 +50,149 @@ const sortDayEvents = (events: CampEvent[], camp: Camp) => {
     }
     dayEvents[dayEvents.length - 1].events.push(event)
   }
+  while (epoch(camp.end_date) >= newDay.getTime()) {
+    dayEvents.push({ date: newDay, events: [] })
+    newDay.setDate(newDay.getDate() + 1)
+  }
 
   return dayEvents
 }
 
-export const getLayout = (allEvents: CampEvent[], camp: Camp) => {
-  const dayEvents = sortDayEvents(allEvents, camp)
+export type EventPos = {
+  startRow: number
+  endRow: number
+  column: number
+  content: CampEvent
+}
 
-  // ここから下は未開発
+export type EventGroup = {
+  columns: number // 列数
+  spaces: { time: Date; minHeight: number }[] // 領域ごとの最小の表示高さ
+  events: EventPos[]
+  moments: EventPos[]
+}
 
-  const moments: CampEvent[] = [] // 開催時間と終了時間が同じイベント
-  const events: CampEvent[] = [] // 開催時間と終了時間が異なるイベント
+export type DayGroup = {
+  date: Date
+  eventGroups: EventGroup[]
+}
 
-  for (const event of events) {
-    if (event.time_start === event.time_end) {
-      moments.push(event)
-    } else {
-      events.push(event)
+// events を groups に仕分け、各 groups の列を決定する
+const arrangeEvents = (events: CampEvent[]) => {
+  const epochTimeSet = new Set<number>([
+    ...Array.from(events, (event) => epoch(event.time_start)),
+    ...Array.from(events, (event) => epoch(event.time_end)),
+  ])
+
+  // それぞれのタイムスタンプに対応した要素をもつ配列 arranged
+  const arranged: { time: Date; events: (CampEvent | null)[] }[] = Array.from(
+    [...epochTimeSet].sort((a, b) => a - b), // 全てのタイムスタンプ（時系列順）
+    (time) => ({ time: new Date(time), events: [] }),
+  )
+
+  // イベントの位置情報を記録する配列
+  const eventPos: EventPos[] = []
+
+  // arranged の瞬間イベントに対応する要素にイベントを追加
+  for (const moment of events.filter((event) => event.time_start === event.time_end)) {
+    const index = arranged.findIndex((el) => el.time.getTime() === epoch(moment.time_start))
+    arranged[index].events.push(moment)
+  }
+
+  // 連続する瞬間イベントの最後に空の要素を追加
+  for (let i = arranged.length - 1; i > 0; i--) {
+    if (arranged[i - 1].events.length === 1 && arranged[i].events.length === 0) {
+      arranged.splice(i, 0, { time: arranged[i - 1].time, events: [] })
     }
   }
 
-  moments.sort((a, b) => epoch(a.time_start) - epoch(b.time_start))
-  const momentsDic: { [id: number]: MomentBlock } = {} // あとで使う。ID は一意なので連想配列（辞書）を定義できる
-  for (const moment of moments) {
-    momentsDic[moment.id] = { ...moment, Row: 0 }
-  }
+  // arranged を分割可能な場所の配列
+  let groupBorder = [...new Array(arranged.length + 1).keys()]
 
-  events.sort((a, b) => {
-    if (epoch(a.time_start) > epoch(b.time_start)) {
-      return 1
-    } else if (epoch(a.time_start) < epoch(b.time_start)) {
-      return -1
-    } else {
-      return epoch(a.time_end) - epoch(b.time_end)
+  // arranged の要素数は定まったので、瞬間イベント以外のイベントも配置していく
+  for (const event of events.filter((event) => event.time_start !== event.time_end)) {
+    let start = arranged.findIndex((el) => el.time.getTime() === epoch(event.time_start))
+    if (start < arranged.length - 1 && arranged[start].time === arranged[start + 1].time) {
+      start = start + 1
     }
-  })
-  const eventsDic: { [id: number]: eventBlock } = {}
-  for (const event of events) {
-    eventsDic[event.id] = { ...event, Start: 0, End: 0, Column: 0 }
+    const end = arranged.findIndex((el) => el.time.getTime() === epoch(event.time_end))
+    // console.log(`${event.name}: ${start} ~ ${end}`)
+
+    // arranged における start から end までの時間に渡ってイベントがまだ存在しない列を探索
+    let column = 0
+    while (true) {
+      for (let i = start; i < end; i++) {
+        if (arranged[i].events.length <= column) {
+          arranged[i].events.push(null)
+        }
+      }
+      const arr = Array.from(arranged.slice(start, end), (el) => el.events[column])
+      if (arr.some((el) => !!el)) {
+        column++ // arr に null でない値が含まれている = すでにイベントが存在する
+      } else {
+        break
+      }
+    }
+
+    // イベントの位置情報を配列に追加
+    eventPos.push({ startRow: start, endRow: end, column: column, content: event })
+
+    // arranged における start から end までの要素にイベント情報を追加する
+    for (let i = start; i < end; i++) {
+      arranged[i].events[column] = event
+      if (i > start) {
+        groupBorder = groupBorder.filter((el) => el !== i) // 分割不可能になったので取り除く
+      }
+    }
   }
 
-  type TimeStatus = {
-    time: number // 日時（UNIX 元期からの経過ミリ秒数）
-    before: { isMoment: boolean; id: number | null }[] // その時刻に開始するイベント終了直後の状態と、その時刻ちょうどのプラン
-    after: { isMoment: boolean; id: number | null }[] // その時刻に開始するイベント開始直後の状態
+  // eventPos に瞬間イベントの情報を追加
+  for (let i = 0; i < arranged.length; i++) {
+    const event = arranged[i].events[0]
+    if (event && event.time_start === event.time_end) {
+      eventPos.push({ startRow: i, endRow: i + 1, column: 0, content: event })
+    }
   }
 
-  const arrange: TimeStatus[] = []
-  const arrangeTimes: number[] = [] // arrange に登録されている日時のみの配列
+  console.log(arranged)
 
-  for (const moment of moments) {
-    arrange.push({
-      time: epoch(moment.time_start),
-      before: [{ isMoment: true, id: moment.id }],
-      after: [],
-    })
-    arrangeTimes.push(epoch(moment.time_start))
-  }
+  // この日の全ての event の配置の配列とイベントグループの境界番号の配列を返す
+  return { events: eventPos, border: groupBorder }
+  // 2 次元配列 arranged はイベントの分布を視覚化するために用いたが、
+  // 最終的な返り値はイベントごとに配置の情報がまとまっている方が望ましい
+}
 
-  for (const event of events) {
-    if (!arrangeTimes.includes(epoch(event.time_start))) {
-      arrange.push({
-        time: epoch(event.time_start),
-        before: [],
-        after: [],
+// 日付 > イベントグループ（時間の重なるイベントの集まり） > イベント という配列を返す
+export const getLayout = (events: CampEvent[], camp: Camp) => {
+  const dayGroups: DayGroup[] = []
+
+  for (const day of sortDayEvents(events, camp)) {
+    const eventGroups: EventGroup[] = []
+
+    const result = arrangeEvents(day.events)
+    const assign: number[] = [0] // この日の第 n 行にあるイベントは第 assign[n] グループに割り当てられる
+    while (assign.length < result.border[result.border.length - 1]) {
+      assign.push(assign[assign.length - 1] + (result.border.includes(assign.length) ? 1 : 0))
+    }
+
+    // 各イベントグループについて（result.border の各要素はイベントグループの始まりの位置を表す）
+    for (let i = 0; i < result.border.length - 1; i++) {
+      const groupEvents = result.events.filter((eventPos) => assign[eventPos.startRow] === i)
+      for (let j = 0; j < groupEvents.length; j++) {
+        groupEvents[j].startRow -= result.border[i]
+        groupEvents[j].endRow -= result.border[i]
+      } // その日の始まり基準 → そのグループの始まり基準
+
+      eventGroups.push({
+        columns: Math.max(...Array.from(groupEvents, (el) => el.column + 1), 0),
+        spaces: [{ time: new Date(), minHeight: 0 }],
+        events: groupEvents.filter((event) => event.content.time_start !== event.content.time_end),
+        moments: groupEvents.filter((event) => event.content.time_start === event.content.time_end),
       })
-      arrangeTimes.push(epoch(event.time_start))
-    }
-    if (!arrangeTimes.includes(epoch(event.time_end))) {
-      arrange.push({
-        time: epoch(event.time_end),
-        before: [],
-        after: [],
-      })
-      arrangeTimes.push(epoch(event.time_end))
-    }
-  }
-
-  arrange.sort((a, b) => a.time - b.time)
-  arrangeTimes.sort((a, b) => a - b)
-
-  // 以上で全てのプラン及び全てのタイムスタンプ（プラン、イベントの開始・終了）の情報を格納した配列 arrange が得られた
-  // ここから arrange において実際にイベントの配置を決める処理をする
-
-  for (const event of events) {
-    // 1. イベント全体が収まる列を探す
-    // 2. イベントを arrange に収める
-
-    // arrange からイベントが新たに入る部分（開催時刻 <= arr.time < 終了時刻）の行を抽出
-    const filtered = arrange.filter(
-      (arr) => epoch(event.time_start) <= arr.time && arr.time < epoch(event.time_end),
-    )
-
-    // イベント期間に真に含まれる arr の before[0] にプランが含まれるなら column > 0
-    // イベント期間に含まれる（先頭を含む）arr の after[0] から after[n] までにイベントが含まれるなら column > n
-
-    let column = 0 // イベントを挿入可能な列
-    const hasMoment = (arr: TimeStatus) => {
-      if (arr.before.length === 0) {
-        arr.before.push({ isMoment: false, id: null })
-      }
-      return arr.before[0].isMoment
-    }
-    if (filtered.slice(1).map(hasMoment).includes(true)) {
-      column++ // 第 0 列を抽出して、プランが一つでも含まれていれば第 1 列に移る
-    }
-    const hasevent = (arr: TimeStatus) => {
-      while (arr.after.length <= column) {
-        arr.after.push({ isMoment: false, id: null })
-      }
-      return Boolean(arr.after[column].id)
-    }
-    while (filtered.map(hasevent).includes(true)) {
-      column++ // 第 n 列を抽出して、イベントが一つでも含まれていれば第 n + 1 列に移る
     }
 
-    eventsDic[event.id].Column = column
-
-    // 第 column 列にイベントを追加する
-    filtered[0].after[filtered[0].after.length - 1] = { isMoment: false, id: event.id }
-    for (let i = 1; i < filtered.length; i++) {
-      filtered[i].before[filtered[i].before.length - 1] = { isMoment: false, id: event.id }
-      filtered[i].after[filtered[i].after.length - 1] = { isMoment: false, id: event.id }
-    }
+    dayGroups.push({ date: day.date, eventGroups: eventGroups })
   }
 
-  // console.log(arrange)
-
-  // 以上で arrange に全てのプラントスタンプの位置と列の情報が入った
-  // この arrange を、before（次の時間からのイベントが始まる前）にイベントが入っていない要素を境に分割する
-  // それぞれのグループの位置や、グループに含まれるイベントやプラン、横幅などを BlockGroup 型にまとめて返り値とする
-
-  for (const moment of moments) {
-    momentsDic[moment.id].Row = arrangeTimes.indexOf(epoch(moment.time_start))
-  }
-
-  for (const event of events) {
-    eventsDic[event.id].Start = arrangeTimes.indexOf(epoch(event.time_start))
-    eventsDic[event.id].End = arrangeTimes.indexOf(epoch(event.time_end))
-  }
-
-  const groups: BlockGroup[] = []
-  const affiliation: number[] = [] // それぞれの時刻がどのグループに所属しているか
-
-  // まず Start と End を埋めていく
-  for (let i = 0; i < arrange.length; i++) {
-    if (
-      arrange[i].before.length === 0 ||
-      (arrange[i].before.length === 1 && arrange[i].before[0].isMoment)
-    ) {
-      if (groups.length > 0) {
-        groups[groups.length - 1].End = i - 1
-      }
-      groups.push({ events: [], Moments: [], Start: i, End: 0, Columns: 0, TimeTable: [] })
-    }
-    groups[groups.length - 1].TimeTable.push({ Line: i, Time: arrangeTimes[i] })
-    affiliation.push(groups.length - 1)
-  }
-  groups[groups.length - 1].End = groups[groups.length - 1].Start
-
-  // console.log(affiliation)
-
-  for (const idText in momentsDic) {
-    const id = Number(idText) // 強制的に string として列挙されるという謎の仕様
-    const groupNum = affiliation[momentsDic[id].Row] // id のプランがどのグループに属するか
-    groups[groupNum].Moments.push(momentsDic[id])
-  }
-
-  for (const idText in eventsDic) {
-    const id = Number(idText)
-    const groupNum = affiliation[eventsDic[id].Start]
-    groups[groupNum].events.push(eventsDic[id])
-  }
-
-  for (let i = 0; i < groups.length; i++) {
-    const arr = arrange.slice(groups[i].Start, groups[i].End + 1)
-    groups[i].Columns = Math.max(...arr.map((t) => t.after.length), 1)
-  }
-
-  // console.log(groups)
-
-  return groups
+  return dayGroups
 }

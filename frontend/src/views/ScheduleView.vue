@@ -1,114 +1,45 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { getLayout } from '@/lib/event-layout'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
-
-const { xs } = useDisplay()
-import { getEvents } from '@/api/handler'
-import { getTimeStringNoPad, getDayString } from '@/lib/date'
-import { getLayout, epoch, type BlockGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/EventBlock.vue'
-import { onMounted, ref, watch } from 'vue'
+import { events, camp } from '@/lib/sample-data'
+const { xs } = useDisplay()
 
-const days = ref<{ dateString: string; groups: BlockGroup[] }[]>([])
-
-const popUp = defineModel<CampEvent | undefined>('popUp')
-
-const refresh = async () => {
-  const res = (await getEvents()) as CampEvent[]
-  console.log(res)
-  days.value = []
-  const dayStrings: string[] = []
-  for (const group of getLayout(res)) {
-    const date = new Date(group.TimeTable[0].Time)
-    const index = dayStrings.indexOf(getDayString(date))
-    if (index === -1) {
-      days.value.push({ dateString: getDayString(date), groups: [group] })
-      dayStrings.push(getDayString(date))
-    } else {
-      days.value[index].groups.push(group)
-    }
-  }
-}
-
-onMounted(refresh)
-
-const onlyPlans = (group: BlockGroup) => {
-  return group.Durations.filter((duration) => duration.Column === 0).length === 0
-  // 1 行目に表示されるイベントが存在しないか、そもそもイベントが存在しない場合 true が返る
-  // true の場合はプランの横幅を可変にし、最大長をもとの長さにする
-}
-
-watch(
-  () => popUp.value,
-  async () => {
-    await refresh()
-  },
-  { deep: true },
-)
+onMounted(() => {
+  console.log(getLayout(events, camp))
+})
 </script>
 
 <template>
   <mobile-header v-if="xs" title="スケジュール" />
-  <div :class="$style.container" v-if="days.length > 0">
-    <div v-for="(day, index) in days" :key="day.dateString">
+  <div :class="$style.container">
+    <div :class="$style.day">
       <h2 style="margin-bottom: 20px; font-weight: 700; font-family: 'Avenir Next'">
-        {{ `Day ${index} - ${day.dateString}` }}
+        {{ `Day 1 - 9/13` }}
       </h2>
-      <div
-        v-for="group in day.groups"
-        :key="group.Start"
-        :class="$style.blockgroup"
-        :style="
-          onlyPlans(group)
-            ? `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
-            : `grid-template-columns: 40px repeat(${group.Columns}, 1fr);`
-        "
-      >
-        <div
-          v-for="timehead in group.TimeTable"
-          :key="timehead.Line"
-          :class="$style.timehead"
-          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 1} / ${(timehead.Line - group.Start) * 2 + 2}; grid-column: 1;`"
-        >
-          <h5 style="font-family: 'Avenir Next'; font-weight: 700">
-            {{ getTimeStringNoPad(new Date(timehead.Time)) }}
-          </h5>
-        </div>
-        <div
-          v-for="timehead in group.TimeTable"
-          :key="timehead.Line"
-          style="margin-bottom: 20px"
-          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 2} / ${(timehead.Line - group.Start) * 2 + 3}; grid-column: 1;`"
-        ></div>
-        <div
-          v-for="timehead in group.TimeTable"
-          :key="timehead.Line"
-          :class="$style.line"
-          :style="`grid-row: ${(timehead.Line - group.Start) * 2 + 2} / ${(timehead.Line - group.Start) * 2 + 3}; grid-column: 2 / 100;`"
-        >
-          <hr
-            v-if="!group.Moments.map((p) => epoch(p.time_start)).includes(timehead.Time)"
-            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
-          />
-        </div>
-        <div
-          v-for="moment in group.Moments"
-          :key="moment.id"
-          :class="$style.plan"
-          :style="`grid-row: ${(moment.Row - group.Start) * 2 + 1} / ${(moment.Row - group.Start) * 2 + 2}; grid-column: 2;`"
-        >
-          <h5 style="font-weight: 500">{{ moment.name }}</h5>
-        </div>
-        <EventBlock
-          v-for="duration in group.Durations"
-          :key="duration.id"
-          :event="duration"
-          :style="`grid-row: ${(duration.Start - group.Start) * 2 + 2} / ${(duration.End - group.Start) * 2 + 1}; grid-column: ${duration.Column + 2}`"
-          v-model:popUp="popUp"
-        />
+      <!-- その日全体のイベント -->
+      <div :class="$style.dayEvents1">
+        <!-- その日のあるイベントグループ -->
+        <!-- ここに grid-row と grid-column を持った要素を並べる -->
+        <EventBlock :event="events[2]" style="grid-row: 1 / 3; grid-column: 1" />
+        <EventBlock :event="events[5]" style="grid-row: 2 / 4; grid-column: 2" />
+        <EventBlock :event="events[8]" style="grid-row: 3 / 5; grid-column: 3" />
+        <EventBlock :event="events[12]" style="grid-row: 7; grid-column: 1" />
+        <EventBlock :event="events[13]" style="grid-row: 8; grid-column: 1" />
+        <EventBlock :event="events[14]" style="grid-row: 9; grid-column: 1" />
+      </div>
+      <div :class="$style.dayEvents2">
+        <!-- その日のあるイベントグループ -->
+        <EventBlock :event="events[2]" style="grid-row: 1 / 3; grid-column: 1" />
+        <EventBlock :event="events[5]" style="grid-row: 2 / 4; grid-column: 2" />
+        <EventBlock :event="events[8]" style="grid-row: 3 / 5; grid-column: 1" />
+        <EventBlock :event="events[12]" style="grid-row: 7; grid-column: 2" />
+        <EventBlock :event="events[13]" style="grid-row: 8; grid-column: 2" />
+        <EventBlock :event="events[14]" style="grid-row: 9; grid-column: 2" />
       </div>
     </div>
-    <!-- <EventPopUp v-if="popUp !== 0" v-model:popUp="popUp" /> -->
   </div>
 </template>
 
@@ -122,6 +53,17 @@ watch(
   max-width: 600px;
 }
 
+.dayEvents1 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.dayEvents2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 
 .blockgroup {
   display: grid;
   grid-template-rows: minmax(1fr, 2fr);
@@ -156,5 +98,5 @@ watch(
   align-items: center;
   justify-content: center;
   width: 100%;
-}
+} */
 </style>
