@@ -1,94 +1,26 @@
 /// <reference types="vite/client" />
 
-type Camp = {
-  id: number
-  display_id: string
-  name: string
-  is_draft: boolean
-  description: string
-  start_date: string
-  end_date: string
-}
+// 応急処置
+import type { components } from '@/api/schema'
 
-type CampParams = {
-  display_id: string
-  name: string
-  is_draft: boolean
-  description: string
-}
+type Camp = components['schemas']['Camp']
 
-type EventParams = {
-  name: string
-  description: string
-  location: string
-  time_start: string
-  time_end: string
-  camp_id: number
-  create_as_staff: boolean
-  display_color: string
-}
+type CampParams = components['schemas']['PostCampRequest']
 
-type CampEvent = {
-  id: number
-  name: string
-  description: string
-  location: string
-  time_start: string
-  time_end: string
-  camp_id: number
-  organizer_traq_id: string
-  by_staff: true
-  display_color: string
-}
+type EventParams = components['schemas']['PostEventRequest']
 
-type OptionParams = {
-  question_id: number
-  content: string
-}
+type CampEvent = components['schemas']['Event']
 
-type Option = {
-  id: number
-  question_id: number
-  content: string
-}
+type OptionParams = components['schemas']['PostOptionRequest']
 
-type QuestionParams = {
-  question_group_id: number
-  title: string
-  description: string
-  type: string
-  is_public: boolean
-  is_open: boolean
-}
+type Option = components['schemas']['Option']
 
-type Question = {
-  id: number
-  question_group_id: number
-  title: string
-  description: string
-  type: string // "single" などいくつかの種類の文字列
-  is_public: boolean
-  is_open: boolean
-  options?: Option[]
-}
+type QuestionParams = components['schemas']['PostQuestionRequest']
 
-type QuestionGroupParams = {
-  name: string
-  description: string
-  due: string
-}
+type Question = components['schemas']['Question']
 
-type QuestionGroup = {
-  id: number
-  name: string
-  description: string
-  due: string
-  questions: Question[]
-}
+type QuestionGroupParams = components['schemas']['PostQuestionGroupRequest']
 
-type QuestionAnswer = {
-  id: number
-  question_id: number
-  user_traq_id: string
-  content: string | string[]
-}
+type QuestionGroup = components['schemas']['QuestionGroup']
+
+type QuestionAnswer = components['schemas']['Answer']
