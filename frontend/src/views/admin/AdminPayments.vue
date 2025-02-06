@@ -115,10 +115,10 @@ onMounted(async () => {
 <template>
   <mobile-header v-if="xs" title="振込み確認" />
   <v-container class="d-flex flex-column align-center ga-4">
-    <v-sheet class="d-flex flex-column elevation-2 pa-4" max-width="800" width="100%">
+    <v-sheet class="d-flex flex-column elevation-2 px-8 py-4" max-width="800" width="100%">
       <v-autocomplete
         v-model="selectedId"
-        class="px-4 py-2"
+        class="py-2"
         ref="autocompleteRef"
         :items="paymentDataList"
         item-title="user_traq_id"
@@ -138,14 +138,13 @@ onMounted(async () => {
         </template>
       </v-autocomplete>
       <v-card-item
+        class="px-0"
         :title="selectedData?.user_traq_id ?? 'traQ ID'"
         :prepend-avatar="selectedData?.avatar ?? 'https://q.trap.jp/api/v3/public/icon/traP'"
       />
-      <v-card-text>
-        <payment-information-panel :data="selectedData" />
-      </v-card-text>
-      <v-text-field v-model="newPaidAmount" class="pa-4" label="振込金額" hide-details />
-      <div class="d-flex align-center justify-center ga-4 px-4">
+      <payment-information-panel :data="selectedData" />
+      <v-text-field v-model="newPaidAmount" class="pt-8 pb-4" label="振込金額" hide-details />
+      <div class="d-flex align-center justify-center ga-4">
         <v-btn
           class="flex-grow-1 bg-green-lighten-2"
           :disabled="
