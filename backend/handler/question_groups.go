@@ -36,6 +36,7 @@ func (s *Server) GetQuestionGroup(e echo.Context, questionGroupID QuestionGroupI
 		if errors.Is(err, model.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "Not found")
 		}
+
 		e.Logger().Errorf("failed to get question group: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}

@@ -12,7 +12,7 @@ const { xs } = useDisplay()
 
 // const roomData = ref()
 const paymentData = ref<components['schemas']['Budget']>()
-const questionGroups = ref()
+const questionGroups = ref<components['schemas']['QuestionGroup'][]>([])
 
 const getPaymentData = async () => {
   const { data, error } = await apiClient.GET('/api/me/budgets')
