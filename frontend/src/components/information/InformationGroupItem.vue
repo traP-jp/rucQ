@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
@@ -85,9 +85,10 @@ const putAnswer = async (questionItem: QuestionItem) => {
   return error == null
 }
 
-onMounted(async () => {
+watch(() => props.targetId, async () => {
   questionItems.value = await constructQuestionItems()
-})
+},
+{ immediate: true })
 </script>
 
 <template>
