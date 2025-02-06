@@ -123,7 +123,7 @@ const saveMarkdown = async () => {
       description: markdown.value,
       name: '2024年度 春合宿',
       is_draft: false,
-    }
+    },
   })
   console.log('API response:', response.value)
 
@@ -144,14 +144,14 @@ function showPreviewOnly() {
 const saveMarkdownAsync = async () => {
   try {
     await apiClient.PUT('/api/camps/{camp_id}', {
-    params: { path: { camp_id: response.value.id } },
-    body: {
-      display_id: '24spring',
-      description: markdown.value,
-      name: '2024年度 春合宿', // この辺は後で決める
-      is_draft: false,
-    }
-  })
+      params: { path: { camp_id: response.value.id } },
+      body: {
+        display_id: '24spring',
+        description: markdown.value,
+        name: '2024年度 春合宿', // この辺は後で決める
+        is_draft: false,
+      },
+    })
     isSaved.value = true // 保存に成功した場合
   } catch (error) {
     console.error('保存に失敗しました:', error)
