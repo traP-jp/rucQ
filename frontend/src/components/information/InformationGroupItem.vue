@@ -92,27 +92,27 @@ onMounted(async () => {
 
 <template>
   <v-sheet class="d-flex flex-column rounded elevation-1 pa-4 ga-2">
-    <div class="d-flex flex-column">
-      <div class="d-flex align-center justify-space-between">
+    <div class="d-flex align-center justify-space-between">
+      <div class="d-flex flex-column">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
-        <v-btn
-          v-if="!editMode"
-          :disabled="targetId === null"
-          icon
-          variant="plain"
-          size="small"
-          @click="editMode = true"
-        >
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        <v-btn v-else icon variant="plain" size="small" @click="cancel">
-          <v-icon>mdi-file-undo</v-icon>
-        </v-btn>
+        <v-card-subtitle>
+          {{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
+          {{ questionGroup.description }}
+        </v-card-subtitle>
       </div>
-      <v-card-subtitle
-        >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
-        {{ questionGroup.description }}</v-card-subtitle
+      <v-btn
+        v-if="!editMode"
+        :disabled="targetId === null"
+        icon
+        variant="plain"
+        size="small"
+        @click="editMode = true"
       >
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn v-else icon variant="plain" size="small" @click="cancel">
+        <v-icon>mdi-file-undo</v-icon>
+      </v-btn>
     </div>
 
     <v-data-table
