@@ -14,10 +14,12 @@ const headers = [
 ]
 const isValid = computed(() => true)
 
+// targetIdは、undefined: 自分, null: 選択なし
 const props = defineProps<{
   questionGroup: components['schemas']['QuestionGroup']
-  targetId?: string
+  targetId?: string | null
 }>()
+
 const questionItems = ref<QuestionItem[]>([])
 const date = new Date(props.questionGroup.due)
 
@@ -53,8 +55,9 @@ const cancel = () => {
 }
 
 const getAnswer = async (questionId: number) => {
+  if (props.targetId === null) return null
   const { data, error } =
-    props.targetId == null
+    props.targetId === undefined
       ? await apiClient.GET('/api/me/answers/{question_id}', {
           params: { path: { question_id: questionId } },
         })
@@ -66,8 +69,9 @@ const getAnswer = async (questionId: number) => {
 }
 
 const putAnswer = async (questionItem: QuestionItem) => {
+  if (props.targetId === null) return false
   const { error } =
-    props.targetId == null
+    props.targetId === undefined
       ? await apiClient.PUT('/api/me/answers/{question_id}', {
           params: { path: { question_id: questionItem.id } },
           body: { content: questionItem.contentNew },
@@ -91,7 +95,14 @@ onMounted(async () => {
     <div class="d-flex flex-column">
       <div class="d-flex align-center justify-space-between">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
-        <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
+        <v-btn
+          v-if="!editMode"
+          :disabled="targetId === null"
+          icon
+          variant="plain"
+          size="small"
+          @click="editMode = true"
+        >
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
         <v-btn v-else icon variant="plain" size="small" @click="cancel">
