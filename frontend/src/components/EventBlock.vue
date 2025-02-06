@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { components } from '@/api/schema'
+type CampEvent = components['schemas']['Event']
+
 const props = defineProps<{
   event: CampEvent
 }>()
