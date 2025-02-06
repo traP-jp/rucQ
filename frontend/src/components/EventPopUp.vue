@@ -25,12 +25,12 @@
                 async () => {
                   const newEvent: components['schemas']['PostEventRequest'] = {
                     ...popUp!,
-                    create_as_staff: false
+                    create_as_staff: false,
                   }
                   newEvent.description = text
                   await apiClient.PUT('/api/events/{event_id}', {
-                    params: { path: { event_id: popUp!.id }},
-                    body: newEvent
+                    params: { path: { event_id: popUp!.id } },
+                    body: newEvent,
                   })
                   popUp = undefined
                 }

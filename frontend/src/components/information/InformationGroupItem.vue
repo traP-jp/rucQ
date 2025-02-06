@@ -85,10 +85,13 @@ const putAnswer = async (questionItem: QuestionItem) => {
   return error == null
 }
 
-watch(() => props.targetId, async () => {
-  questionItems.value = await constructQuestionItems()
-},
-{ immediate: true })
+watch(
+  () => props.targetId,
+  async () => {
+    questionItems.value = await constructQuestionItems()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

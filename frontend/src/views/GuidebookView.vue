@@ -22,7 +22,7 @@ const htmlContent = computed(() => marked(markdown.value))
 
 onMounted(async () => {
   try {
-    const {data} = await apiClient.GET('/api/camps/default')
+    const { data } = await apiClient.GET('/api/camps/default')
     console.log('API response:', data)
 
     if (data && typeof data.description === 'string') {
