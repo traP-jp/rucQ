@@ -1,4 +1,5 @@
-export const events: CampEvent[] = [
+import type { components } from '@/api/schema'
+export const events: components['schemas']['Event'][] = [
   {
     id: 1,
     name: 'BBQ',

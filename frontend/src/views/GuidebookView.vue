@@ -10,10 +10,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { apiClient } from '@/api/apiClient'
 import { marked } from 'marked'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
-import { getCamps, getDefalutCamps } from '@/api/handler'
 
 const { xs } = useDisplay()
 
@@ -22,13 +22,13 @@ const htmlContent = computed(() => marked(markdown.value))
 
 onMounted(async () => {
   try {
-    const response = await getDefalutCamps()
-    console.log('API response:', response)
+    const {data} = await apiClient.GET('/api/camps/default')
+    console.log('API response:', data)
 
-    if (response && typeof response.description === 'string') {
-      markdown.value = response.description
+    if (data && typeof data.description === 'string') {
+      markdown.value = data.description
     } else {
-      console.error('Invalid response format:', response)
+      console.error('Invalid response format:', data)
     }
   } catch (error) {
     console.error('Failed to fetch camps:', error)
