@@ -39,7 +39,6 @@ onMounted(async () => {
 <style>
 .guidebook-markdown {
   padding: 30px;
-  background-color: var(--color-background); /* 背景色  あとで色はちゃんと設定する*/
   max-width: 1000px;
   height: 100%;
   width: 100%;
