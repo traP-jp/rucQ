@@ -2,16 +2,17 @@
 const props = defineProps<{
   event: CampEvent
 }>()
-const popUp = defineModel<CampEvent | undefined>('popUp')
 </script>
 
 <template>
-  <button :class="$style.container" @click="popUp = event">
-    <div :class="$style.content" :style="`background-color: #${event.display_color}`">
-      <h3 style="font-weight: 700">{{ props.event.name }}</h3>
-      <h5 style="font-weight: 500">{{ props.event.location }}</h5>
-    </div>
-  </button>
+  <div :class="$style.container">
+    <v-card link :class="$style.card" :color="event.display_color" height="100%">
+      <div :class="$style.content">
+        <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
+        <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <style module>
@@ -20,11 +21,23 @@ const popUp = defineModel<CampEvent | undefined>('popUp')
   color: var(--color-exwhite);
 }
 
-.content {
+.card {
   width: 100%;
   height: 100%;
-  background-color: #0088ff;
   padding: 10px;
-  border-radius: 10px;
+  margin: 0px;
+  cursor: pointer; /* ボタンのようにクリック可能に */
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.text {
+  color: var(--color-exwhite);
+  overflow-wrap: break-word;
 }
 </style>

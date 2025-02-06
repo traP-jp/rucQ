@@ -8,7 +8,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -20,7 +20,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -32,7 +32,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9FB0E4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -44,7 +44,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -56,7 +56,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9FB0E4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -68,7 +68,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9DD8FF',
+    display_color: 'blue',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -80,7 +80,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9DD8FF',
+    display_color: 'green',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -92,7 +92,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FFD0C2',
+    display_color: 'red',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -104,7 +104,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'CEED94',
+    display_color: 'orange',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -116,7 +116,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FFDAA3',
+    display_color: 'blue',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -128,7 +128,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FF9900',
+    display_color: 'orange',
     organizer_traq_id: 'kitsne',
   },
   {

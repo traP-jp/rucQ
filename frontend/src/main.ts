@@ -22,12 +22,29 @@ const vuetify = createVuetify({
     themes: {
       light: {
         colors: {
+          black: '#000000',
+          gray: '#444444',
+          lightgray: '#aaaaaa',
+          white: '#f6f6f6',
+          exwhite: '#ffffff',
+
+          orange: '#ff7300',
+          orangePale: '#ffe2b2',
+          green: '#178000',
+          greenPale: '#ccffc1',
+          red: '#ff4d00',
+          redPale: '#ffc9b2',
+          blue: '#008cff',
+          bluePale: '#9dd8ff',
+          navy: '#2444a4',
+          navyPale: '#afc3ff',
+
+          text: '#000000', // var(--color-black)
           background: '#f6f6f6', // var(--color-background)
           surface: '#f6f6f6',
           primary: '#ff7300', // var(--color-orange)
           secondary: '#ffe2b2', // var(--color-orange-pale)
           error: '#ff4d00', // var(--color-red)
-          text: '#000000', // var(--color-black)
         },
       },
     },
@@ -35,8 +52,7 @@ const vuetify = createVuetify({
 })
 
 // 調べた限りでは、Vuetify のテーマ設定は基本的にこの createVuetify の中をいじって行うらしい
-// 全面的に Vuetify 製コンポーネントを採用する場合、基本的な色の設定は base.css ではなくこちらで行うべき
-// ただし、イベントブロックなど色付きの情報を扱う場合は base.css も依然として必要ではありそう
+// base.css の色定義は準備が整い次第廃止したい
 
 app.use(pinia)
 app.use(router)
