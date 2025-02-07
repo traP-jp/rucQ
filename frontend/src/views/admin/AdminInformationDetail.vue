@@ -343,10 +343,10 @@ const questionDialogs = ref<Record<number, boolean>>({})
 
 .questionDescription {
   /*個々の質問の説明*/
-  font-size: 16px;
+  font-size: 17px;
   margin-top: 6px;
   padding-bottom: 10px;
-  color: #555555;
+  color: #2d2d2d;
   border-bottom: 1px solid #e0e0e0;
   display: flex;
 }
