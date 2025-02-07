@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import EventDialog from '@/components/EventDialog.vue'
+
 const props = defineProps<{
   event: CampEvent
 }>()
@@ -6,12 +8,27 @@ const props = defineProps<{
 
 <template>
   <div :class="$style.container">
-    <v-card link :class="$style.card" :color="event.display_color" height="100%">
-      <div :class="$style.content">
-        <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
-        <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>
-      </div>
-    </v-card>
+    <v-dialog max-width="500">
+      <template v-slot:activator="{ props: activatorProps }">
+        <v-card
+          link
+          :class="$style.card"
+          :color="event.display_color"
+          height="100%"
+          variant="flat"
+          v-bind="activatorProps"
+        >
+          <div :class="$style.content">
+            <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
+            <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>
+          </div>
+        </v-card>
+      </template>
+
+      <template v-slot:default="{ isActive }">
+        <EventDialog @close="isActive.value = false" />
+      </template>
+    </v-dialog>
   </div>
 </template>
 

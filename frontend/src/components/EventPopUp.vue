@@ -1,3 +1,6 @@
+<!-- 旧イベントダイアログ用コンポーネント -->
+<!-- 置き換えが済み次第削除します -->
+
 <template>
   <div :class="$style.container" @wheel="handleScroll">
     <div :class="$style.column">
@@ -10,7 +13,6 @@
           <button v-if="isPreview" :class="$style.epbutton" @click="isPreview = false">
             <v-icon icon="mdi-square-edit-outline" :class="$style.icon"></v-icon>
           </button>
-          <!-- <EditPreviewButton :class="$style.epbutton" v-model:isPreview="isPreview" /> -->
           <button :class="$style.clbutton" @click="popUp = undefined">
             <v-icon icon="mdi-close" :class="$style.icon"></v-icon>
           </button>
