@@ -2,7 +2,7 @@
   <div class="container">
     <div class="headQuestionHeader">
       <div class="headQuestionTitle">
-        {{ questionHeader.title }}
+        {{ questionGroup?.name }}
         <button class="EditIconContainer" @click="openHeaderDialog">
           <v-icon class="edit-icon">mdi-square-edit-outline</v-icon>
         </button>
@@ -43,12 +43,12 @@
           </v-sheet>
         </v-dialog>
       </div>
-      <div class="headQuestionDescription">{{ questionHeader.description }}</div>
-      <div class="headQuestionDeadline">回答期限: {{ questionHeader.deadline }}</div>
+      <div class="headQuestionDescription">{{ questionGroup?.description }}</div>
+      <div class="headQuestionDeadline">回答期限: {{ questionGroup?.due }}</div>
     </div>
 
     <div class="questionsBody">
-      <div v-for="question in questions" :key="question.id">
+      <div v-for="question in questionGroup?.questions" :key="question.id">
         <div class="question">
           <div class="questionTitle">
             <div class="questionTitleText">{{ question.title }}</div>
@@ -85,14 +85,18 @@
                 >
                   <v-textarea
                     label="選択肢"
-                    v-model="editedOptions[index]"
+                    v-model="editedOptions[index].content"
                     variant="underlined"
                     rows="1"
                     auto-grow
                     class="text-field"
                   />
                 </div>
-                <v-btn @click="editedOptions.push('')" class="mb-5">選択肢を追加</v-btn>
+                <v-btn
+                  @click="editedOptions.push({ id: Date.now(), question_id: 0, content: '' })"
+                  class="mb-5"
+                  >選択肢を追加</v-btn
+                >
                 <div class="dialogButtonContainer">
                   <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
                   <v-btn
@@ -110,64 +114,98 @@
             {{ question.description }}
           </div>
 
-          <div v-for="option in question.options" :key="option">
+          <div v-for="option in question.options" :key="option.id">
             <div class="questionOption">
-              {{ option }}
+              {{ option.content }}
 
               <v-icon class="copyIcon">mdi-content-copy </v-icon>
             </div>
             <div class="questionRespondents">
-              <span v-for="respondent in question.respondents" :key="respondent">
+              <!-- <span v-for="respondent in question.respondents" :key="respondent">
                 <div class="member">{{ respondent }}</div>
-              </span>
+              </span> -->
             </div>
           </div>
         </div>
       </div>
+      <v-btn @click="" color="primary" class="w-25 ma-auto mb-3 mt-3">質問項目の追加</v-btn>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { isEqualsGreaterThanToken } from 'typescript'
+import { apiClient } from '@/api/apiClient'
+import type { components } from '@/api/schema'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const dialog = ref(false)
-// パスパラメータを取得
-const eventID = router.currentRoute.value.params.id
 
-// 質問ごとにダイアログを管理するため初期化
-onMounted(() => {
-  questions.value.forEach((q) => {
-    questionDialogs.value[q.id] = false
-  })
-})
+// データ
+const questionGroup = ref<components['schemas']['QuestionGroup']>()
 
 // 編集用の一時変数
-const editedTitle = ref('')
-const editedDescription = ref('')
-const editedDeadline = ref('')
-const editedOptions = ref<string[]>([])
+const editedTitle = ref()
+const editedDescription = ref()
+const editedDeadline = ref()
+const editedOptions = ref<components['schemas']['Option'][]>([
+  { id: 0, question_id: 0, content: '' },
+])
+
+onMounted(async () => {
+  // パスパラメータを取得
+  const eventIDParam = router.currentRoute.value.params.id
+  const eventIDString: string = Array.isArray(eventIDParam) ? eventIDParam[0] : eventIDParam
+  const eventID = Number(eventIDString)
+
+  questionGroup.value = await getQuestionGroup(eventID)
+  if (questionGroup.value === undefined) return
+
+  questionGroup.value.due = formatISOToDate(questionGroup.value.due) // yyyy-mm-dd形式に変換
+
+  questionGroup.value.questions.forEach((q) => {
+    questionDialogs.value[q.id] = false
+  })
+
+
+  console.log(questionGroup.value)
+})
+
+const formatISOToDate = (isoString: string) => {
+  const date = new Date(isoString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const formatDateToISO = (dateString: string) => {
+  // formatがyyyy-mm-ddの形式になっていなければアラート
+  const date = new Date(dateString)
+  return date.toISOString()
+}
 
 // ダイアログを開くときに一時変数に現在の値をセット
 const openHeaderDialog = () => {
-  editedTitle.value = questionHeader.value.title
-  editedDescription.value = questionHeader.value.description
-  editedDeadline.value = questionHeader.value.deadline
+  if (questionGroup.value === undefined) return
+
+  editedTitle.value = questionGroup.value.name
+  editedDescription.value = questionGroup.value.description
+  editedDeadline.value = questionGroup.value.due
   dialog.value = true
 }
 
-const openDialog = (id: number) => {
-  editedTitle.value = questions.value[id].title
-  editedDescription.value = questions.value[id].description
-}
-
 const openQuestionDialog = (id: number) => {
-  editedTitle.value = questions.value[id].title
-  editedDescription.value = questions.value[id].description
-  editedOptions.value = [...questions.value[id].options]
+  if (questionGroup.value === undefined) return
+
+  // idが一致する質問を調べて取得
+  const target: components['schemas']['Question'] | undefined = questionGroup.value.questions.find((q) => q.id === id)
+  if (target === undefined) return
+
+  editedTitle.value = target.title
+  editedDescription.value = target.description
+  editedOptions.value = target.options ? [...target.options] : []
   questionDialogs.value[id] = true
 }
 
@@ -182,12 +220,14 @@ const childQuestionclose = (id: number) => {
 
 // 保存ボタンをクリックしたときの処理
 const headerSave = () => {
-  questionHeader.value.title = editedTitle.value
-  questionHeader.value.description = editedDescription.value
+  if (questionGroup.value === undefined) return
+
+  questionGroup.value.name = editedTitle.value
+  questionGroup.value.description = editedDescription.value
 
   // 2024-12-01のような形式かどうかの確認
   if (editedDeadline.value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    questionHeader.value.deadline = editedDeadline.value
+    questionGroup.value.due = editedDeadline.value
   } else {
     alert('日付の形式が正しくありません (yyyy-mm-dd)')
     return
@@ -196,135 +236,22 @@ const headerSave = () => {
 }
 
 const childQuestionSave = (id: number) => {
-  questions.value[id].title = editedTitle.value
-  questions.value[id].description = editedDescription.value
-  questions.value[id].options = editedOptions.value
-  questionDialogs.value[id] = false
+  // questions.value[id].title = editedTitle.value
+  // questions.value[id].description = editedDescription.value
+  // questions.value[id].options = editedOptions.value
+  // questionDialogs.value[id] = false
 }
 
-const questionHeader = ref({
-  title: '2024年度春合宿 レンタル調査',
-  deadline: '2023-12-01',
-  description:
-    'スキー/スノボをする人は用具をレンタルできますので回答してください。本アンケートに回答しないと用具をレンタルできない可能性があります。',
-})
-
-type Question = {
-  id: number
-  title: string
-  description: string
-  type: 'text' | 'radio' | 'checkbox'
-  options: string[]
-  answerCount: number
-  respondents: string[]
+const getQuestionGroup = async (id: number) => {
+  const { data, error } = await apiClient.GET('/api/question_groups/{question_group_id}', {
+    params: { path: { question_group_id: id } },
+  })
+  if (error) console.error('Failed to fetch question group:', error.message)
+  return data
 }
+
 // それぞれの編集ボタンに対応するダイアログの表示状態を管理
 const questionDialogs = ref<Record<number, boolean>>({})
-
-const questions = ref<Question[]>([
-  // まだ決まってないので一旦適当なダミーデータ、後でAPIから取得する。その時にここ頑張る
-  {
-    id: 0,
-    title: 'スキー/スノボをしますか？',
-    description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
-    type: 'radio',
-    options: ['スキー', 'スノボ', 'しない'],
-    answerCount: 12,
-    respondents: [
-      '山田',
-      '田中',
-      '鈴木',
-      '佐藤',
-      '高橋',
-      '伊藤',
-      '渡辺',
-      '山本',
-      '中村',
-      '小林',
-      '加藤',
-      '吉田',
-      '山口',
-      '松本',
-      '井上',
-      '木村',
-      '山田',
-      '田中',
-      '鈴木',
-      '佐藤',
-      '高橋',
-      '伊藤',
-      '渡辺',
-      '山本',
-      '中村',
-      '小林',
-      '加藤',
-      '吉田',
-      '山口',
-      '松本',
-      '井上',
-      '木村',
-      '山田',
-      '田中',
-      '鈴木',
-      '佐藤',
-      '高橋',
-      '伊藤',
-      '渡辺',
-      '山本',
-      '中村',
-      '小林',
-      '加藤',
-      '吉田',
-      '山口',
-      '松本',
-      '井上',
-      '木村',
-      '山田',
-      '田中',
-      '鈴木',
-      '佐藤',
-      '高橋',
-      '伊藤',
-      '渡辺',
-      '山本',
-      '中村',
-      '小林',
-      '加藤',
-      '吉田',
-      '山口',
-      '松本',
-      '井上',
-      '木村',
-    ],
-  },
-  {
-    id: 1,
-    title: 'スキー/スノボの用具をレンタルしますか？',
-    description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
-    type: 'radio',
-    options: ['レンタルする', '持参する'],
-    answerCount: 8,
-    respondents: ['佐藤', '鈴木'],
-  },
-  {
-    id: 2,
-    title: 'スキー/スノボの用具をレンタルする場合、サイズを教えてください。',
-    description: 'スキー/スノボをする人は用具をレンタルできますので回答してください。',
-    type: 'text',
-    options: [],
-    answerCount: 5,
-    respondents: ['高橋', '伊藤'],
-  },
-  {
-    id: 3,
-    title: 'レンタルするもの',
-    description: 'レンタルするものを選択してください',
-    type: 'checkbox',
-    options: ['スキー板', 'スノボ板', 'ブーツ', 'ウェア', 'その他'],
-    answerCount: 10,
-    respondents: ['渡辺', '山本'],
-  },
-])
 </script>
 
 <style scoped>
@@ -369,6 +296,9 @@ const questions = ref<Question[]>([
 }
 
 .questionsBody {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   width: 90%;
   border-radius: 7px;
   margin-top: 20px;
