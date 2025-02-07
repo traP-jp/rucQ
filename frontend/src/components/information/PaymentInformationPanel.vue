@@ -28,8 +28,8 @@ const paid = computed(() => props.data?.amount_paid ?? 0)
     </v-card-text>
   </v-card>
 
-  <v-card v-if="status === 'none'" class="bg-grey-lighten-4 text-grey-accent-3 pa-4">
-    <v-card-title class="text-center text-h4 pa-0">情報がありません</v-card-title>
+  <v-card v-if="status === 'none'" class="bg-grey-lighten-4 text-grey-darken-3 pa-4">
+    <v-card-title class="text-center text-h4 pa-0">未登録</v-card-title>
     <v-card-text class="text-center pa-0">合宿費情報が登録されていません</v-card-text>
   </v-card>
 </template>

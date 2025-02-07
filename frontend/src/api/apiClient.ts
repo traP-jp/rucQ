@@ -8,4 +8,3 @@ export const apiClient = createClient<paths>({
     'X-Forwarded-User': 'kitsne',
   },
 })
-

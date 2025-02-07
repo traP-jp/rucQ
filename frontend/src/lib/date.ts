@@ -11,6 +11,9 @@ export const getDayString = (date: Readonly<Date>) =>
   '/' +
   date.getDate().toString().padStart(2, '0')
 
+export const getDayStringNoPad = (date: Readonly<Date>) =>
+  (date.getMonth() + 1).toString() + '/' + date.getDate().toString().padStart(2, '0')
+
 export const getFullDayString = (date: Readonly<Date>) =>
   date.getFullYear() + '/' + getDayString(date)
 
