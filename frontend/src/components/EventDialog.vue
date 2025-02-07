@@ -1,23 +1,32 @@
 <script setup lang="ts">
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
+import { getTimeString } from '@/lib/date'
+
+defineProps<{
+  event: CampEvent
+}>()
+
+const makeInfo = (event: CampEvent) => {
+  return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
+}
 </script>
 
 <template>
-  <v-card
-    class="mx-auto"
-    prepend-icon="$vuetify"
-    subtitle="The #1 Vue UI Library"
-    width="400"
-    @click="emit('close')"
-  >
+  <v-card text-high-emphasis :class="[`bg-${event.display_color}`, $style.card]">
     <template v-slot:title>
-      <span class="font-weight-black">Welcome to Vuetify</span>
+      <span style="font-weight: 700">{{ event.name }}</span>
     </template>
-
-    <v-card-text class="bg-surface-light pt-4">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est
-      labore voluptatibus! Eaque cupiditate minima, at placeat totam, magni doloremque veniam neque
-      porro libero rerum unde voluptatem!
-    </v-card-text>
+    <template v-slot:subtitle>
+      <span>{{ makeInfo(event) }}</span>
+    </template>
+    <!-- <v-card-text style="bg-surface-light pt-4">
+      {{ event.description }}
+    </v-card-text> -->
   </v-card>
 </template>
+
+<style module>
+.card :global(.v-card-subtitle) {
+  opacity: 1 !important;
+}
+</style>

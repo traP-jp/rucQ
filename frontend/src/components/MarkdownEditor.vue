@@ -1,36 +1,14 @@
 <script setup lang="ts">
 import { watch, onMounted, onBeforeUnmount, ref } from 'vue'
 const text = defineModel<string>('text')
-const lineCount = ref<number>(1)
-const lineHeights = ref<Record<number, number>>({})
 const editor = ref<HTMLTextAreaElement | null>(null)
 
+defineProps<{
+  color: string
+}>()
+
 // GPT 産
-const updateLine = () => {
-  if (!text.value || !editor.value) return
-  const lines = text.value.split('\n')
-  lineCount.value = lines.length
-  const computedHeights: Record<number, number> = {}
-
-  lines.forEach((_, index) => {
-    const div = document.createElement('div')
-    div.style.visibility = 'hidden'
-    div.style.position = 'absolute'
-    div.style.whiteSpace = 'pre-wrap'
-    div.style.overflowWrap = 'break-word'
-    div.style.width = `${editor.value!.offsetWidth - 8}px`
-    // div.style.borderLeft = '1px dashed black'
-    div.style.paddingLeft = '1px'
-    div.style.fontFamily = getComputedStyle(editor.value!).fontFamily
-    div.style.fontSize = getComputedStyle(editor.value!).fontSize
-    div.textContent = lines[index] || ' '
-    document.body.appendChild(div)
-    computedHeights[index + 1] = div.offsetHeight
-    document.body.removeChild(div)
-  })
-
-  lineHeights.value = computedHeights
-}
+const updateLine = () => {}
 
 watch(text, updateLine)
 
@@ -49,12 +27,28 @@ onMounted(() => {
 
 <template>
   <div :class="$style.container">
-    <div :class="$style.numbers">
+    <!-- <div :class="$style.numbers">
       <div v-for="line in lineCount" :key="line" :style="{ height: lineHeights[line] + 'px' }">
         {{ line }}
       </div>
+    </div> -->
+    <div style="width: 26px"></div>
+    <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
+    <div :class="$style.content">
+      <div style="z-index: 1000">
+        <textarea v-model="text" :class="$style.input" ref="editor"></textarea>
+      </div>
+      <div :class="$style.dummy" v-if="text">
+        <div v-for="(line, i) in text.split('\n')" :key="i" :class="$style.dummyLine">
+          <div :class="$style.lineNumber">
+            <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
+              {{ i }}
+            </p>
+          </div>
+          <p :class="$style.dummyLineText">{{ line }}</p>
+        </div>
+      </div>
     </div>
-    <textarea v-model="text" :class="$style.input" ref="editor"></textarea>
   </div>
 </template>
 
@@ -69,19 +63,53 @@ onMounted(() => {
   font-weight: 400;
 }
 
+.content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.dummy {
+  top: 0px;
+  width: 100%;
+  position: absolute;
+  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  z-index: 0;
+}
+
+.dummyLine {
+  position: relative;
+}
+
+.lineNumber {
+  position: absolute;
+  left: -42px;
+  width: 30px;
+}
+
+.lineNumberText {
+  text-align: right;
+  line-height: 1.4;
+}
+
+.dummyLineText {
+  color: transparent;
+  font-weight: 500;
+  position: relative;
+  line-height: 1.4;
+  min-height: 1.4em;
+}
+
 .input {
+  position: absolute;
   width: 100%;
   height: 100%;
   resize: none;
   /* scrollbar-gutter: stable; */
-  border-left: 1px dashed var(--color-theme);
-  padding-left: 4px;
-}
-
-.numbers {
-  text-align: right;
-  width: 20px;
-  margin-right: 4px;
-  color: var(--color-theme);
+  line-height: 1.4;
+  overflow: hidden;
+  z-index: 1;
 }
 </style>

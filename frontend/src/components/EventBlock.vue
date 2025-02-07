@@ -26,7 +26,7 @@ const props = defineProps<{
       </template>
 
       <template v-slot:default="{ isActive }">
-        <EventDialog @close="isActive.value = false" />
+        <EventDialog :event="event" @close="isActive.value = false" />
       </template>
     </v-dialog>
   </div>
