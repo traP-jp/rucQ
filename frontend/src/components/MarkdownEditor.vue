@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { watch, onMounted, onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
+import { decorated } from '@/lib/editor-parse'
 const text = defineModel<string>('text')
-const editor = ref<HTMLTextAreaElement | null>(null)
+
+const isComposing = ref(false)
+const textComposing = ref('') // 変換中の部分を含めたテキスト全体
+
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement
+  textComposing.value = target.value
+  if (!isComposing.value) {
+    text.value = target.value
+  }
+}
+
+const handleCompose = () => {
+  isComposing.value = false
+  text.value = textComposing.value
+}
 
 defineProps<{
   color: string
 }>()
-
-// GPT 産
-const updateLine = () => {}
-
-watch(text, updateLine)
-
-onMounted(async () => {
-  window.addEventListener('resize', updateLine)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateLine)
-})
-
-onMounted(() => {
-  updateLine()
-})
 </script>
 
 <template>
   <div :class="$style.container">
-    <!-- <div :class="$style.numbers">
-      <div v-for="line in lineCount" :key="line" :style="{ height: lineHeights[line] + 'px' }">
-        {{ line }}
-      </div>
-    </div> -->
     <div style="width: 26px"></div>
     <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
     <div :class="$style.content">
       <div style="z-index: 1000">
-        <textarea v-model="text" :class="$style.input" ref="editor"></textarea>
+        <textarea
+          :value="textComposing"
+          @input="handleInput"
+          @compositionstart="isComposing = true"
+          @compositionend="handleCompose"
+          :class="$style.input"
+        ></textarea>
       </div>
       <div :class="$style.dummy" v-if="text">
         <div v-for="(line, i) in text.split('\n')" :key="i" :class="$style.dummyLine">
@@ -45,7 +45,21 @@ onMounted(() => {
               {{ i }}
             </p>
           </div>
-          <p :class="$style.dummyLineText">{{ line }}</p>
+          <div
+            v-for="(part, j) in decorated(line)"
+            :key="j"
+            :class="$style.dummyLineText"
+            :style="part.style"
+          >
+            {{ part.text }}
+          </div>
+          <div
+            v-if="i === text.split('\n').length - 1"
+            :class="$style.dummyLineText"
+            style="text-decoration: underline"
+          >
+            {{ textComposing.slice(text.length, textComposing.length) }}
+          </div>
         </div>
       </div>
     </div>
@@ -81,6 +95,9 @@ onMounted(() => {
 
 .dummyLine {
   position: relative;
+  display: flex;
+  justify-content: flex-start;
+  min-height: 1.4em;
 }
 
 .lineNumber {
@@ -95,11 +112,8 @@ onMounted(() => {
 }
 
 .dummyLineText {
-  color: transparent;
-  font-weight: 500;
   position: relative;
   line-height: 1.4;
-  min-height: 1.4em;
 }
 
 .input {
@@ -107,9 +121,16 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   resize: none;
-  /* scrollbar-gutter: stable; */
   line-height: 1.4;
   overflow: hidden;
   z-index: 1;
+  color: transparent;
+  caret-color: black;
+}
+
+textarea::selection {
+  text-decoration: none;
+  -webkit-text-decoration: none;
+  background-color: #ff000044;
 }
 </style>
