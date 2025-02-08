@@ -47,6 +47,15 @@ func (r *Repository) UpdateQuestionGroup(ID uint, questionGroup *model.QuestionG
 		return err
 	}
 
+	return nil
+}
+
+func (r *Repository) DeleteQuestionGroup(ID uint) error {
+	if err := r.db.
+		Delete(&model.QuestionGroup{}, ID).
+		Error; err != nil {
+		return err
+	}
 
 	return nil
 }
