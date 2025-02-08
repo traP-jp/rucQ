@@ -119,7 +119,15 @@ func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID QuestionGroupI
 		return echo.NewHTTPError(http.StatusBadRequest, "Bad request")
 	}
 
-	var updateQuestionGroup model.QuestionGroup
+	updateQuestionGroup, err := s.repo.GetQuestionGroup(uint(questionGroupID))
+	
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Not found")
+		}
+		e.Logger().Errorf("failed to get question group: %v", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
 
 	if err := copier.Copy(&updateQuestionGroup, req); err != nil {
 		e.Logger().Errorf("failed to copy request body: %v", err)
@@ -127,7 +135,7 @@ func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID QuestionGroupI
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	if err := s.repo.UpdateQuestionGroup(uint(questionGroupID), &updateQuestionGroup); err != nil {
+	if err := s.repo.UpdateQuestionGroup(uint(questionGroupID), updateQuestionGroup); err != nil {
 		e.Logger().Errorf("failed to update question group: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
