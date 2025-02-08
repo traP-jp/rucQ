@@ -1,54 +1,51 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { getAnswer, editAnswer } from '@/api/handler'
+import { ref, computed, watch } from 'vue'
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 
-type QuestionItem = Question & {
-  content: string | string[]
-  contentNew: string | string[]
-  displayContent: string
+type QuestionItem = components['schemas']['Question'] & {
+  content?: string
+  contentNew?: string
 }
 const headers = [
-  { text: 'label', value: 'title' },
-  { text: 'answer', value: 'displayContent' },
+  { title: 'label', key: 'title' },
+  { title: 'answer', key: 'content' },
 ]
+const isValid = computed(() => true)
 
+// targetIdは、undefined: 自分, null: 選択なし
 const props = defineProps<{
-  questionGroup: QuestionGroup
-  staff?: boolean
+  questionGroup: components['schemas']['QuestionGroup']
+  targetId?: string | null
 }>()
-const answers = ref<QuestionAnswer[]>([])
 
+const questionItems = ref<QuestionItem[]>([])
 const date = new Date(props.questionGroup.due)
 
 const editMode = ref(false)
-const isValid = computed(() => true)
 
-const questionItems = ref<QuestionItem[]>(
-  props.questionGroup.questions.map((question) => {
-    const answer = answers.value.find((answer) => answer.question_id === question.id)
-    const content = answer?.content ?? (question.type === 'multiple' ? [] : '')
-    const display = Array.isArray(content) ? content.join(', ') : content
-    return {
+const constructQuestionItems = async () => {
+  const res: QuestionItem[] = []
+  for (const question of props.questionGroup.questions) {
+    const answer = await getAnswer(question.id)
+    res.push({
       ...question,
-      content: content,
-      contentNew: content,
-      displayContent: display,
-    } as QuestionItem
-  }),
-)
-
-onMounted(async () => {
-  for (const questionItem of questionItems.value) {
-    try {
-      const response = await getAnswer(questionItem.id)
-      console.log('API response:', response)
-      answers.value.push(response)
-    } catch (error) {
-      console.error('Failed to fetch question answer:', error)
-    }
+      content: answer?.content as string,
+      contentNew: answer?.content as string,
+    })
   }
-})
+  return res
+}
+
+const submit = async () => {
+  let submitSuccess = true
+  for (const questionItem of questionItems.value) {
+    const putAnswerSuccess = await putAnswer(questionItem)
+    if (!putAnswerSuccess) submitSuccess = false
+  }
+  if (submitSuccess) editMode.value = false
+}
 
 const cancel = () => {
   questionItems.value.forEach((questionItem) => {
@@ -57,40 +54,74 @@ const cancel = () => {
   editMode.value = false
 }
 
-const submit = async () => {
-  for (const questionItem of questionItems.value) {
-    try {
-      const response = await editAnswer(questionItem.id, questionItem.contentNew)
-      console.log('API response:', response)
-    } catch (error) {
-      console.error('Failed to edit question answer:', error)
-    }
-  }
-  editMode.value = false
+const getAnswer = async (questionId: number) => {
+  if (props.targetId === null) return null
+  const { data, error } =
+    props.targetId === undefined
+      ? await apiClient.GET('/api/me/answers/{question_id}', {
+          params: { path: { question_id: questionId } },
+        })
+      : await apiClient.GET('/api/users/{traq_id}/answers/{question_id}', {
+          params: { path: { traq_id: props.targetId, question_id: questionId } },
+        })
+  if (error) console.error('Failed to fetch question answer:', error.message)
+  return data
 }
+
+const putAnswer = async (questionItem: QuestionItem) => {
+  if (props.targetId === null) return false
+  const { error } =
+    props.targetId === undefined
+      ? await apiClient.PUT('/api/me/answers/{question_id}', {
+          params: { path: { question_id: questionItem.id } },
+          body: { content: questionItem.contentNew },
+        })
+      : await apiClient.PUT('/api/users/{traq_id}/answers/{question_id}', {
+          params: { path: { traq_id: props.targetId, question_id: questionItem.id } },
+          body: { content: questionItem.contentNew },
+        })
+  if (error) console.error('Failed to edit question answer:', error.message)
+  else questionItem.content = questionItem.contentNew
+  return error == null
+}
+
+watch(
+  () => props.targetId,
+  async () => {
+    questionItems.value = await constructQuestionItems()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <v-card class="d-flex flex-column pa-4">
-    <div class="d-flex flex-column">
-      <div class="d-flex align-center justify-space-between">
+  <v-sheet class="d-flex flex-column rounded elevation-1 pa-4 ga-2">
+    <div class="d-flex align-center justify-space-between">
+      <div class="d-flex flex-column">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
-        <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        <v-btn v-else icon variant="plain" size="small" @click="cancel">
-          <v-icon>mdi-file-undo</v-icon>
-        </v-btn>
+        <v-card-subtitle>
+          {{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
+          {{ questionGroup.description }}
+        </v-card-subtitle>
       </div>
-      <v-card-subtitle
-        >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
-        {{ questionGroup.description }}</v-card-subtitle
+      <v-btn
+        v-if="!editMode"
+        :disabled="targetId === null"
+        icon
+        variant="plain"
+        size="small"
+        @click="editMode = true"
       >
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn v-else icon variant="plain" size="small" @click="cancel">
+        <v-icon>mdi-file-undo</v-icon>
+      </v-btn>
     </div>
 
     <v-data-table
       v-if="!editMode"
-      class="pa-2"
+      class="px-4"
       :headers="headers"
       :items="questionItems"
       density="compact"
@@ -103,9 +134,10 @@ const submit = async () => {
         v-for="questionItem in questionItems"
         :key="questionItem.id"
         :question-item="questionItem"
+        :staff="targetId != null"
         v-model="questionItem.contentNew"
       />
       <v-btn :disabled="!isValid" type="submit" @click="submit">保存</v-btn>
     </v-form>
-  </v-card>
+  </v-sheet>
 </template>

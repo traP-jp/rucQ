@@ -12,25 +12,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
 
-// ナビゲーションバインディング
-const value = ref<string>('guidebook')
-
-// ナビゲーション関数
-const navigateTo = (path: string) => {
+// URLからアクティブなナビゲーション値を取得する関数
+const getActiveValue = () => {
   const segments = route.path.split('/')
+  // 配列に2つ以上ある場合、index 1（例: "/aa/admin" → "admin") を採用
+  return segments[2] || 'guidebook'
+}
+
+let value = ref<string | null>(null)
+
+// ナビゲーション関数の簡略化
+const navigateTo = (path: string) => {
   value.value = path
-  if (path == 'guidebook') {
-    router.push(`/${segments[1]}`)
+  if (path === 'guidebook') {
+    router.push(`/${route.params.campname}/`)
   } else {
-    router.push(`/${segments[1]}/${path}`)
+    router.push(`/${route.params.campname}/${path}`)
   }
 }
+
+watch(
+  () => route.path,
+  () => {
+    value.value = getActiveValue()
+  },
+  { immediate: true },
+)
 
 // ナビゲーションアイテムのリスト
 const navItems = [
