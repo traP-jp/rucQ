@@ -126,7 +126,7 @@ func (s *Server) PutRoom(e echo.Context, roomID RoomId, params PutRoomParams) er
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	if err := copier.Copy(&roomModel, &req); err != nil {
+	if err := copier.Copy(roomModel, &req); err != nil {
 		e.Logger().Errorf("failed to copy request to model: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -150,7 +150,7 @@ func (s *Server) PutRoom(e echo.Context, roomID RoomId, params PutRoomParams) er
 		roomModel.Members[i] = *member
 	}
 
-	if err := s.repo.UpdateRoom(&roomModel); err != nil {
+	if err := s.repo.UpdateRoom(roomModel); err != nil {
 		e.Logger().Errorf("failed to update room: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
@@ -158,7 +158,7 @@ func (s *Server) PutRoom(e echo.Context, roomID RoomId, params PutRoomParams) er
 
 	var res Room
 
-	if err := copier.Copy(&res, &roomModel); err != nil {
+	if err := copier.Copy(&res, roomModel); err != nil {
 		e.Logger().Errorf("failed to copy model to response: %v", err)
 
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
