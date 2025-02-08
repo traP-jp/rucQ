@@ -13,9 +13,11 @@ import splitIcon from '@/assets/splitIcon.svg'
 import splitIconActive from '@/assets/splitIconActive.svg'
 import eyeIcon from '@/assets/eyeIcon.svg'
 import eyeIconActive from '@/assets/eyeIconActive.svg'
-import { editCamp, getCamps, getDefalutCamps } from '@/api/handler'
 import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
+
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
 
 const markdown = ref(`# 2024年度 夏合宿
 
@@ -89,10 +91,10 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
 
   try {
-    response.value = await getDefalutCamps()
+    response.value = (await apiClient.GET('/api/camps/default')).data!
     console.log('API response:', response)
 
-    if (response && typeof response.value.description === 'string') {
+    if (response.value && typeof response.value.description === 'string') {
       markdown.value = response.value.description
     } else {
       console.error('Invalid response format:', response)
@@ -102,7 +104,7 @@ onMounted(async () => {
   }
 })
 
-const response = ref<Camp>({
+const response = ref<components['schemas']['Camp']>({
   id: 0,
   display_id: '',
   description: '',
@@ -114,11 +116,14 @@ const response = ref<Camp>({
 const saveMarkdown = async () => {
   alert('保存しました')
   isSaved.value = true
-  await editCamp(response.value.id, {
-    display_id: '24spring',
-    description: markdown.value,
-    name: '2024年度 春合宿',
-    is_draft: false,
+  await apiClient.PUT('/api/camps/{camp_id}', {
+    params: { path: { camp_id: response.value.id } },
+    body: {
+      display_id: '24spring',
+      description: markdown.value,
+      name: '2024年度 春合宿',
+      is_draft: false,
+    },
   })
   console.log('API response:', response.value)
 
@@ -138,11 +143,14 @@ function showPreviewOnly() {
 // 保存関数（blurイベント用）　カーソルが離れたら保存する
 const saveMarkdownAsync = async () => {
   try {
-    await editCamp(response.value.id, {
-      display_id: '24spring',
-      description: markdown.value,
-      name: '2024年度 春合宿', // この辺は後で決める
-      is_draft: false,
+    await apiClient.PUT('/api/camps/{camp_id}', {
+      params: { path: { camp_id: response.value.id } },
+      body: {
+        display_id: '24spring',
+        description: markdown.value,
+        name: '2024年度 春合宿', // この辺は後で決める
+        is_draft: false,
+      },
     })
     isSaved.value = true // 保存に成功した場合
   } catch (error) {

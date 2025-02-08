@@ -1,14 +1,4 @@
-<script setup lang="ts">
-import { onMounted } from 'vue'
-import { newStaff } from '@/api/handler'
-
-onMounted(() => {
-  newStaff('ogu_kazemiya')
-  newStaff('kitsne')
-  newStaff('akimo')
-  newStaff('mumumu')
-})
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div :class="$style.container">

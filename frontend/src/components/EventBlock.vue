@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { DurationBlock } from '@/lib/event-layout'
+import type { components } from '@/api/schema'
+type CampEvent = components['schemas']['Event']
 
 const props = defineProps<{
-  event: DurationBlock
+  event: CampEvent
 }>()
 const popUp = defineModel<CampEvent | undefined>('popUp')
 </script>
@@ -19,7 +20,6 @@ const popUp = defineModel<CampEvent | undefined>('popUp')
 <style module>
 .container {
   padding: 4px;
-  flex-grow: 0;
   color: var(--color-exwhite);
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
@@ -14,10 +14,12 @@ const headers = [
 ]
 const isValid = computed(() => true)
 
+// targetIdは、undefined: 自分, null: 選択なし
 const props = defineProps<{
   questionGroup: components['schemas']['QuestionGroup']
-  targetId?: string
+  targetId?: string | null
 }>()
+
 const questionItems = ref<QuestionItem[]>([])
 const date = new Date(props.questionGroup.due)
 
@@ -53,8 +55,9 @@ const cancel = () => {
 }
 
 const getAnswer = async (questionId: number) => {
+  if (props.targetId === null) return null
   const { data, error } =
-    props.targetId == null
+    props.targetId === undefined
       ? await apiClient.GET('/api/me/answers/{question_id}', {
           params: { path: { question_id: questionId } },
         })
@@ -66,8 +69,9 @@ const getAnswer = async (questionId: number) => {
 }
 
 const putAnswer = async (questionItem: QuestionItem) => {
+  if (props.targetId === null) return false
   const { error } =
-    props.targetId == null
+    props.targetId === undefined
       ? await apiClient.PUT('/api/me/answers/{question_id}', {
           params: { path: { question_id: questionItem.id } },
           body: { content: questionItem.contentNew },
@@ -81,27 +85,38 @@ const putAnswer = async (questionItem: QuestionItem) => {
   return error == null
 }
 
-onMounted(async () => {
-  questionItems.value = await constructQuestionItems()
-})
+watch(
+  () => props.targetId,
+  async () => {
+    questionItems.value = await constructQuestionItems()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <v-sheet class="d-flex flex-column rounded elevation-1 pa-4 ga-2">
-    <div class="d-flex flex-column">
-      <div class="d-flex align-center justify-space-between">
+    <div class="d-flex align-center justify-space-between">
+      <div class="d-flex flex-column">
         <v-card-title class="py-0">{{ questionGroup.name }}</v-card-title>
-        <v-btn v-if="!editMode" icon variant="plain" size="small" @click="editMode = true">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        <v-btn v-else icon variant="plain" size="small" @click="cancel">
-          <v-icon>mdi-file-undo</v-icon>
-        </v-btn>
+        <v-card-subtitle>
+          {{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
+          {{ questionGroup.description }}
+        </v-card-subtitle>
       </div>
-      <v-card-subtitle
-        >{{ date.getMonth() + 1 }}/{{ date.getDate() }}まで
-        {{ questionGroup.description }}</v-card-subtitle
+      <v-btn
+        v-if="!editMode"
+        :disabled="targetId === null"
+        icon
+        variant="plain"
+        size="small"
+        @click="editMode = true"
       >
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn v-else icon variant="plain" size="small" @click="cancel">
+        <v-icon>mdi-file-undo</v-icon>
+      </v-btn>
     </div>
 
     <v-data-table
