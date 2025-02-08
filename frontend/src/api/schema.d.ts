@@ -1317,7 +1317,10 @@ export interface operations {
     getQuestionAnswers: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
             path: {
                 /** @description 質問ID */
                 question_id: components["parameters"]["QuestionId"];

@@ -595,6 +595,7 @@ paths:
         - Questions
       operationId: getQuestionAnswers
       parameters:
+        - $ref: "#/components/parameters/X-Forwarded-User"
         - $ref: "#/components/parameters/QuestionId"
       responses:
         "200":

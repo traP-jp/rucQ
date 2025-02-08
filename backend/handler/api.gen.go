@@ -390,6 +390,12 @@ type PostStaffParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// GetQuestionAnswersParams defines parameters for GetQuestionAnswers.
+type GetQuestionAnswersParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // GetUserAnswerParams defines parameters for GetUserAnswer.
 type GetUserAnswerParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -692,7 +698,7 @@ type ServerInterface interface {
 	PostStaff(ctx echo.Context, params PostStaffParams) error
 	// 質問に対するユーザーの回答一覧を取得
 	// (GET /api/users/answers/{question_id})
-	GetQuestionAnswers(ctx echo.Context, questionId QuestionId) error
+	GetQuestionAnswers(ctx echo.Context, questionId QuestionId, params GetQuestionAnswersParams) error
 	// ユーザーの回答を取得
 	// (GET /api/users/{traq_id}/answers/{question_id})
 	GetUserAnswer(ctx echo.Context, traqId TraqId, questionId QuestionId, params GetUserAnswerParams) error
@@ -1551,8 +1557,28 @@ func (w *ServerInterfaceWrapper) GetQuestionAnswers(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_id: %s", err))
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetQuestionAnswersParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetQuestionAnswers(ctx, questionId)
+	err = w.Handler.GetQuestionAnswers(ctx, questionId, params)
 	return err
 }
 
