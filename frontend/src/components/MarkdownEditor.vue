@@ -10,18 +10,21 @@ const textComposing = ref('')
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
+  const prevCursorPos = target.selectionStart // カーソル位置を保持
   textAll.value = target.value
   text.value = target.value
+
   nextTick(() => {
     // defineModel の値は 1 フレーム待たないと変更されないらしい
     if (!isComposing.value) {
       text.value = textAll.value
     }
-    cursorPos.value = target.selectionStart
     textComposing.value = textAll.value.slice(
       cursorPos.value - (textAll.value.length - text.value!.length),
       cursorPos.value,
     )
+    cursorPos.value = prevCursorPos // カーソル位置を元に戻す
+    target.setSelectionRange(cursorPos.value, cursorPos.value) // カーソル位置を明示的に設定
   })
 }
 
