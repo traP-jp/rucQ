@@ -93,12 +93,12 @@
                   />
                 </div>
                 <v-btn
-                  @click="editedOptions.push({ id: Date.now(), question_id: 0, content: '' })"
+                  @click="editedOptions.push({ id: -1, question_id: question.id, content: '' })"
                   class="mb-5"
                   >選択肢を追加</v-btn
                 >
                 <div class="dialogButtonContainer">
-                  <v-btn color="primary" @click="childQuestionSave(question.id)">保存</v-btn>
+                  <v-btn color="primary" @click="childQuestionSave(question)">保存</v-btn>
                   <v-btn
                     color="primary"
                     variant="tonal"
@@ -149,9 +149,7 @@ const questionGroup = ref<components['schemas']['QuestionGroup']>()
 const editedTitle = ref()
 const editedDescription = ref()
 const editedDeadline = ref()
-const editedOptions = ref<components['schemas']['Option'][]>([
-  { id: 0, question_id: 0, content: '' },
-])
+const editedOptions = ref<components['schemas']['Option'][]>([])
 
 onMounted(async () => {
   // パスパラメータを取得
@@ -168,7 +166,6 @@ onMounted(async () => {
     questionDialogs.value[q.id] = false
   })
 
-  console.log(questionGroup.value)
 })
 
 const formatISOToDate = (isoString: string) => {
@@ -206,7 +203,9 @@ const openQuestionDialog = (id: number) => {
 
   editedTitle.value = target.title
   editedDescription.value = target.description
-  editedOptions.value = target.options ? [...target.options] : []
+  target.options?.forEach((option) => {
+    editedOptions.value.push({ id: option.id, question_id: option.question_id, content: option.content })
+  })
   questionDialogs.value[id] = true
 }
 
@@ -217,6 +216,7 @@ const closeHeaderDialog = () => {
 
 const childQuestionclose = (id: number) => {
   questionDialogs.value[id] = false
+  editedOptions.value = []
 }
 
 // 保存ボタンをクリックしたときの処理
@@ -246,12 +246,54 @@ const headerSave = async () => {
   dialog.value = false
 }
 
-const childQuestionSave = (id: number) => {
-  // questions.value[id].title = editedTitle.value
-  // questions.value[id].description = editedDescription.value
-  // questions.value[id].options = editedOptions.value
-  // questionDialogs.value[id] = false
+const childQuestionSave = async (question : components['schemas']['Question']) => {
+  try {
+    if (questionGroup.value === undefined) return
+
+    // バックエンドへの保存処理
+    await putQuestion(question.id, {
+      title: editedTitle.value,
+      description: editedDescription.value,
+      question_group_id: questionGroup.value.id,
+      type: question.type, // ここは変更する部分はないのでそのまま
+      is_public: question.is_public,
+      is_open: question.is_open,
+    })
+
+    if (question.options != undefined) {
+      editedOptions.value.forEach(async (option) => {
+        if (option.id >= 0) {
+          await putOption(option.id, {
+            question_id: option.question_id,
+            content: option.content,
+          })
+        }else {
+          await postOption({ // 新規の要素は idが-1にしてあるので、それを使って判定
+            question_id: option.question_id,
+            content: option.content,
+          })
+        } 
+      })
+    }
+
+    // 画面の更新
+    question.title = editedTitle.value
+    question.description = editedDescription.value
+
+    question.options = editedOptions.value.map((option) => ({
+      id: 0,
+      question_id: option.question_id,
+      content: option.content,
+    })) // idはなんでもいい関係ないので
+
+    questionDialogs.value[question.id] = false
+    editedOptions.value = []
+  } catch (e) {
+    console.error(e)
+  }
 }
+
+// API
 
 const getQuestionGroup = async (id: number) => {
   const { data, error } = await apiClient.GET('/api/question_groups/{question_group_id}', {
@@ -270,6 +312,31 @@ const putQuestionGroup = async (
     body: questionGroup,
   })
   if (error) console.error('Failed to update question group:', error.message)
+  return data
+}
+
+const putQuestion = async (id: number, question: components['schemas']['PostQuestionRequest']) => {
+  const { data, error } = await apiClient.PUT('/api/questions/{question_id}', {
+    params: { path: { question_id: id } },
+    body: question,
+  })
+  if (error) console.error('Failed to update question:', error.message)
+  return data
+} 
+
+const postOption = async (option: components['schemas']['PostOptionRequest']) => {
+  // 選択肢を増やす場合は別でapiをたたく
+  const { data, error } = await apiClient.POST('/api/options', { body: option })
+  if (error) console.error('Failed to create option:', error.message)
+  return data
+}
+
+const putOption = async (id: number, question: components['schemas']['PostOptionRequest']) => {
+  const { data, error } = await apiClient.PUT('/api/options/{option_id}', {
+    params: { path: { option_id: id } },
+    body: question,
+  })
+  if (error) console.error('Failed to update question:', error.message)
   return data
 }
 
@@ -366,7 +433,7 @@ const questionDialogs = ref<Record<number, boolean>>({})
 
 .questionDescription {
   /*個々の質問の説明*/
-  font-size: 17px;
+  font-size: 16px;
   margin-top: 6px;
   padding-bottom: 3px;
   color: #2d2d2d;
