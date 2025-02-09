@@ -1,14 +1,24 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 // const emit = defineEmits(['close'])
+import MarkdownEditor from './MarkdownEditor.vue'
 import { getTimeString } from '@/lib/date'
 
-defineProps<{
+const props = defineProps<{
   event: CampEvent
 }>()
 
 const makeInfo = (event: CampEvent) => {
   return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
 }
+
+const text = ref('')
+
+const isPreview = ref(false)
+
+onMounted(() => {
+  text.value = props.event.description
+})
 </script>
 
 <template>
@@ -19,9 +29,14 @@ const makeInfo = (event: CampEvent) => {
     <template v-slot:subtitle>
       <span>{{ makeInfo(event) }}</span>
     </template>
-    <!-- <v-card-text style="bg-surface-light pt-4">
-      {{ event.description }}
-    </v-card-text> -->
+    <MarkdownEditor
+      color="orange"
+      v-if="!isPreview"
+      v-model:text="text"
+      style="min-height: 100px"
+    />
+    <!-- <MarkdownPreview v-else v-model:text="text" />
+      <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" /> -->
   </v-card>
 </template>
 

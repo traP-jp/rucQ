@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { decorated } from '@/lib/editor-parse'
 const text = defineModel<string>('text')
 
@@ -25,6 +25,16 @@ const handleInput = (event: Event) => {
   })
 }
 
+watch(
+  () => text.value,
+  () => {
+    if (text.value) {
+      textAll.value = text.value
+    }
+  },
+  { deep: true },
+)
+
 const handleCompose = () => {
   isComposing.value = false
   text.value = textAll.value
@@ -33,38 +43,43 @@ const handleCompose = () => {
 defineProps<{
   color: string
 }>()
-
-onMounted(() => {
-  console.log([...'YouTubeのURLはhttps://www.youtube.comです'.matchAll(/\bhttps?:\/\/[^\s<>"]+/g)])
-})
 </script>
 
 <template>
-  <div :class="$style.container">
-    <div style="width: 26px"></div>
-    <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
-    <div :class="$style.content">
-      <div style="z-index: 1000">
+  <div
+    :class="$style.container"
+    :style="`background: var(--color-${color}-pale); color: var(--color-text)`"
+  >
+    <div :class="$style.guide">
+      <div style="width: 26px"></div>
+      <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
+      <div :class="$style.content">
         <textarea
+          :value="text"
           @input="handleInput"
           @compositionstart="isComposing = true"
           @compositionend="handleCompose"
           :class="$style.input"
         ></textarea>
-      </div>
-      <div :class="$style.dummy">
-        <div
-          v-for="(line, i) in decorated(textAll, cursorPos, textComposing)"
-          :key="i"
-          :class="$style.dummyLine"
-        >
-          <div :class="$style.lineNumber">
-            <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
-              {{ i }}
-            </p>
-          </div>
-          <div v-for="(part, j) in line" :key="j" :class="$style.dummyLineText" :style="part.style">
-            {{ part.part }}
+        <div :class="$style.dummy">
+          <div
+            v-for="(line, i) in decorated(textAll, cursorPos, textComposing)"
+            :key="i"
+            :class="$style.dummyLine"
+          >
+            <div :class="$style.lineNumber">
+              <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
+                {{ i }}
+              </p>
+            </div>
+            <div
+              v-for="(part, j) in line"
+              :key="j"
+              :class="$style.dummyLineText"
+              :style="part.style"
+            >
+              {{ part.part }}
+            </div>
           </div>
         </div>
       </div>
@@ -76,23 +91,31 @@ onMounted(() => {
 .container {
   width: 100%;
   height: 100%;
+  overflow: auto;
   padding: 10px;
-  background: var(--color-theme-pale);
-  display: flex;
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   font-weight: 400;
 }
 
-.content {
+.guide {
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: stretch;
+}
+
+.content {
+  width: 100%;
+  height: fit-content;
+  min-height: 100%;
+  z-index: 1;
   position: relative;
 }
 
 .dummy {
   top: 0px;
   width: 100%;
-  position: absolute;
+  /* position: absolute; */
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   white-space: pre-wrap;
   overflow-wrap: break-word;
@@ -126,6 +149,7 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   height: 100%;
+  /* min-height: 1.4em; */
   resize: none;
   line-height: 1.4;
   overflow: hidden;

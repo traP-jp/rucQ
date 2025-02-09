@@ -12,7 +12,6 @@ const dayGroups = ref<DayGroup[]>([])
 
 onMounted(() => {
   dayGroups.value = getLayout(events, camp)
-  console.log(dayGroups.value)
 })
 </script>
 

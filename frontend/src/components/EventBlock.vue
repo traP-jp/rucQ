@@ -8,7 +8,7 @@ const props = defineProps<{
 
 <template>
   <div :class="$style.container">
-    <v-dialog max-width="500">
+    <v-dialog max-width="800">
       <template v-slot:activator="{ props: activatorProps }">
         <v-card
           link

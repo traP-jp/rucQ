@@ -170,7 +170,7 @@ const arrangeEvents = (events: CampEvent[]) => {
     }
   }
 
-  console.log(arranged)
+  // console.log(arranged)
 
   // この日の全ての event の配置の配列とイベントグループの境界番号の配列を返す
   return { events: eventPos, border: groupBorder, times: times }

@@ -118,7 +118,6 @@ export const decorated = (textAll: string, cursorPos: number, composing: string)
         }
       }
     }
-    console.log(effectChars)
 
     const effectCharsT = effectChars[0].map((_, c) => effectChars.map((r) => r[c])) // effects の転置
     effectCharsT.splice(cursorPos, 0, ...Array(composing.length).fill([false, false, false, true]))
