@@ -1,27 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { decorated } from '@/lib/editor-parse'
 const text = defineModel<string>('text')
 
 const isComposing = ref(false)
-const textComposing = ref('') // 変換中の部分を含めたテキスト全体
+const textAll = ref('') // 変換中の部分を含めたテキスト全体
+const cursorPos = ref(0) // カーソル位置
+const textComposing = ref('')
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
-  textComposing.value = target.value
-  if (!isComposing.value) {
-    text.value = target.value
-  }
+  textAll.value = target.value
+  text.value = target.value
+  nextTick(() => {
+    // defineModel の値は 1 フレーム待たないと変更されないらしい
+    if (!isComposing.value) {
+      text.value = textAll.value
+    }
+    cursorPos.value = target.selectionStart
+    textComposing.value = textAll.value.slice(
+      cursorPos.value - (textAll.value.length - text.value!.length),
+      cursorPos.value,
+    )
+  })
 }
 
 const handleCompose = () => {
   isComposing.value = false
-  text.value = textComposing.value
+  text.value = textAll.value
 }
 
 defineProps<{
   color: string
 }>()
+
+onMounted(() => {
+  console.log([...'YouTubeのURLはhttps://www.youtube.comです'.matchAll(/\bhttps?:\/\/[^\s<>"]+/g)])
+})
 </script>
 
 <template>
@@ -31,34 +46,25 @@ defineProps<{
     <div :class="$style.content">
       <div style="z-index: 1000">
         <textarea
-          :value="textComposing"
           @input="handleInput"
           @compositionstart="isComposing = true"
           @compositionend="handleCompose"
           :class="$style.input"
         ></textarea>
       </div>
-      <div :class="$style.dummy" v-if="text">
-        <div v-for="(line, i) in text.split('\n')" :key="i" :class="$style.dummyLine">
+      <div :class="$style.dummy">
+        <div
+          v-for="(line, i) in decorated(textAll, cursorPos, textComposing)"
+          :key="i"
+          :class="$style.dummyLine"
+        >
           <div :class="$style.lineNumber">
             <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
               {{ i }}
             </p>
           </div>
-          <div
-            v-for="(part, j) in decorated(line)"
-            :key="j"
-            :class="$style.dummyLineText"
-            :style="part.style"
-          >
-            {{ part.text }}
-          </div>
-          <div
-            v-if="i === text.split('\n').length - 1"
-            :class="$style.dummyLineText"
-            style="text-decoration: underline"
-          >
-            {{ textComposing.slice(text.length, textComposing.length) }}
+          <div v-for="(part, j) in line" :key="j" :class="$style.dummyLineText" :style="part.style">
+            {{ part.part }}
           </div>
         </div>
       </div>
