@@ -22,8 +22,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card :class="`bg-${event.display_color}`">
-    <div :class="$style.title">
+  <v-card :class="`bg-white`">
+    <div :class="$style.title" :style="`background-color: var(--color-${event.display_color})`">
       <v-card rounded="0" elevation="0" :class="[$style.card, `bg-${event.display_color}`]">
         <template v-slot:title>
           <span style="font-weight: 700">{{ event.name }}</span>
@@ -39,18 +39,25 @@ onMounted(() => {
           elevation="0"
           icon="mdi-close"
           baseColor="transparent"
+          class="text-white"
         ></v-btn>
         <v-btn
           density="comfortable"
           elevation="0"
           icon="mdi-square-edit-outline"
           baseColor="transparent"
+          class="text-white"
         ></v-btn>
       </div>
     </div>
-    <div style="height: 100%; overflow-y: auto; background-color: var(--color-white)">
-      <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
+    <div style="height: 100%; width: 100%; background-color: var(--color-white)">
+      <div style="height: 100%; overflow-y: auto; padding: 4px">
+        <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
+      </div>
     </div>
+    <v-btn style="margin: 10px" :baseColor="event.display_color" class="text-white">
+      <span style="font-weight: bold">参　加　す　る</span>
+    </v-btn>
   </v-card>
 </template>
 

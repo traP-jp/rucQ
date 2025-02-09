@@ -63,7 +63,7 @@ onMounted(async () => {
 
 .preview {
   width: 100%;
-  padding: 0 20px 20px 20px;
+  padding: 10px;
   height: fit-content;
   min-height: max(100%, 100px);
   max-width: 1000px;

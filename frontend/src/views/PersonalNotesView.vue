@@ -23,7 +23,7 @@ const isPreview = ref(false)
     </div>
     <div style="height: 100%" v-else>
       <ScrollableContent>
-        <MarkdownPreview v-model:text="text" v-model:isPreview="isPreview" />
+        <MarkdownPreview v-model:text="text" v-model:isPreview="isPreview" style="padding: 10px" />
       </ScrollableContent>
       <div :class="$style.button">
         <v-btn
