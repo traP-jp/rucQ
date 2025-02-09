@@ -102,6 +102,10 @@ export const decorated = (textAll: string, cursorPos: number, composing: string)
     ]
     // effectChars[0] は bold, [1] は italic, [2] は strike, [3] は link
 
+    if (line === '---' || /^#{1,6} /.test(line)) {
+      effectChars[0] = Array(text.length).fill(true)
+    }
+
     for (const bold of matchDivision(line, wholeLine, /\*\*([^\*\s]|[^\*\s].*?[^\*\s])\*\*/g)) {
       overWrite(effectChars[0], bold)
       for (const italic of matchDivision(line, bold.parts, /\*([^\*\s]|[^\*\s].*?[^\*\s])\*/g)) {
