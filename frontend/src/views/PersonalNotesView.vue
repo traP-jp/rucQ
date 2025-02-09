@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
-import EditPreviewButton from '@/components/EditPreviewButton.vue'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
@@ -16,9 +15,14 @@ const isPreview = ref(false)
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
-    <MarkdownEditor color="orange" v-if="!isPreview" v-model:text="text" />
+    <MarkdownEditor
+      color="orange"
+      v-if="!isPreview"
+      v-model:text="text"
+      v-model:isPreview="isPreview"
+    />
     <MarkdownPreview v-else v-model:text="text" />
-    <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" />
+    <!-- <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" /> -->
   </div>
 </template>
 

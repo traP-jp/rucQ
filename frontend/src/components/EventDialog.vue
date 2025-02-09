@@ -38,13 +38,13 @@ onMounted(() => {
           density="comfortable"
           elevation="0"
           icon="mdi-close"
-          :baseColor="`${event.display_color}`"
+          baseColor="transparent"
         ></v-btn>
         <v-btn
           density="comfortable"
           elevation="0"
           icon="mdi-square-edit-outline"
-          :baseColor="`${event.display_color}`"
+          baseColor="transparent"
         ></v-btn>
       </div>
     </div>

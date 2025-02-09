@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { onMounted, ref, watch, nextTick } from 'vue'
 import { decorated } from '@/lib/editor-parse'
+const isPreview = defineModel<boolean>('isPreview')
 const text = defineModel<string>('text')
 
 const isComposing = ref(false)
@@ -8,13 +9,21 @@ const textAll = ref('') // 変換中の部分を含めたテキスト全体
 const cursorPos = ref(0) // カーソル位置
 const textComposing = ref('')
 
-const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement
-  const prevCursorPos = target.selectionStart // カーソル位置を保持
-  textAll.value = target.value
-  text.value = target.value
+const textarea = ref<HTMLTextAreaElement | undefined>(undefined)
+
+const handleInput = () => {
+  if (!textarea.value) {
+    return
+  }
+  const prevCursorPos = textarea.value.selectionStart
+  textAll.value = textarea.value.value
+  text.value = textarea.value.value
 
   nextTick(() => {
+    if (!textarea.value) {
+      return
+    }
+
     // defineModel の値は 1 フレーム待たないと変更されないらしい
     if (!isComposing.value) {
       text.value = textAll.value
@@ -23,8 +32,8 @@ const handleInput = (event: Event) => {
       cursorPos.value - (textAll.value.length - text.value!.length),
       cursorPos.value,
     )
-    cursorPos.value = prevCursorPos // カーソル位置を元に戻す
-    target.setSelectionRange(cursorPos.value, cursorPos.value) // カーソル位置を明示的に設定
+    cursorPos.value = prevCursorPos
+    textarea.value.setSelectionRange(cursorPos.value, cursorPos.value)
   })
 }
 
@@ -43,6 +52,32 @@ const handleCompose = () => {
   text.value = textAll.value
 }
 
+const enclose = (symbol: string) => {
+  if (!textarea.value || !text.value) {
+    return
+  }
+  textarea.value.focus()
+  const start = textarea.value.selectionStart
+  const end = textarea.value.selectionEnd
+  console.log(start, end)
+  let tempText = text.value // text.value は即座に変更されてくれないので
+  tempText = tempText.slice(0, end) + symbol + tempText.slice(end, tempText.length)
+  tempText = tempText.slice(0, start) + symbol + tempText.slice(start, tempText.length)
+  text.value = tempText
+  cursorPos.value = start === end ? end + symbol.length : end + 2 * symbol.length
+  console.log(cursorPos.value)
+  nextTick(() => {
+    if (!textarea.value) {
+      return
+    }
+    textarea.value.setSelectionRange(cursorPos.value, cursorPos.value)
+  })
+}
+
+onMounted(() => {
+  handleInput()
+})
+
 defineProps<{
   color: string
 }>()
@@ -58,6 +93,7 @@ defineProps<{
       <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
       <div :class="$style.content">
         <textarea
+          ref="textarea"
           :value="text"
           @input="handleInput"
           @compositionstart="isComposing = true"
@@ -75,16 +111,57 @@ defineProps<{
                 {{ i + 1 }}
               </p>
             </div>
-            <div
+            <span
               v-for="(part, j) in line"
               :key="j"
               :class="$style.dummyLineText"
               :style="part.style"
             >
               {{ part.part }}
-            </div>
+            </span>
           </div>
         </div>
+      </div>
+      <div :class="$style.tools">
+        <v-btn
+          @click="isPreview = true"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-eye-outline"
+          baseColor="transparent"
+          class="text-primary"
+          style="margin-bottom: 10px"
+        ></v-btn>
+        <!-- <v-btn
+          density="comfortable"
+          elevation="0"
+          icon="mdi-undo"
+          baseColor="transparent"
+          class="text-primary"
+          :style="{ color: 'red' }"
+        ></v-btn> -->
+        <!-- document.execCommand('undo') が非推奨になっていて、自力実装の必要がありそうなので保留 -->
+        <v-btn
+          @click="enclose('**')"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-format-bold"
+          baseColor="transparent"
+        ></v-btn>
+        <v-btn
+          @click="enclose('*')"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-format-italic"
+          baseColor="transparent"
+        ></v-btn>
+        <v-btn
+          @click="enclose('~~')"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-format-strikethrough"
+          baseColor="transparent"
+        ></v-btn>
       </div>
     </div>
   </div>
@@ -127,9 +204,8 @@ defineProps<{
 
 .dummyLine {
   position: relative;
-  display: flex;
-  justify-content: flex-start;
   min-height: 1.4em;
+  line-height: 1.4;
 }
 
 .lineNumber {
@@ -140,12 +216,10 @@ defineProps<{
 
 .lineNumberText {
   text-align: right;
-  line-height: 1.4;
 }
 
 .dummyLineText {
   position: relative;
-  line-height: 1.4;
 }
 
 .input {
@@ -165,5 +239,11 @@ textarea::selection {
   text-decoration: none;
   -webkit-text-decoration: none;
   background-color: #ff000044;
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
 }
 </style>

@@ -25,92 +25,87 @@ const marked = new Marked(
   }),
   {
     gfm: true, // GitHub Flavored Markdown を有効にする
-    breaks: true, // 改行を有効にする（純正Markdownでは1段の改行がスペースに変換される決まりだが、それでは困るので）
+    breaks: true, // 1段の改行を有効にする
   },
 )
 
-// node_modules フォルダの highlight.js から好きな配色を引っ張ってくる
-// とはいえ個人のエディタではないので趣味はなしにしてとりあえず GitHub から
-// 個人的には tokyo-night-dark がめっちゃ好き
-
 import darkStyle from 'highlight.js/styles/github-dark.css?inline'
-import lightStyle from 'highlight.js/styles/github.css?inline'
-
-// ?inline をつけて読み込むことでCSSファイルもテキストデータになるらしい
+// ?inline をつけて読み込むことでCSSファイルもテキストデータになる
 
 onMounted(async () => {
-  // あまりよくわかっていないGPT製のコード
-  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
   const highlightStyleTag = document.createElement('style')
-  highlightStyleTag.textContent = prefersDarkScheme.matches ? darkStyle : lightStyle
+  highlightStyleTag.textContent = darkStyle
   document.head.appendChild(highlightStyleTag)
-
-  prefersDarkScheme.addEventListener('change', async (event) => {
-    highlightStyleTag.textContent = event.matches ? darkStyle : lightStyle
-  })
 })
 </script>
 
 <template>
-  <div v-html="html" style="padding: 10px"></div>
-  <!-- {{ html }} と書くとそのまま HTML テキストが確認できる -->
+  <div :class="$style.container">
+    <div v-html="html" :class="$style.preview"></div>
+  </div>
 </template>
 
-<style scoped>
-:deep(p) {
+<style module>
+.preview {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.preview :global(p) {
   font-size: 1em;
   line-height: 1.4;
   margin-bottom: 0.3lh;
 }
 
-:deep(h1),
-:deep(h2),
-:deep(h3),
-:deep(h4),
-:deep(h5),
-:deep(h6) {
-  padding-top: 0.5em;
+.preview :global(h1),
+.preview :global(h2),
+.preview :global(h3),
+.preview :global(h4),
+.preview :global(h5),
+.preview :global(h6) {
+  margin: calc(0.5em + 10px) 0 0.5em 0;
   font-weight: bold;
   letter-spacing: 0.05em;
 }
 
-:deep(strong) {
+.preview :global(strong) {
   font-weight: bold;
 }
 
-:deep(code) {
+.preview :global(code) {
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   font-weight: 500;
   font-size: 11pt;
 }
 
-:deep(pre code) {
+.preview :global(pre code) {
   margin: 0 4px 8px 4px !important;
-  border-radius: 6px;
+  border-radius: 4px;
   max-height: 400px;
   overflow: scroll;
-  background-color: var(--color-darkgray) !important;
+  background-color: var(--color-gray) !important;
 }
 
-:deep(p code) {
+.preview :global(p code) {
   margin: 0 0px;
   background-color: var(--color-theme-pale);
   border-radius: 4px;
   border: 2px solid var(--color-theme-pale);
 }
 
-:deep(ul),
-:deep(ol) {
+.preview :global(ul),
+.preview :global(ol) {
   padding: 0px 0px 0px 20px;
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
-:deep(li) {
+.preview :global(li) {
   margin-bottom: 8px;
 }
 
-:deep(blockquote) {
+.preview :global(blockquote) {
   border-radius: 0px;
   color: var(--color-darkgray);
   padding: 0px 0px 0px 10px;
@@ -118,33 +113,37 @@ onMounted(async () => {
   margin: 0 0 8px 4px;
 }
 
-:deep(tr:not(:last-child)) {
-  border-bottom: 1px dashed var(--color-lightgray);
+.preview :global(tr:nth-child(2n + 1)) {
+  background-color: #f0f0f0;
 }
 
-:deep(thead) {
-  border-bottom: 1px solid var(--color-black);
+.preview :global(tr:nth-child(2n + 2)) {
+  background-color: #e0e0e0;
 }
 
-:deep(th),
-:deep(td) {
+.preview :global(th),
+.preview :global(td) {
   padding: 4px;
 }
 
-:deep(th) {
+.preview :global(th) {
   font-weight: bold;
+  background-color: var(--color-theme-pale) !important;
 }
 
-:deep(table) {
+.preview :global(table) {
   border-collapse: collapse;
+  margin: 0 4px 8px 4px !important;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-:deep(a) {
+.preview :global(a) {
   color: #0066ff !important;
   text-decoration: none;
 }
 
-:deep(a):hover {
+.preview :global(a):hover {
   text-decoration: underline;
 }
 </style>
