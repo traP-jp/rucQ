@@ -83,17 +83,36 @@
                   :key="index"
                   class="editQuestionOption"
                 >
-                  <v-textarea
-                    label="選択肢"
-                    v-model="editedOptions[index].content"
-                    variant="underlined"
-                    rows="1"
-                    auto-grow
-                    class="text-field"
-                  />
+                  <v-sheet
+                    style="display: flex; flex-direction: row; align-items: center"
+                    class="w-100 mb-5"
+                  >
+                    <v-textarea
+                      label="選択肢"
+                      v-model="editedOptions[index].content"
+                      variant="underlined"
+                      rows="1"
+                      auto-grow
+                      hide-details
+                      class="text-field"
+                    />
+                    <v-btn
+                      class="m-auto"
+                      icon="mdi-close"
+                      elevation="0"
+                      @click="deleteOption(editedOptions[index])"
+                    >
+                    </v-btn>
+                  </v-sheet>
                 </div>
                 <v-btn
-                  @click="editedOptions.push({ id: -1, question_id: question.id, content: '' })"
+                  @click="
+                    editedOptions.push({
+                      id: -editedOptions.length - 1,
+                      question_id: question.id,
+                      content: '',
+                    })
+                  "
                   class="mb-5"
                   >選択肢を追加</v-btn
                 >
@@ -128,7 +147,27 @@
           </div>
         </div>
       </div>
-      <v-btn @click="" color="primary" class="w-25 ma-auto mb-3 mt-3">質問項目の追加</v-btn>
+      <v-sheet style="display: flex; justify-content: center; align-items: center; width: 100%">
+        <v-btn @click="" color="primary" class="ma-auto mb-3 mt-3">質問項目の追加</v-btn>
+        <v-btn
+          @click="deleteDialog = true"
+          color="red-darken-2"
+          class="mb-3 mt-3"
+          style="position: absolute; right: 30px"
+          >アンケートを削除</v-btn
+        >
+        <v-dialog v-model="deleteDialog" scrollable>
+          <v-card class="mx-auto px-7 py-5" max-width="600" elevation="3">
+            <v-card-title class="text-h5">アンケートを削除</v-card-title>
+            <v-card-text> 本当にこのアンケートを削除しますか？ </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="red" @click="deleteAnketo">削除</v-btn>
+              <v-btn color="primary" @click="deleteDialog = false"> キャンセル </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-sheet>
     </div>
   </div>
 </template>
@@ -141,6 +180,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const dialog = ref(false)
+const deleteDialog = ref(false)
 
 // データ
 const questionGroup = ref<components['schemas']['QuestionGroup']>()
@@ -165,7 +205,6 @@ onMounted(async () => {
   questionGroup.value.questions.forEach((q) => {
     questionDialogs.value[q.id] = false
   })
-
 })
 
 const formatISOToDate = (isoString: string) => {
@@ -204,7 +243,11 @@ const openQuestionDialog = (id: number) => {
   editedTitle.value = target.title
   editedDescription.value = target.description
   target.options?.forEach((option) => {
-    editedOptions.value.push({ id: option.id, question_id: option.question_id, content: option.content })
+    editedOptions.value.push({
+      id: option.id,
+      question_id: option.question_id,
+      content: option.content,
+    })
   })
   questionDialogs.value[id] = true
 }
@@ -217,6 +260,14 @@ const closeHeaderDialog = () => {
 const childQuestionclose = (id: number) => {
   questionDialogs.value[id] = false
   editedOptions.value = []
+}
+
+const deleteOption = (option: components['schemas']['Option']) => {
+  if (option.id <= -1) {
+    editedOptions.value = editedOptions.value.filter((o) => o !== option)
+  } else {
+    // 削除するapiを作る
+  }
 }
 
 // 保存ボタンをクリックしたときの処理
@@ -246,7 +297,7 @@ const headerSave = async () => {
   dialog.value = false
 }
 
-const childQuestionSave = async (question : components['schemas']['Question']) => {
+const childQuestionSave = async (question: components['schemas']['Question']) => {
   try {
     if (questionGroup.value === undefined) return
 
@@ -267,12 +318,13 @@ const childQuestionSave = async (question : components['schemas']['Question']) =
             question_id: option.question_id,
             content: option.content,
           })
-        }else {
-          await postOption({ // 新規の要素は idが-1にしてあるので、それを使って判定
+        } else {
+          await postOption({
+            // 新規の要素は idが-1にしてあるので、それを使って判定
             question_id: option.question_id,
             content: option.content,
           })
-        } 
+        }
       })
     }
 
@@ -291,6 +343,13 @@ const childQuestionSave = async (question : components['schemas']['Question']) =
   } catch (e) {
     console.error(e)
   }
+}
+
+const deleteAnketo = async () => {
+  if (questionGroup.value === undefined) return
+
+  await deleteQuestionGroup(questionGroup.value.id)
+  router.push({ name: 'UserInformationView' })
 }
 
 // API
@@ -322,7 +381,7 @@ const putQuestion = async (id: number, question: components['schemas']['PostQues
   })
   if (error) console.error('Failed to update question:', error.message)
   return data
-} 
+}
 
 const postOption = async (option: components['schemas']['PostOptionRequest']) => {
   // 選択肢を増やす場合は別でapiをたたく
@@ -337,6 +396,14 @@ const putOption = async (id: number, question: components['schemas']['PostOption
     body: question,
   })
   if (error) console.error('Failed to update question:', error.message)
+  return data
+}
+
+const deleteQuestionGroup = async (id: number) => {
+  const { data, error } = await apiClient.DELETE('/api/question_groups/{question_group_id}', {
+    params: { path: { question_group_id: id } },
+  })
+  if (error) console.error('Failed to delete question group:', error.message)
   return data
 }
 
@@ -359,7 +426,7 @@ const questionDialogs = ref<Record<number, boolean>>({})
   background-color: #fcfcfc;
   border-radius: 7px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 90%;
+  width: 93%;
   position: relative;
   justify-content: center;
   margin-top: 40px;
@@ -389,7 +456,7 @@ const questionDialogs = ref<Record<number, boolean>>({})
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 90%;
+  width: 93%;
   border-radius: 7px;
   margin-top: 20px;
   margin-bottom: 30px;
@@ -467,8 +534,8 @@ const questionDialogs = ref<Record<number, boolean>>({})
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
-  min-width: 300px;
+  width: 90%;
+  min-width: 370px;
   margin: auto;
   max-height: 80vh;
 }
