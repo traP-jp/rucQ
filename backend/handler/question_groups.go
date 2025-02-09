@@ -151,3 +151,25 @@ func (s *Server) PutQuestionGroup(e echo.Context, questionGroupID QuestionGroupI
 
 	return e.JSON(http.StatusOK, res)
 }
+
+func (s *Server) DeleteQuestionGroup(e echo.Context, questionGroupID QuestionGroupId, params DeleteQuestionGroupParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	if err := s.repo.DeleteQuestionGroup(uint(questionGroupID)); err != nil {
+		e.Logger().Errorf("failed to delete question group: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
+}

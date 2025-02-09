@@ -345,6 +345,12 @@ type PostQuestionGroupParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// DeleteQuestionGroupParams defines parameters for DeleteQuestionGroup.
+type DeleteQuestionGroupParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // PutQuestionGroupParams defines parameters for PutQuestionGroup.
 type PutQuestionGroupParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -654,6 +660,9 @@ type ServerInterface interface {
 	// 質問グループを作成
 	// (POST /api/question_groups)
 	PostQuestionGroup(ctx echo.Context, params PostQuestionGroupParams) error
+	// 質問グループを削除
+	// (DELETE /api/question_groups/{question_group_id})
+	DeleteQuestionGroup(ctx echo.Context, questionGroupId QuestionGroupId, params DeleteQuestionGroupParams) error
 	// 質問グループの詳細を取得
 	// (GET /api/question_groups/{question_group_id})
 	GetQuestionGroup(ctx echo.Context, questionGroupId QuestionGroupId) error
@@ -1280,6 +1289,42 @@ func (w *ServerInterfaceWrapper) PostQuestionGroup(ctx echo.Context) error {
 	return err
 }
 
+// DeleteQuestionGroup converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteQuestionGroup(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "question_group_id" -------------
+	var questionGroupId QuestionGroupId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "question_group_id", ctx.Param("question_group_id"), &questionGroupId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter question_group_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteQuestionGroupParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteQuestionGroup(ctx, questionGroupId, params)
+	return err
+}
+
 // GetQuestionGroup converts echo context to params.
 func (w *ServerInterfaceWrapper) GetQuestionGroup(ctx echo.Context) error {
 	var err error
@@ -1777,6 +1822,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/options/:option_id", wrapper.PutOption)
 	router.GET(baseURL+"/api/question_groups", wrapper.GetQuestionGroups)
 	router.POST(baseURL+"/api/question_groups", wrapper.PostQuestionGroup)
+	router.DELETE(baseURL+"/api/question_groups/:question_group_id", wrapper.DeleteQuestionGroup)
 	router.GET(baseURL+"/api/question_groups/:question_group_id", wrapper.GetQuestionGroup)
 	router.PUT(baseURL+"/api/question_groups/:question_group_id", wrapper.PutQuestionGroup)
 	router.GET(baseURL+"/api/questions", wrapper.GetQuestions)
