@@ -72,7 +72,7 @@ defineProps<{
           >
             <div :class="$style.lineNumber">
               <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
-                {{ i }}
+                {{ i + 1 }}
               </p>
             </div>
             <div
@@ -109,8 +109,8 @@ defineProps<{
 
 .content {
   width: 100%;
-  height: fit-content;
-  min-height: 100%;
+  height: max(100%, fit-content);
+  min-height: 100px;
   z-index: 1;
   position: relative;
 }

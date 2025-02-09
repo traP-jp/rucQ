@@ -29,12 +29,7 @@ onMounted(() => {
     <template v-slot:subtitle>
       <span>{{ makeInfo(event) }}</span>
     </template>
-    <MarkdownEditor
-      color="orange"
-      v-if="!isPreview"
-      v-model:text="text"
-      style="min-height: 100px"
-    />
+    <MarkdownEditor color="orange" v-if="!isPreview" v-model:text="text" />
     <!-- <MarkdownPreview v-else v-model:text="text" />
       <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" /> -->
   </v-card>
