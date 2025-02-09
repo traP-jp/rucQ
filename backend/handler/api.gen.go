@@ -333,6 +333,12 @@ type PostOptionParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// DeleteOptionParams defines parameters for DeleteOption.
+type DeleteOptionParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // PutOptionParams defines parameters for PutOption.
 type PutOptionParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
@@ -651,6 +657,9 @@ type ServerInterface interface {
 	// 選択肢を作成
 	// (POST /api/options)
 	PostOption(ctx echo.Context, params PostOptionParams) error
+	// 選択肢を削除
+	// (DELETE /api/options/{option_id})
+	DeleteOption(ctx echo.Context, optionId OptionId, params DeleteOptionParams) error
 	// 選択肢を更新
 	// (PUT /api/options/{option_id})
 	PutOption(ctx echo.Context, optionId OptionId, params PutOptionParams) error
@@ -1212,6 +1221,42 @@ func (w *ServerInterfaceWrapper) PostOption(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PostOption(ctx, params)
+	return err
+}
+
+// DeleteOption converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteOption(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "option_id" -------------
+	var optionId OptionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "option_id", ctx.Param("option_id"), &optionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter option_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteOptionParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteOption(ctx, optionId, params)
 	return err
 }
 
@@ -1819,6 +1864,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/me/answers/:question_id", wrapper.PutAnswer)
 	router.GET(baseURL+"/api/me/budgets", wrapper.GetMyBudget)
 	router.POST(baseURL+"/api/options", wrapper.PostOption)
+	router.DELETE(baseURL+"/api/options/:option_id", wrapper.DeleteOption)
 	router.PUT(baseURL+"/api/options/:option_id", wrapper.PutOption)
 	router.GET(baseURL+"/api/question_groups", wrapper.GetQuestionGroups)
 	router.POST(baseURL+"/api/question_groups", wrapper.PostQuestionGroup)
