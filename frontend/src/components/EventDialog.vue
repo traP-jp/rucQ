@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
-import MarkdownEditor from './MarkdownEditor.vue'
+import MarkdownPreview from './MarkdownPreview.vue'
 import { getTimeString } from '@/lib/date'
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ const makeInfo = (event: CampEvent) => {
 
 const text = ref('')
 
-const isPreview = ref(false)
+const isPreview = ref(true)
 
 onMounted(() => {
   text.value = props.event.description
@@ -48,10 +48,9 @@ onMounted(() => {
         ></v-btn>
       </div>
     </div>
-    <MarkdownEditor color="orange" v-if="!isPreview" v-model:text="text" />
-
-    <!-- <MarkdownPreview v-else v-model:text="text" />
-      <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" /> -->
+    <div style="height: 100%; overflow-y: auto; background-color: var(--color-white)">
+      <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
+    </div>
   </v-card>
 </template>
 

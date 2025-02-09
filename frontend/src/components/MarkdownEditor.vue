@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, nextTick } from 'vue'
 import { decorated } from '@/lib/editor-parse'
+import ScrollableContent from './Generic/ScrollableContent.vue'
 const isPreview = defineModel<boolean>('isPreview')
 const text = defineModel<string>('text')
 
@@ -79,18 +80,18 @@ onMounted(() => {
 })
 
 defineProps<{
-  color: string
+  isPreviewable: boolean
 }>()
 </script>
 
 <template>
   <div
     :class="$style.container"
-    :style="`background: var(--color-${color}-pale); color: var(--color-text)`"
+    :style="`background: var(--color-theme-pale); color: var(--color-text)`"
   >
-    <div :class="$style.guide">
+    <ScrollableContent>
       <div style="width: 26px"></div>
-      <div :style="`border-left: 1px dashed var(--color-${color}); padding-right: 6px`"></div>
+      <div :style="`border-left: 1px dashed var(--color-theme); padding-right: 6px`"></div>
       <div :class="$style.content">
         <textarea
           ref="textarea"
@@ -107,7 +108,7 @@ defineProps<{
             :class="$style.dummyLine"
           >
             <div :class="$style.lineNumber">
-              <p :class="$style.lineNumberText" :style="`color: var(--color-${color})`">
+              <p :class="$style.lineNumberText" :style="`color: var(--color-theme)`">
                 {{ i + 1 }}
               </p>
             </div>
@@ -122,17 +123,19 @@ defineProps<{
           </div>
         </div>
       </div>
-      <div :class="$style.tools">
-        <v-btn
-          @click="isPreview = true"
-          density="comfortable"
-          elevation="0"
-          icon="mdi-eye-outline"
-          baseColor="transparent"
-          class="text-primary"
-          style="margin-bottom: 10px"
-        ></v-btn>
-        <!-- <v-btn
+    </ScrollableContent>
+    <div :class="$style.tools">
+      <v-btn
+        v-if="isPreviewable"
+        @click="isPreview = true"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-eye-outline"
+        baseColor="transparent"
+        class="text-primary"
+        style="margin-bottom: 10px"
+      ></v-btn>
+      <!-- <v-btn
           density="comfortable"
           elevation="0"
           icon="mdi-undo"
@@ -140,29 +143,28 @@ defineProps<{
           class="text-primary"
           :style="{ color: 'red' }"
         ></v-btn> -->
-        <!-- document.execCommand('undo') が非推奨になっていて、自力実装の必要がありそうなので保留 -->
-        <v-btn
-          @click="enclose('**')"
-          density="comfortable"
-          elevation="0"
-          icon="mdi-format-bold"
-          baseColor="transparent"
-        ></v-btn>
-        <v-btn
-          @click="enclose('*')"
-          density="comfortable"
-          elevation="0"
-          icon="mdi-format-italic"
-          baseColor="transparent"
-        ></v-btn>
-        <v-btn
-          @click="enclose('~~')"
-          density="comfortable"
-          elevation="0"
-          icon="mdi-format-strikethrough"
-          baseColor="transparent"
-        ></v-btn>
-      </div>
+      <!-- document.execCommand('undo') が非推奨になっていて、自力実装の必要がありそうなので保留 -->
+      <v-btn
+        @click="enclose('**')"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-format-bold"
+        baseColor="transparent"
+      ></v-btn>
+      <v-btn
+        @click="enclose('*')"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-format-italic"
+        baseColor="transparent"
+      ></v-btn>
+      <v-btn
+        @click="enclose('~~')"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-format-strikethrough"
+        baseColor="transparent"
+      ></v-btn>
     </div>
   </div>
 </template>
@@ -171,23 +173,16 @@ defineProps<{
 .container {
   width: 100%;
   height: 100%;
-  overflow: auto;
-  padding: 10px;
+  padding: 10px 0 10px 10px;
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
   font-weight: 400;
-}
-
-.guide {
-  width: 100%;
-  height: 100%;
   display: flex;
-  align-items: stretch;
 }
 
 .content {
   width: 100%;
-  height: max(100%, fit-content);
-  min-height: 100px;
+  height: fit-content;
+  min-height: max(100%, 100px);
   z-index: 1;
   position: relative;
 }
@@ -245,5 +240,6 @@ textarea::selection {
   display: flex;
   flex-direction: column;
   width: fit-content;
+  padding: 0 10px;
 }
 </style>

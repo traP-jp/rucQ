@@ -46,8 +46,26 @@ onMounted(async () => {
 </template>
 
 <style module>
+.container {
+  background-color: var(--color-white);
+  color: var(--color-text);
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
 .preview {
-  padding: 20px;
+  width: 100%;
+  padding: 0 20px 20px 20px;
+  height: fit-content;
+  min-height: max(100%, 100px);
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -123,7 +141,7 @@ onMounted(async () => {
 
 .preview :global(th),
 .preview :global(td) {
-  padding: 4px;
+  padding: 4px 8px;
 }
 
 .preview :global(th) {
