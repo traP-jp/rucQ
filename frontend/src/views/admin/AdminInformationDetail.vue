@@ -168,7 +168,6 @@ onMounted(async () => {
     questionDialogs.value[q.id] = false
   })
 
-
   console.log(questionGroup.value)
 })
 
@@ -200,7 +199,9 @@ const openQuestionDialog = (id: number) => {
   if (questionGroup.value === undefined) return
 
   // idが一致する質問を調べて取得
-  const target: components['schemas']['Question'] | undefined = questionGroup.value.questions.find((q) => q.id === id)
+  const target: components['schemas']['Question'] | undefined = questionGroup.value.questions.find(
+    (q) => q.id === id,
+  )
   if (target === undefined) return
 
   editedTitle.value = target.title
@@ -219,15 +220,25 @@ const childQuestionclose = (id: number) => {
 }
 
 // 保存ボタンをクリックしたときの処理
-const headerSave = () => {
+const headerSave = async () => {
   if (questionGroup.value === undefined) return
-
-  questionGroup.value.name = editedTitle.value
-  questionGroup.value.description = editedDescription.value
 
   // 2024-12-01のような形式かどうかの確認
   if (editedDeadline.value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    questionGroup.value.due = editedDeadline.value
+    try {
+      await putQuestionGroup(questionGroup.value.id, {
+        name: editedTitle.value,
+        description: editedDescription.value,
+        due: formatDateToISO(editedDeadline.value),
+        camp_id: questionGroup.value.camp_id,
+      })
+
+      questionGroup.value.due = editedDeadline.value
+      questionGroup.value.name = editedTitle.value
+      questionGroup.value.description = editedDescription.value
+    } catch (e) {
+      console.error(e)
+    }
   } else {
     alert('日付の形式が正しくありません (yyyy-mm-dd)')
     return
@@ -247,6 +258,18 @@ const getQuestionGroup = async (id: number) => {
     params: { path: { question_group_id: id } },
   })
   if (error) console.error('Failed to fetch question group:', error.message)
+  return data
+}
+
+const putQuestionGroup = async (
+  id: number,
+  questionGroup: components['schemas']['PostQuestionGroupRequest'],
+) => {
+  const { data, error } = await apiClient.PUT('/api/question_groups/{question_group_id}', {
+    params: { path: { question_group_id: id } },
+    body: questionGroup,
+  })
+  if (error) console.error('Failed to update question group:', error.message)
   return data
 }
 
