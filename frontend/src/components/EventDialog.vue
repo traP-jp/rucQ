@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card :class="`bg-white`">
+  <v-card :class="`bg-white`" style="position: relative">
     <div :class="$style.title" :style="`background-color: var(--color-${event.display_color})`">
       <v-card rounded="0" elevation="0" :class="[$style.card, `bg-${event.display_color}`]">
         <template v-slot:title>
@@ -50,18 +50,25 @@ onMounted(() => {
         ></v-btn>
       </div>
     </div>
-    <div style="height: 100%; width: 100%; background-color: var(--color-white)">
-      <div style="height: 100%; overflow-y: auto; padding: 4px">
+    <div style="width: 100%; height: 100%; overflow-y: auto; background-color: var(--color-white)">
+      <div style="height: 100%; padding: 4px 4px 40px 4px">
         <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
       </div>
     </div>
-    <v-btn style="margin: 10px" :baseColor="event.display_color" class="text-white">
+    <v-btn :class="[$style.join, 'text-white']" :baseColor="event.display_color">
       <span style="font-weight: bold">参　加　す　る</span>
     </v-btn>
   </v-card>
 </template>
 
 <style module>
+.join {
+  bottom: 0px;
+  width: calc(100% - 20px);
+  position: absolute;
+  margin: 10px;
+}
+
 .card {
   height: fit-content;
   margin: auto 0;
