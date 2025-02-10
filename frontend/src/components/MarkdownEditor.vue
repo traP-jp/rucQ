@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, nextTick } from 'vue'
 import { decorated } from '@/lib/editor-parse'
-import ScrollableContent from './Generic/ScrollableContent.vue'
 const text = defineModel<string>('text')
+
+defineProps<{ color?: string | undefined }>()
 
 const isComposing = ref(false)
 const textAll = ref('') // 変換中の部分を含めたテキスト全体
@@ -76,15 +77,32 @@ const enclose = (symbol: string) => {
 </script>
 
 <template>
-  <div
-    :class="$style.container"
-    :style="`background: var(--color-theme-pale); color: var(--color-text)`"
-  >
-    <ScrollableContent>
-      <div style="width: 100%; height: 100%; display: flex; align-items: stretch">
-        <div style="width: 26px; flex-shrink: 0"></div>
-        <div :style="`border-left: 1px dashed var(--color-theme); padding-right: 6px`"></div>
-        <div style="width: 100%; height: 100%; position: relative">
+  <div :class="$style.container">
+    <div style="width: 100%; height: 100%; overflow-y: auto">
+      <div
+        style="
+          width: 100%;
+          height: 100%;
+          min-height: fit-content;
+          display: flex;
+          align-items: stretch;
+        "
+      >
+        <!-- height: 100% は textarea 左脇の点線を伸ばすため -->
+        <div style="padding-left: 26px; flex-shrink: 0"></div>
+        <div
+          :style="`flex-shrink: 0; border-left: 1px dashed var(--color-${color || 'theme'}); padding-right: 6px;`"
+        ></div>
+        <div
+          style="
+            width: calc(100% - 33px);
+            height: 100%;
+            min-height: fit-content;
+            flex-shrink: 1;
+            position: relative;
+          "
+        >
+          <!-- height: 100% は、textarea が画面内に完全に収まる場合も縦に引き伸ばすため -->
           <textarea
             ref="ta"
             v-model="text"
@@ -100,7 +118,10 @@ const enclose = (symbol: string) => {
               :class="$style.dummyLine"
             >
               <div :class="$style.lineNumber">
-                <p :class="$style.lineNumberText" :style="`color: var(--color-theme)`">
+                <p
+                  :class="$style.lineNumberText"
+                  :style="`color: var(--color-${color || 'theme'})`"
+                >
                   {{ i + 1 }}
                 </p>
               </div>
@@ -116,7 +137,7 @@ const enclose = (symbol: string) => {
           </div>
         </div>
       </div>
-    </ScrollableContent>
+    </div>
     <div :class="$style.tools">
       <slot></slot>
       <!-- <v-btn
@@ -155,6 +176,7 @@ const enclose = (symbol: string) => {
 
 <style module>
 .container {
+  color: var(--color-text);
   width: 100%;
   height: 100%;
   padding: 10px 0 10px 10px;
@@ -196,18 +218,11 @@ const enclose = (symbol: string) => {
   position: absolute;
   width: 100%;
   height: 100%;
-  /* min-height: 1.4em; */
   resize: none;
   line-height: 1.4;
   z-index: 1;
   color: transparent;
   caret-color: black;
-}
-
-.input textarea::selection {
-  text-decoration: none;
-  -webkit-text-decoration: none;
-  background-color: #ff000044;
 }
 
 .tools {

@@ -18,18 +18,24 @@ const isPreview = ref(false)
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
-    <div style="height: 100%" v-if="!isPreview">
-      <MarkdownEditor v-model:text="text" v-model:isPreview="isPreview">
-        <v-btn
-          @click="isPreview = true"
-          density="comfortable"
-          elevation="0"
-          icon="mdi-eye-outline"
-          baseColor="transparent"
-          class="text-primary"
-          style="margin-bottom: 10px"
-        ></v-btn>
-      </MarkdownEditor>
+    <div style="width: 100%; height: 100%" v-if="!isPreview">
+      <div style="width: 100%; height: 100%; position: absolute">
+        <MarkdownEditor
+          v-model:text="text"
+          v-model:isPreview="isPreview"
+          style="background-color: var(--color-white)"
+        >
+          <v-btn
+            @click="isPreview = true"
+            density="comfortable"
+            elevation="0"
+            icon="mdi-eye-outline"
+            baseColor="transparent"
+            class="text-primary"
+            style="margin-bottom: 10px"
+          ></v-btn>
+        </MarkdownEditor>
+      </div>
     </div>
     <div style="height: 100%" v-else>
       <ScrollableContent>

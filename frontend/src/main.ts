@@ -23,8 +23,9 @@ const vuetify = createVuetify({
       light: {
         colors: {
           black: '#000000',
-          gray: '#444444',
-          lightgray: '#aaaaaa',
+          darkGray: '#444444',
+          gray: '#aaaaaa',
+          lightGray: '#e0e0e0',
           white: '#f6f6f6',
           exwhite: '#ffffff',
 
@@ -38,6 +39,10 @@ const vuetify = createVuetify({
           bluePale: '#9dd8ff',
           navy: '#2444a4',
           navyPale: '#afc3ff',
+          purple: '#7210C8',
+          purplePale: '#DEB9FF',
+          pink: '#EE4DBE',
+          pinkPale: '#FFB6E9',
 
           text: '#000000', // var(--color-black)
           background: '#f6f6f6', // var(--color-background)

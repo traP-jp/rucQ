@@ -5,9 +5,7 @@ import MarkdownPreview from './MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import { getTimeString } from '@/lib/date'
 
-const props = defineProps<{
-  event: CampEvent
-}>()
+const props = defineProps<{ event: CampEvent }>()
 
 const makeInfo = (event: CampEvent) => {
   return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
@@ -43,6 +41,7 @@ onMounted(() => {
           class="text-white"
         ></v-btn>
         <v-dialog fullscreen transition="dialog-bottom-transition">
+          <!-- PC からの操作を可能にするなら別の表示方法を考える -->
           <template v-slot:activator="{ props: activatorProps }">
             <v-btn
               density="comfortable"

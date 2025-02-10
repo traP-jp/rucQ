@@ -136,7 +136,7 @@ onMounted(async () => {
   border-radius: 0px;
   color: var(--color-darkgray);
   padding: 0px 0px 0px 10px;
-  border-left: 4px solid var(--color-lightgray);
+  border-left: 4px solid var(--color-gray);
   margin: 0 0 8px 4px;
 }
 

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import EventDialog from '@/components/EventDialog.vue'
 
-const props = defineProps<{
-  event: CampEvent
-}>()
+const props = defineProps<{ event: CampEvent }>()
 </script>
 
 <template>
