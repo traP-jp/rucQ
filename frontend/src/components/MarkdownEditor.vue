@@ -180,7 +180,7 @@ const enclose = (symbol: string) => {
   width: 100%;
   height: 100%;
   padding: 10px 0 10px 10px;
-  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
+  font-family: 'M PLUS Code Latin', 'M PLUS 1p';
   font-weight: 400;
   display: flex;
 }
@@ -188,7 +188,7 @@ const enclose = (symbol: string) => {
 .dummy {
   top: 0px;
   width: 100%;
-  font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
+  font-family: 'M PLUS Code Latin', 'M PLUS 1p';
   z-index: 0;
 }
 

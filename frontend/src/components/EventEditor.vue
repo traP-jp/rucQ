@@ -30,25 +30,32 @@ const isPreview = ref(false)
 <template>
   <div :class="$style.container">
     <v-sheet :class="[$style.sheet, `bg-white`]">
-      <v-btn
-        @click="emit('close')"
-        density="comfortable"
-        elevation="0"
-        icon="mdi-close"
-        baseColor="transparent"
-        class="text-black"
-        style="margin: 10px"
-      ></v-btn>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <v-btn
+          @click="emit('close')"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-close"
+          baseColor="transparent"
+          class="text-black"
+          style="margin: 10px"
+        ></v-btn>
+        <v-btn
+          elevation="0"
+          append-icon="mdi-check"
+          baseColor="transparent"
+          variant="flat"
+          :color="color"
+          style="font-size: 16px; margin: 10px"
+          >更新</v-btn
+        >
+      </div>
       <v-tabs
         v-model="tab"
-        class="bg-transition"
-        :color="color"
-        style="flex-shrink: 0; transition: background-color 0.2s ease-in-out"
+        :style="`flex-shrink: 0; color: var(--color-${color}); transition: color 0s`"
       >
         <v-tab value="one" width="50%"><span style="font-weight: bold">設 定</span></v-tab>
-        <v-tab value="two" width="50%" style="font-weight: bold"
-          ><span style="font-weight: bold">概 要</span></v-tab
-        >
+        <v-tab value="two" width="50%"><span style="font-weight: bold">概 要</span></v-tab>
       </v-tabs>
 
       <v-tabs-window v-model="tab" style="height: 100%; flex-shrink: 1">
@@ -116,8 +123,10 @@ const isPreview = ref(false)
   flex-direction: column;
   position: relative;
   height: fit-content;
-  margin: 60px 0 0 0;
-  height: calc(100% - 60px);
+  /* margin: 60px 0 0 0;
+  height: calc(100% - 60px); */
+  height: 100%;
+  /* 後ろが見えた方が閉塞感ないかなぁと思いつつ若干微妙な気もする */
 }
 
 .description {

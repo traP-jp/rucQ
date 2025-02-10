@@ -52,15 +52,14 @@ const color = defineModel<string>('color')
       </template>
       <template v-slot:default="{ isActive }">
         <v-sheet width="fit-content" style="margin: 0 auto">
-          <v-time-picker format="24hr" color="orange" v-model="startTime" title="開始時刻を設定" />
+          <v-time-picker format="24hr" :color="color" v-model="startTime" title="開始時刻を設定" />
           <v-btn
             @click="isActive.value = false"
             elevation="0"
             rounded="0"
             width="100%"
-            color="orange"
+            :color="color"
             size="large"
-            style="border-top: 1px solid var(--color-light-gray)"
           >
             <span style="font-weight: bold">OK</span>
           </v-btn>
@@ -81,15 +80,14 @@ const color = defineModel<string>('color')
       </template>
       <template v-slot:default="{ isActive }">
         <v-sheet width="fit-content" style="margin: 0 auto">
-          <v-time-picker format="24hr" color="orange" v-model="endTime" title="終了時刻を設定" />
+          <v-time-picker format="24hr" :color="color" v-model="endTime" title="終了時刻を設定" />
           <v-btn
             @click="isActive.value = false"
             elevation="0"
             rounded="0"
             width="100%"
-            color="orange"
+            :color="color"
             size="large"
-            style="border-top: 1px solid var(--color-light-gray)"
           >
             <span style="font-weight: bold">OK</span>
           </v-btn>
