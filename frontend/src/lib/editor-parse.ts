@@ -123,8 +123,6 @@ export const decorated = (textAll: string, underline: { start: number; end: numb
     charEffects.push([false, false, false, false]) // 改行文字分
   }
 
-  console.log(underline.start, underline.end)
-
   // 変換中の部分を追加
   charEffects.splice(
     underline.start,

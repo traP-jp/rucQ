@@ -19,7 +19,17 @@ const isPreview = ref(false)
   <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
     <div style="height: 100%" v-if="!isPreview">
-      <MarkdownEditor :isPreviewable="true" v-model:text="text" v-model:isPreview="isPreview" />
+      <MarkdownEditor v-model:text="text" v-model:isPreview="isPreview">
+        <v-btn
+          @click="isPreview = true"
+          density="comfortable"
+          elevation="0"
+          icon="mdi-eye-outline"
+          baseColor="transparent"
+          class="text-primary"
+          style="margin-bottom: 10px"
+        ></v-btn>
+      </MarkdownEditor>
     </div>
     <div style="height: 100%" v-else>
       <ScrollableContent>
@@ -48,6 +58,6 @@ const isPreview = ref(false)
 .button {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 6px;
 }
 </style>

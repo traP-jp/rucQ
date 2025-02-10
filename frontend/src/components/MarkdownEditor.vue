@@ -2,7 +2,6 @@
 import { onMounted, ref, watch, nextTick } from 'vue'
 import { decorated } from '@/lib/editor-parse'
 import ScrollableContent from './Generic/ScrollableContent.vue'
-const isPreview = defineModel<boolean>('isPreview')
 const text = defineModel<string>('text')
 
 const isComposing = ref(false)
@@ -37,7 +36,6 @@ const handleInput = () => {
   if (!ta.value || text.value === undefined) return // 空文字も false なので !text.value はダメ
   textAll.value = ta.value.value
   const s = { start: ta.value.selectionStart, end: ta.value.selectionEnd }
-  console.log([...textAll.value])
 
   if (isComposing.value) {
     if (s.start === s.end) {
@@ -49,12 +47,10 @@ const handleInput = () => {
     underline.value.start = s.end
   }
   underline.value.end = s.end
-
-  console.log(textAll.value, underline.value)
 }
 
 watch(() => text.value, handleInput)
-onMounted(handleInput)
+onMounted(() => nextTick(handleInput))
 
 const handleCompose = (state: boolean) => {
   isComposing.value = state
@@ -74,12 +70,9 @@ const enclose = (symbol: string) => {
   nextTick(() => {
     if (!ta.value) return
     ta.value.setSelectionRange(cursorPos, cursorPos)
+    handleInput()
   })
 }
-
-defineProps<{
-  isPreviewable: boolean
-}>()
 </script>
 
 <template>
@@ -88,51 +81,44 @@ defineProps<{
     :style="`background: var(--color-theme-pale); color: var(--color-text)`"
   >
     <ScrollableContent>
-      <div style="width: 26px"></div>
-      <div :style="`border-left: 1px dashed var(--color-theme); padding-right: 6px`"></div>
-      <div :class="$style.content">
-        <textarea
-          ref="ta"
-          v-model="text"
-          @input="handleInput"
-          @compositionstart="handleCompose(true)"
-          @compositionend="handleCompose(false)"
-          :class="$style.input"
-        ></textarea>
-        <div :class="$style.dummy">
-          <div
-            v-for="(line, i) in decorated(textAll, underline)"
-            :key="i"
-            :class="$style.dummyLine"
-          >
-            <div :class="$style.lineNumber">
-              <p :class="$style.lineNumberText" :style="`color: var(--color-theme)`">
-                {{ i + 1 }}
-              </p>
-            </div>
-            <span
-              v-for="(part, j) in line"
-              :key="j"
-              :class="$style.dummyLineText"
-              :style="part.style"
+      <div style="width: 100%; height: 100%; display: flex; align-items: stretch">
+        <div style="width: 26px; flex-shrink: 0"></div>
+        <div :style="`border-left: 1px dashed var(--color-theme); padding-right: 6px`"></div>
+        <div style="width: 100%; height: 100%; position: relative">
+          <textarea
+            ref="ta"
+            v-model="text"
+            @input="handleInput"
+            @compositionstart="handleCompose(true)"
+            @compositionend="handleCompose(false)"
+            :class="$style.input"
+          ></textarea>
+          <div :class="$style.dummy">
+            <div
+              v-for="(line, i) in decorated(textAll, underline)"
+              :key="i"
+              :class="$style.dummyLine"
             >
-              {{ part.part }}
-            </span>
+              <div :class="$style.lineNumber">
+                <p :class="$style.lineNumberText" :style="`color: var(--color-theme)`">
+                  {{ i + 1 }}
+                </p>
+              </div>
+              <span
+                v-for="(part, j) in line"
+                :key="j"
+                :class="$style.dummyLineText"
+                :style="part.style"
+              >
+                {{ part.part }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </ScrollableContent>
     <div :class="$style.tools">
-      <v-btn
-        v-if="isPreviewable"
-        @click="isPreview = true"
-        density="comfortable"
-        elevation="0"
-        icon="mdi-eye-outline"
-        baseColor="transparent"
-        class="text-primary"
-        style="margin-bottom: 10px"
-      ></v-btn>
+      <slot></slot>
       <!-- <v-btn
           density="comfortable"
           elevation="0"
@@ -177,21 +163,10 @@ defineProps<{
   display: flex;
 }
 
-.content {
-  width: 100%;
-  height: fit-content;
-  min-height: max(100%, 100px);
-  z-index: 1;
-  position: relative;
-}
-
 .dummy {
   top: 0px;
   width: 100%;
-  /* position: absolute; */
   font-family: 'M PLUS Code Latin 60', 'M PLUS 1p';
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
   z-index: 0;
 }
 
@@ -213,6 +188,8 @@ defineProps<{
 
 .dummyLineText {
   position: relative;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .input {
@@ -222,13 +199,12 @@ defineProps<{
   /* min-height: 1.4em; */
   resize: none;
   line-height: 1.4;
-  overflow: hidden;
   z-index: 1;
   color: transparent;
   caret-color: black;
 }
 
-textarea::selection {
+.input textarea::selection {
   text-decoration: none;
   -webkit-text-decoration: none;
   background-color: #ff000044;
@@ -238,6 +214,6 @@ textarea::selection {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  padding: 0 10px;
+  padding: 0 6px;
 }
 </style>

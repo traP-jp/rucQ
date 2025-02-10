@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
 import MarkdownPreview from './MarkdownPreview.vue'
+import EventEditor from './EventEditor.vue'
 import { getTimeString } from '@/lib/date'
 
 const props = defineProps<{
@@ -41,13 +42,21 @@ onMounted(() => {
           baseColor="transparent"
           class="text-white"
         ></v-btn>
-        <v-btn
-          density="comfortable"
-          elevation="0"
-          icon="mdi-square-edit-outline"
-          baseColor="transparent"
-          class="text-white"
-        ></v-btn>
+        <v-dialog fullscreen transition="dialog-bottom-transition">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-btn
+              density="comfortable"
+              elevation="0"
+              icon="mdi-square-edit-outline"
+              baseColor="transparent"
+              class="text-white"
+              v-bind="activatorProps"
+            ></v-btn>
+          </template>
+          <template v-slot:default="{ isActive }">
+            <EventEditor :event="event" @close="isActive.value = false" />
+          </template>
+        </v-dialog>
       </div>
     </div>
     <div style="width: 100%; height: 100%; overflow-y: auto; background-color: var(--color-white)">
@@ -55,6 +64,7 @@ onMounted(() => {
         <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
       </div>
     </div>
+
     <v-btn :class="[$style.join, 'text-white']" :baseColor="event.display_color">
       <span style="font-weight: bold">参　加　す　る</span>
     </v-btn>

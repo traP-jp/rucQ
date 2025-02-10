@@ -1,27 +1,33 @@
 <!-- 外側の高さ 100% に合わせて縦スクロールさせるためのコンポーネント -->
 
 <template>
-  <div :class="$style.container">
-    <div :class="$style.scroll">
-      <slot></slot>
+  <div :class="$style.remainder">
+    <div :class="$style.container">
+      <div :class="$style.content">
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>
 
 <style module>
-.container {
-  overflow-y: auto;
-  position: relative;
+.remainder {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 
-.scroll {
-  width: 100%;
+.container {
   height: 100%;
-  min-height: fit-content;
+  width: 100%;
+  overflow-y: auto;
   position: absolute;
-  display: flex;
-  align-items: stretch;
+}
+
+.content {
+  width: 100%;
+  min-height: 100%;
+  height: fit-content;
+  position: relative;
 }
 </style>
