@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { useDisplay } from 'vuetify'
+import type { components } from '@/api/schema'
 import SideBar from '@/components/layout/SideBar.vue'
 import MobileFooter from '@/components/layout/MobileFooter.vue'
 

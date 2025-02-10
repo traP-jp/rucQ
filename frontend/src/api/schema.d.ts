@@ -172,9 +172,11 @@ export interface paths {
         };
         /** 質問グループの詳細を取得 */
         get: operations["getQuestionGroup"];
-        put?: never;
+        /** 質問グループを更新 */
+        put: operations["putQuestionGroup"];
         post?: never;
-        delete?: never;
+        /** 質問グループを削除 */
+        delete: operations["deleteQuestionGroup"];
         options?: never;
         head?: never;
         patch?: never;
@@ -997,6 +999,62 @@ export interface operations {
                     "application/json": components["schemas"]["QuestionGroup"];
                 };
             };
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    putQuestionGroup: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 質問グループのID */
+                question_group_id: components["parameters"]["QuestionGroupId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostQuestionGroupRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionGroup"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    deleteQuestionGroup: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description 質問グループのID */
+                question_group_id: components["parameters"]["QuestionGroupId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: components["responses"]["NoContent"];
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             500: components["responses"]["InternalServerError"];
         };

@@ -25,9 +25,15 @@
               :style="`background: #${popUp!.display_color};`"
               @click="
                 async () => {
-                  const newEvent = makeEventParams(popUp!)
+                  const newEvent: components['schemas']['PostEventRequest'] = {
+                    ...popUp!,
+                    create_as_staff: false,
+                  }
                   newEvent.description = text
-                  await editEvent(popUp!.id, newEvent)
+                  await apiClient.PUT('/api/events/{event_id}', {
+                    params: { path: { event_id: popUp!.id } },
+                    body: newEvent,
+                  })
                   popUp = undefined
                 }
               "
@@ -46,10 +52,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { editEvent, makeEventParams } from '@/api/handler'
+import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
 import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
 import { getTimeString } from '@/lib/date'
+
+type CampEvent = components['schemas']['Event']
 
 const popUp = defineModel<CampEvent | undefined>('popUp')
 

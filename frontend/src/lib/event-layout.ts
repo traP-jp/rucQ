@@ -1,3 +1,7 @@
+import type { components } from '@/api/schema'
+type Camp = components['schemas']['Camp'] & { start_date: string; end_date: string } // 一時的な処置
+type CampEvent = components['schemas']['Event']
+
 const epoch = (timeString: string) => new Date(timeString).getTime()
 
 const isMoment = (event: CampEvent) => event.time_start === event.time_end
