@@ -4,7 +4,9 @@ const emit = defineEmits(['close'])
 import MarkdownPreview from './MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import { getTimeString } from '@/lib/date'
+import type { components } from '@/api/schema'
 
+type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
 
 const makeInfo = (event: CampEvent) => {

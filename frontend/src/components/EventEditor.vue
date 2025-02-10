@@ -5,6 +5,9 @@ import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
 import ScrollableContent from '@/components/Generic/ScrollableContent.vue'
 import EventEditorSettings from '@/components/EventEditorSettings.vue'
+
+import type { components } from '@/api/schema'
+type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
 
 const tab = ref('')
