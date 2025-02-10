@@ -46,7 +46,7 @@ onMounted(async () => {
     />
   </v-container>
 
-  <v-container class="d-flex flex-column align-center ga-4">
+  <v-container v-else class="d-flex flex-column align-center ga-4">
     <v-sheet class="d-flex flex-column elevation-2 px-8 py-4" max-width="800" width="100%">
       <v-card-item
         class="px-0"
