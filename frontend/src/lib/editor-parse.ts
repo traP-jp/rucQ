@@ -73,12 +73,11 @@ const overWrite = (effect: boolean[], toAdd: DecoParts) => {
   }
 }
 
-export const decorated = (textAll: string, cursorPos: number, composing: string) => {
+export const decorated = (textAll: string, underline: { start: number; end: number }) => {
   // cursorPos はカーソル位置、length は変換中のテキストの長さを表す
 
-  const effectLines: { part: string; style: string }[][] = []
-  const text =
-    textAll.slice(0, cursorPos - composing.length) + textAll.slice(cursorPos, textAll.length)
+  const text = textAll.slice(0, underline.start) + textAll.slice(underline.end, textAll.length)
+  // console.log(`${cursorPos}: ${textAll} = ${text} + ${composing}`)
 
   const parsedStyle = (style: boolean[]) =>
     (style[0] ? 'font-weight: bold; ' : '') +
@@ -86,6 +85,8 @@ export const decorated = (textAll: string, cursorPos: number, composing: string)
     (style[2] ? 'text-decoration: line-through ' : 'text-decoration: ') +
     (style[3] ? 'underline ' : '') +
     (!(style[2] || style[3]) ? 'none;' : ';')
+
+  const charEffects: boolean[][] = []
 
   for (const line of text.split('\n')) {
     const wholeLine: { shell: Range; kernel: Range }[] = [
@@ -95,15 +96,15 @@ export const decorated = (textAll: string, cursorPos: number, composing: string)
       },
     ]
     const effectChars: boolean[][] = [
-      Array(text.length).fill(false),
-      Array(text.length).fill(false),
-      Array(text.length).fill(false),
-      Array(text.length).fill(false),
+      Array(line.length).fill(false),
+      Array(line.length).fill(false),
+      Array(line.length).fill(false),
+      Array(line.length).fill(false),
     ]
     // effectChars[0] は bold, [1] は italic, [2] は strike, [3] は link
 
     if (line === '---' || /^#{1,6} /.test(line)) {
-      effectChars[0] = Array(text.length).fill(true)
+      effectChars[0] = Array(line.length).fill(true)
     }
 
     for (const bold of matchDivision(line, wholeLine, /\*\*([^\*\s]|[^\*\s].*?[^\*\s])\*\*/g)) {
@@ -118,27 +119,48 @@ export const decorated = (textAll: string, cursorPos: number, composing: string)
         }
       }
     }
+    charEffects.push(...effectChars[0].map((_, c) => effectChars.map((r) => r[c]))) // effectChars の転置
+    charEffects.push([false, false, false, false]) // 改行文字分
+  }
 
-    const effectCharsT = effectChars[0].map((_, c) => effectChars.map((r) => r[c])) // effects の転置
-    effectCharsT.splice(cursorPos, 0, ...Array(composing.length).fill([false, false, false, true]))
+  console.log(underline.start, underline.end)
+
+  // 変換中の部分を追加
+  charEffects.splice(
+    underline.start,
+    0,
+    ...Array.from({ length: underline.end - underline.start }, () => [false, false, false, true]),
+  )
+
+  const effectLines: { part: string; style: string }[][] = []
+
+  let last = 0 // 前にスタイルが確定した部分が何文字目か
+  let lastLine = 0 // 前の行の最後が何文字目か
+
+  for (const line of textAll.split('\n')) {
     const effectLine: { part: string; style: string }[] = []
 
-    let last = 0
-    for (let i = 1; i < effectCharsT.length; i++) {
-      if (!effectCharsT[i - 1].every((val, index) => val === effectCharsT[i][index])) {
-        // [1, 0, 0, 0] と [1, 1, 0, 0] など、ひとつでも要素が違うことがあれば
-        effectLine.push({ part: line.slice(last, i), style: parsedStyle(effectCharsT[i - 1]) })
-        last = i
+    for (let j = lastLine + 1; j < lastLine + line.length; j++) {
+      const a = charEffects[j - 1]
+      const b = charEffects[j]
+      if (!(a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3])) {
+        effectLine.push({
+          part: textAll.slice(last, j),
+          style: parsedStyle(charEffects[j - 1]),
+        })
+        last = j
       }
     }
-    if (effectCharsT.length > 0) {
+
+    if (line.length > 0) {
       effectLine.push({
-        part: line.slice(last, effectCharsT.length),
-        style: parsedStyle(effectCharsT[effectCharsT.length - 1]),
+        part: textAll.slice(last, lastLine + line.length),
+        style: parsedStyle(charEffects[lastLine + line.length - 1]),
       })
     }
-
+    last = lastLine + line.length + 1
     effectLines.push(effectLine)
+    lastLine = last
   }
 
   return effectLines
