@@ -29,6 +29,9 @@ const vuetify = createVuetify({
           white: '#f6f6f6',
           exwhite: '#ffffff',
 
+          ash: '#444444', // darkGray に同じ。イベントの色名はこっちを採用
+          ashPale: '#e0e0e0', // lightGray に同じ
+
           orange: '#ff7300',
           orangePale: '#ffe2b2',
           green: '#178000',

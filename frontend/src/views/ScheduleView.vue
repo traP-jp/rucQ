@@ -5,6 +5,7 @@ import { getLayout, type DayGroup } from '@/lib/event-layout'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 import EventBlock from '@/components/EventBlock.vue'
+import EventDialog from '@/components/EventDialog.vue'
 import { events, camp } from '@/lib/sample-data'
 const { xs } = useDisplay()
 
@@ -48,7 +49,16 @@ onMounted(() => {
           :key="k"
           :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
         >
-          <h5 style="font-weight: 500; padding-left: 4px">{{ moment.content.name }}</h5>
+          <v-dialog max-width="800">
+            <template v-slot:activator="{ props: activatorProps }">
+              <h5 :class="$style.momentText" v-bind="activatorProps">
+                {{ moment.content.name }}
+              </h5>
+            </template>
+            <template v-slot:default="{ isActive }">
+              <EventDialog :event="moment.content" @close="isActive.value = false" />
+            </template>
+          </v-dialog>
         </div>
         <div
           v-for="(space, k) in eventGroup.spaces"
@@ -87,5 +97,15 @@ onMounted(() => {
   margin: auto;
   padding: 20px 10px;
   max-width: 600px;
+}
+
+.momentText {
+  font-weight: 500;
+  padding-left: 4px;
+  cursor: pointer;
+}
+
+.momentText:hover {
+  text-decoration: underline;
 }
 </style>

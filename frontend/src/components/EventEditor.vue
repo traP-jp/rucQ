@@ -52,7 +52,7 @@ const isPreview = ref(false)
       </div>
       <v-tabs
         v-model="tab"
-        :style="`flex-shrink: 0; color: var(--color-${color}); transition: color 0s`"
+        :style="`flex-shrink: 0; color: var(--color-${color}); transition: color 0s;`"
       >
         <v-tab value="one" width="50%"><span style="font-weight: bold">設 定</span></v-tab>
         <v-tab value="two" width="50%"><span style="font-weight: bold">概 要</span></v-tab>

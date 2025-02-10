@@ -6,6 +6,9 @@
   --color-white: #f6f6f6;
   --color-exwhite: #ffffff;
 
+  --color-ash: var(--color-dark-gray);
+  --color-ash-pale: var(--color-light-gray);
+
   --color-orange: #ff7300;
   --color-orange-pale: #ffe2b2;
   --color-green: #178000;

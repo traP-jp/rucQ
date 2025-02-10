@@ -107,7 +107,7 @@ const color = defineModel<string>('color')
           :ripple="false"
           :variant="color === myColor ? 'elevated' : 'tonal'"
           width="40"
-          style="margin: 10px"
+          style="margin: 6px"
           elevation="0"
           @click="color = myColor"
         ></v-btn>

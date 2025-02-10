@@ -141,7 +141,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -153,7 +153,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -165,7 +165,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -177,7 +177,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -189,7 +189,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -201,7 +201,7 @@ export const events: CampEvent[] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
 ]
