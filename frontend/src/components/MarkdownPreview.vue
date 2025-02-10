@@ -87,6 +87,15 @@ onMounted(async () => {
   letter-spacing: 0.05em;
 }
 
+.preview :global(h1):first-child,
+.preview :global(h2):first-child,
+.preview :global(h3):first-child,
+.preview :global(h4):first-child,
+.preview :global(h5):first-child,
+.preview :global(h6):first-child {
+  margin-top: 0px !important;
+}
+
 .preview :global(strong) {
   font-weight: bold;
 }
