@@ -1,9 +1,13 @@
 :root {
   --color-black: #000000;
-  --color-darkgray: #444444;
-  --color-lightgray: #aaaaaa;
+  --color-dark-gray: #444444;
+  --color-gray: #aaaaaa;
+  --color-light-gray: #e0e0e0;
   --color-white: #f6f6f6;
   --color-exwhite: #ffffff;
+
+  --color-ash: var(--color-dark-gray);
+  --color-ash-pale: var(--color-light-gray);
 
   --color-orange: #ff7300;
   --color-orange-pale: #ffe2b2;
@@ -15,11 +19,15 @@
   --color-blue-pale: #9dd8ff;
   --color-navy: #2444a4;
   --color-navy-pale: #afc3ff;
+  --color-purple: #7210C8;
+  --color-purple-pale: #DEB9FF;
+  --color-pink: #EE4DBE;
+  --color-pink-pale: #FFB6E9;
 
   --color-text: var(--color-black);
   --color-background: var(--color-white);
-  --color-line: var(--color-lightgray);
-  --color-text-sub: var(--color-darkgray);
+  --color-line: var(--color-gray);
+  --color-text-sub: var(--color-dark-gray);
   --color-theme: var(--color-orange);
   --color-theme-pale: var(--color-orange-pale);
   --color-trap: var(--color-navy); /* 実際にロゴから色をとってきたわけではない */

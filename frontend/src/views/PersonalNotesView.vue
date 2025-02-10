@@ -2,8 +2,8 @@
 import { ref } from 'vue'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
-import EditPreviewButton from '@/components/EditPreviewButton.vue'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
+import ScrollableContent from '@/components/Generic/ScrollableContent.vue'
 import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
@@ -16,9 +16,40 @@ const isPreview = ref(false)
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
-    <MarkdownEditor v-if="!isPreview" v-model:text="text" />
-    <MarkdownPreview v-else v-model:text="text" />
-    <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" />
+    <div style="width: 100%; height: 100%" v-if="!isPreview">
+      <div style="width: 100%; height: 100%; position: absolute">
+        <MarkdownEditor
+          v-model:text="text"
+          v-model:isPreview="isPreview"
+          style="background-color: var(--color-white)"
+        >
+          <v-btn
+            @click="isPreview = true"
+            density="comfortable"
+            elevation="0"
+            icon="mdi-eye-outline"
+            baseColor="transparent"
+            class="text-primary"
+            style="margin-bottom: 10px"
+          ></v-btn>
+        </MarkdownEditor>
+      </div>
+    </div>
+    <div style="height: 100%" v-else>
+      <ScrollableContent>
+        <MarkdownPreview v-model:text="text" v-model:isPreview="isPreview" style="padding: 10px" />
+      </ScrollableContent>
+      <div :class="$style.button">
+        <v-btn
+          @click="isPreview = false"
+          density="comfortable"
+          icon="mdi-square-edit-outline"
+          baseColor="white"
+          class="text-primary"
+        ></v-btn>
+      </div>
+    </div>
+    <!-- <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" /> -->
   </div>
 </template>
 
@@ -30,7 +61,7 @@ const isPreview = ref(false)
 
 .button {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 6px;
 }
 </style>
