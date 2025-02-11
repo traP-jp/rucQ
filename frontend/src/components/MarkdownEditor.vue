@@ -34,20 +34,26 @@ const ta = ref<HTMLTextAreaElement>()
 // selectionStart === selectionEnd の場合： ta.value.value 上で selectionEnd 以前の ta.value.value.length - text.value.length 文字
 
 const handleInput = () => {
-  if (!ta.value || text.value === undefined) return // 空文字も false なので !text.value はダメ
+  if (!ta.value) return
   textAll.value = ta.value.value
   const s = { start: ta.value.selectionStart, end: ta.value.selectionEnd }
 
-  if (isComposing.value) {
-    if (s.start === s.end) {
-      underline.value.start = s.end - (ta.value.value.length - text.value.length)
+  nextTick(() => {
+    if (!ta.value || text.value === undefined) return // 空文字も false なので !text.value はダメ
+    if (isComposing.value) {
+      if (s.start === s.end) {
+        underline.value.start = s.end - (ta.value.value.length - text.value.length)
+      } else {
+        underline.value.start = s.start
+      }
     } else {
-      underline.value.start = s.start
+      underline.value.start = s.end
     }
-  } else {
-    underline.value.start = s.end
-  }
-  underline.value.end = s.end
+    underline.value.end = s.end
+
+    // カーソル位置を強制的に維持
+    ta.value.setSelectionRange(s.start, s.end)
+  })
 }
 
 watch(() => text.value, handleInput)
