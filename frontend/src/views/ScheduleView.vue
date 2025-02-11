@@ -10,9 +10,11 @@ import { events, camp } from '@/lib/sample-data'
 const { xs } = useDisplay()
 
 const dayGroups = ref<DayGroup[]>([])
+const currentTime = ref(new Date('2024-09-10T16:15:01.000000+09:00'))
 
 onMounted(() => {
-  dayGroups.value = getLayout(events, camp)
+  dayGroups.value = getLayout(events, camp, currentTime.value)
+  // 現在時刻が既存のタイムスタンプと 0.001 秒単位で完全に被った場合に限り表示がおかしくなるが、とりあえず放置でよさそう
 })
 </script>
 
@@ -31,11 +33,61 @@ onMounted(() => {
         <div
           v-for="(space, k) in eventGroup.spaces"
           :key="k"
+          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 12}px;`"
+        >
+          <div
+            v-if="space.stamp !== 'none'"
+            :style="`height: 100%; display: flex; align-items: ${space.stamp}; padding-right: 4px;`"
+          >
+            <div
+              style="
+                height: 0px;
+                width: 100%;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <h5
+                v-if="space.time.getTime() !== currentTime.getTime()"
+                :style="`font-weight: 900; width: fit-content; font-family: 'Roboto'`"
+              >
+                {{ getTimeStringNoPad(space.time) }}
+              </h5>
+              <div v-else style="position: relative">
+                <v-icon
+                  icon="mdi-menu-right"
+                  color="red"
+                  style="transform: scaleX(4); position: absolute; top: -10.5px; left: -10px"
+                  height="20px"
+                ></v-icon>
+                <div
+                  style="
+                    top: -0.5px;
+                    width: 30px;
+                    height: 0px;
+                    border-top: 2px solid var(--color-red);
+                    position: absolute;
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-for="(space, k) in eventGroup.spaces"
+          :key="k"
           :style="`grid-row: ${k + 1}; grid-column: 2 / ${eventGroup.columns + 2};`"
         >
           <hr
             v-if="space.line"
-            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
+            :style="
+              'border: 0px; margin-top: -0.5px; ' +
+              (space.time.getTime() === currentTime.getTime()
+                ? `border-top: 2px solid var(--color-red);`
+                : `border-top: 1px dashed var(--color-line);`)
+            "
           />
         </div>
         <EventBlock
@@ -51,7 +103,15 @@ onMounted(() => {
         >
           <v-dialog max-width="800">
             <template v-slot:activator="{ props: activatorProps }">
-              <h5 :class="$style.momentText" v-bind="activatorProps">
+              <h5
+                :class="$style.momentText"
+                :style="
+                  new Date(moment.content.time_start).getTime() === currentTime.getTime()
+                    ? 'color: var(--color-red)'
+                    : ''
+                "
+                v-bind="activatorProps"
+              >
                 {{ moment.content.name }}
               </h5>
             </template>
@@ -59,30 +119,6 @@ onMounted(() => {
               <EventDialog :event="moment.content" @close="isActive.value = false" />
             </template>
           </v-dialog>
-        </div>
-        <div
-          v-for="(space, k) in eventGroup.spaces"
-          :key="k"
-          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 12}px;`"
-        >
-          <div
-            v-if="space.stamp !== 'none'"
-            :style="`height: 100%; display: flex; align-items: ${space.stamp}; padding-right: 4px;`"
-          >
-            <div
-              style="
-                height: 0px;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <h5 style="font-weight: 900; width: fit-content">
-                {{ getTimeStringNoPad(space.time) }}
-              </h5>
-            </div>
-          </div>
         </div>
       </div>
     </div>

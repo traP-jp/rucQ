@@ -64,10 +64,11 @@ export type DayGroup = {
 }
 
 // events を groups に仕分け、各 groups の列を決定する
-const arrangeEvents = (events: CampEvent[]) => {
+const arrangeEvents = (events: CampEvent[], currentTime?: Date) => {
   const epochTimeSet = new Set<number>([
     ...Array.from(events, (event) => epoch(event.time_start)),
     ...Array.from(events, (event) => epoch(event.time_end)),
+    ...(currentTime ? [currentTime.getTime()] : []),
   ])
 
   // それぞれのタイムスタンプに対応した要素をもつ配列 arranged
@@ -183,13 +184,18 @@ const arrangeEvents = (events: CampEvent[]) => {
 }
 
 // 日付 > イベントグループ（時間の重なるイベントの集まり） > イベント という配列を返す
-export const getLayout = (events: CampEvent[], camp: Camp) => {
+export const getLayout = (events: CampEvent[], camp: Camp, currentTime: Date) => {
   const dayGroups: DayGroup[] = []
+  const currentDate = new Date(currentTime)
+  currentDate.setHours(0, 0, 0, 0)
 
   for (const day of sortDayEvents(events, camp)) {
     const eventGroups: EventGroup[] = []
 
-    const result = arrangeEvents(day.events)
+    const result = arrangeEvents(
+      day.events,
+      day.date.getTime() === currentDate.getTime() ? currentTime : undefined,
+    )
 
     const assign: number[] = [0] // この日の第 n 行にあるイベントは第 assign[n] グループに割り当てられる
     while (assign.length < result.border[result.border.length - 1]) {
