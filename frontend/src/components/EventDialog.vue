@@ -66,7 +66,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <v-btn :class="[$style.join, 'text-white']" :baseColor="event.display_color">
+    <v-btn variant="flat" :class="[$style.join, 'text-white']" :baseColor="event.display_color">
       <span style="font-weight: bold">参　加　す　る</span>
     </v-btn>
   </v-card>
@@ -78,6 +78,7 @@ onMounted(() => {
   width: calc(100% - 20px);
   position: absolute;
   margin: 10px;
+  z-index: 1;
 }
 
 .card {

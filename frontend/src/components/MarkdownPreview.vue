@@ -41,7 +41,10 @@ onMounted(async () => {
 
 <template>
   <div :class="$style.container">
-    <div v-html="html" :class="$style.preview"></div>
+    <slot></slot>
+    <div :class="$style.content">
+      <div v-html="html" :class="$style.preview"></div>
+    </div>
   </div>
 </template>
 
@@ -52,20 +55,22 @@ onMounted(async () => {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+  z-index: 1;
 }
 
-.button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1;
+.content {
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow-y: auto;
 }
 
 .preview {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   height: fit-content;
-  min-height: max(100%, 100px);
+  min-height: 100%;
   max-width: 1000px;
   margin: 0 auto;
 }

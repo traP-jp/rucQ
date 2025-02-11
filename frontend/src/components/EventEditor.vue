@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
 import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
-import ScrollableContent from '@/components/Generic/ScrollableContent.vue'
 import EventEditorSettings from '@/components/EventEditorSettings.vue'
 
 import type { components } from '@/api/schema'
@@ -74,39 +73,40 @@ const isPreview = ref(false)
         </v-tabs-window-item>
 
         <v-tabs-window-item value="two" style="height: 100%">
-          <MarkdownEditor
-            v-if="!isPreview"
-            :color="color"
-            :class="$style.description"
-            :isPreviewable="true"
-            v-model:text="text"
-          >
-            <v-btn
-              @click="isPreview = true"
-              density="comfortable"
-              elevation="0"
-              icon="mdi-eye-outline"
-              baseColor="transparent"
-              :class="`text-${color}`"
-              style="margin-bottom: 10px"
-            ></v-btn
-          ></MarkdownEditor>
-          <div style="width: 100%; height: 100%" v-else>
-            <ScrollableContent>
-              <MarkdownPreview
+          <div style="width: 100%; height: 100%">
+            <div style="width: 100%; height: 100%; position: absolute">
+              <MarkdownEditor
+                :color="color"
                 v-model:text="text"
                 v-model:isPreview="isPreview"
-                style="padding: 10px"
-              />
-            </ScrollableContent>
-            <div :class="$style.button">
-              <v-btn
-                @click="isPreview = false"
-                density="comfortable"
-                icon="mdi-square-edit-outline"
-                baseColor="white"
-                :class="`text-${color}`"
-              ></v-btn>
+                v-if="!isPreview"
+              >
+                <v-btn
+                  @click="isPreview = true"
+                  density="comfortable"
+                  elevation="0"
+                  icon="mdi-eye-outline"
+                  baseColor="transparent"
+                  :class="`text-${color}`"
+                  style="margin-bottom: 10px"
+                ></v-btn>
+              </MarkdownEditor>
+              <MarkdownPreview
+                v-else
+                v-model:text="text"
+                v-model:isPreview="isPreview"
+                style="height: 100%; width: 100%; padding: 0 8px"
+              >
+                <div :class="$style.button">
+                  <v-btn
+                    @click="isPreview = false"
+                    density="comfortable"
+                    icon="mdi-square-edit-outline"
+                    baseColor="white"
+                    :class="`text-${color}`"
+                  ></v-btn>
+                </div>
+              </MarkdownPreview>
             </div>
           </div>
         </v-tabs-window-item>
@@ -126,22 +126,12 @@ const isPreview = ref(false)
   flex-direction: column;
   position: relative;
   height: fit-content;
-  /* margin: 60px 0 0 0;
-  height: calc(100% - 60px); */
   height: 100%;
-  /* 後ろが見えた方が閉塞感ないかなぁと思いつつ若干微妙な気もする */
-}
-
-.description {
-  width: 100%;
-  height: 100%;
-  flex-shrink: 1;
-  background-color: var(--color-white);
 }
 
 .button {
   position: absolute;
   top: 10px;
-  right: 6px;
+  right: 10px;
 }
 </style>

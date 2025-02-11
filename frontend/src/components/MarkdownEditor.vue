@@ -89,6 +89,7 @@ const enclose = (symbol: string) => {
         style="
           width: 100%;
           height: 100%;
+          padding: 10px 0 10px 10px;
           min-height: fit-content;
           display: flex;
           align-items: stretch;
@@ -185,7 +186,6 @@ const enclose = (symbol: string) => {
   color: var(--color-text);
   width: 100%;
   height: 100%;
-  padding: 10px 0 10px 10px;
   font-family: 'M PLUS Code Latin', 'M PLUS 1p';
   font-weight: 400;
   display: flex;
@@ -194,6 +194,7 @@ const enclose = (symbol: string) => {
 .dummy {
   top: 0px;
   width: 100%;
+  padding-bottom: 4em;
   font-family: 'M PLUS Code Latin', 'M PLUS 1p';
   z-index: 0;
 }
@@ -235,6 +236,6 @@ const enclose = (symbol: string) => {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  padding: 0 6px;
+  padding: 6px;
 }
 </style>
