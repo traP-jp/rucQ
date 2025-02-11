@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
-import MarkdownEditor from './MarkdownEditor.vue'
-import MarkdownPreview from './MarkdownPreview.vue'
 import EventEditorSettings from '@/components/EventEditorSettings.vue'
+import MarkdownPlatform from '@/components/MarkdownPlatform.vue'
+import { useDisplay } from 'vuetify'
+const { smAndDown } = useDisplay()
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
@@ -53,6 +54,7 @@ const isPreview = ref(false)
         >
       </div>
       <v-tabs
+        v-if="smAndDown"
         v-model="tab"
         :style="`flex-shrink: 0; color: var(--color-${color}); transition: color 0s;`"
       >
@@ -60,7 +62,7 @@ const isPreview = ref(false)
         <v-tab value="two" width="50%"><span style="font-weight: bold">概 要</span></v-tab>
       </v-tabs>
 
-      <v-tabs-window v-model="tab" style="height: 100%; flex-shrink: 1">
+      <v-tabs-window v-if="smAndDown" v-model="tab" style="height: 100%; flex-shrink: 1">
         <v-tabs-window-item value="one" style="height: 100%; padding: 20px">
           <EventEditorSettings
             v-model:title="title"
@@ -73,44 +75,31 @@ const isPreview = ref(false)
         </v-tabs-window-item>
 
         <v-tabs-window-item value="two" style="height: 100%">
-          <div style="width: 100%; height: 100%">
-            <div style="width: 100%; height: 100%; position: absolute">
-              <MarkdownEditor
-                :color="color"
-                v-model:text="text"
-                v-model:isPreview="isPreview"
-                v-if="!isPreview"
-              >
-                <v-btn
-                  @click="isPreview = true"
-                  density="comfortable"
-                  elevation="0"
-                  icon="mdi-eye-outline"
-                  baseColor="transparent"
-                  :class="`text-${color}`"
-                  style="margin-bottom: 10px"
-                ></v-btn>
-              </MarkdownEditor>
-              <MarkdownPreview
-                v-else
-                v-model:text="text"
-                v-model:isPreview="isPreview"
-                style="height: 100%; width: 100%; padding: 0 8px"
-              >
-                <div :class="$style.button">
-                  <v-btn
-                    @click="isPreview = false"
-                    density="comfortable"
-                    icon="mdi-square-edit-outline"
-                    baseColor="white"
-                    :class="`text-${color}`"
-                  ></v-btn>
-                </div>
-              </MarkdownPreview>
-            </div>
-          </div>
+          <MarkdownPlatform
+            v-model:isPreview="isPreview"
+            v-model:text="text"
+            :color="color"
+          ></MarkdownPlatform>
         </v-tabs-window-item>
       </v-tabs-window>
+      <div v-else style="display: flex; width: 100%; height: 100%">
+        <EventEditorSettings
+          style="width: 400px; height: 100%; padding: 20px; flex-shrink: 0"
+          v-model:title="title"
+          v-model:place="place"
+          v-model:day="day"
+          v-model:startTime="startTime"
+          v-model:endTime="endTime"
+          v-model:color="color"
+        />
+        <div style="width: 100%; height: 100%; position: relative">
+          <MarkdownPlatform
+            v-model:isPreview="isPreview"
+            v-model:text="text"
+            :color="color"
+          ></MarkdownPlatform>
+        </div>
+      </div>
     </v-sheet>
   </div>
 </template>
@@ -127,11 +116,5 @@ const isPreview = ref(false)
   position: relative;
   height: fit-content;
   height: 100%;
-}
-
-.button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 </style>

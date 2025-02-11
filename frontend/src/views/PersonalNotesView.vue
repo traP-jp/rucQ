@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import MarkdownEditor from '@/components/MarkdownEditor.vue'
-import MarkdownPreview from '@/components/MarkdownPreview.vue'
+import MarkdownPlatform from '@/components/MarkdownPlatform.vue'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
@@ -15,37 +14,11 @@ const isPreview = ref(false)
 <template>
   <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
-    <div style="width: 100%; height: 100%">
-      <div style="width: 100%; height: 100%; position: absolute">
-        <MarkdownEditor v-model:text="text" v-model:isPreview="isPreview" v-if="!isPreview">
-          <v-btn
-            @click="isPreview = true"
-            density="comfortable"
-            elevation="0"
-            icon="mdi-eye-outline"
-            baseColor="transparent"
-            class="text-primary"
-            style="margin-bottom: 10px"
-          ></v-btn>
-        </MarkdownEditor>
-        <MarkdownPreview
-          v-else
-          v-model:text="text"
-          v-model:isPreview="isPreview"
-          style="height: 100%; width: 100%; padding: 0 8px"
-        >
-          <div :class="$style.button">
-            <v-btn
-              @click="isPreview = false"
-              density="comfortable"
-              icon="mdi-square-edit-outline"
-              baseColor="white"
-              class="text-primary"
-            ></v-btn>
-          </div>
-        </MarkdownPreview>
-      </div>
-    </div>
+    <MarkdownPlatform
+      v-model:isPreview="isPreview"
+      v-model:text="text"
+      color="orange"
+    ></MarkdownPlatform>
   </div>
 </template>
 
