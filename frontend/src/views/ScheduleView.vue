@@ -4,8 +4,8 @@ import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
-import EventBlock from '@/components/EventBlock.vue'
-import EventDialog from '@/components/EventDialog.vue'
+import EventBlock from '@/components/event/EventBlock.vue'
+import EventDialog from '@/components/event/EventDialog.vue'
 import { events, camp } from '@/lib/sample-data'
 const { xs } = useDisplay()
 

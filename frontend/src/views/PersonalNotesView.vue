@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import MarkdownPlatform from '@/components/MarkdownPlatform.vue'
+import MarkdownPlatform from '@/components/markdown/MarkdownPlatform.vue'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 
