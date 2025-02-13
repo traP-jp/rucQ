@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, watch } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -35,7 +35,7 @@ const getActiveValue = () => {
   return segments[2] || 'guidebook'
 }
 
-let value = ref<string | null>(null)
+const value = ref<string | null>(null)
 
 // ナビゲーション関数の簡略化
 const navigateTo = (path: string) => {

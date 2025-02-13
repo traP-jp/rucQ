@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
-import MarkdownPreview from '@/components/MarkdownPreview.vue'
+import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import { getTimeString } from '@/lib/date'
 import type { components } from '@/api/schema'
