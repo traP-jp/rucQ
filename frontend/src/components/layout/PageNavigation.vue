@@ -37,12 +37,6 @@ const navItems = [
     iconActive: 'mdi-information',
     icon: 'mdi-information-outline',
   },
-  {
-    path: 'admin',
-    title: '管理者ツール',
-    iconActive: 'mdi-account-cog',
-    icon: 'mdi-account-cog-outline',
-  },
 ]
 </script>
 

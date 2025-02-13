@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { useDisplay } from 'vuetify'
 import PageNavigation from '@/components/layout/PageNavigation.vue'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-
-const { xs } = useDisplay()
+import HeaderButton from '@/components/layout/HeaderButton.vue'
 </script>
 
 <template>
   <v-app>
-    <mobile-header v-if="xs" />
+    <header-button />
     <page-navigation />
     <v-main>
       <router-view />
