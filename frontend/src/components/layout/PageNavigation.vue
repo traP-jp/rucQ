@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
 const router = useRouter()
 const route = useRoute()
+
+const currentPath = computed(() => route.path)
 
 const navItems = [
   {
@@ -38,16 +41,21 @@ const navItems = [
     icon: 'mdi-information-outline',
   },
 ]
+
+const fullPath = (path: string) => `/${route.params.campname}/${path}`
 </script>
 
 <template>
-  <v-bottom-navigation v-if="xs" color="primary" mandatory grow>
+  <v-bottom-navigation v-if="xs" color="primary" v-model="currentPath" mandatory grow>
     <v-btn
-      v-for="item in navItems"
-      :key="item.title"
-      @click="router.push(`/${route.params.campname}/${item.path}`)"
+      v-for="(item, i) in navItems"
+      :value="fullPath(item.path)"
+      :key="i"
+      @click="router.push(fullPath(item.path))"
     >
-      <v-icon size="24">{{ route.name === item.title ? item.iconActive : item.icon }}</v-icon>
+      <v-icon size="24">{{
+        currentPath === fullPath(item.path) ? item.iconActive : item.icon
+      }}</v-icon>
     </v-btn>
   </v-bottom-navigation>
   <v-navigation-drawer
@@ -57,20 +65,21 @@ const navItems = [
     app
   >
     <img src="/logo/logo.svg" alt="rucQ Icon" :class="$style.logo" />
-    <v-list dense mandatory>
+    <v-list dense mandatory v-model="currentPath">
       <v-list-item
-        v-for="item in navItems"
-        :key="item.title"
-        @click="router.push(`/${route.params.campname}/${item.path}`)"
+        v-for="(item, i) in navItems"
+        :value="fullPath(item.path)"
+        :key="i"
+        @click="router.push(fullPath(item.path))"
       >
         <div :class="$style.headerTab">
           <v-icon class="mr-3">{{
-            route.name === item.title ? item.iconActive : item.icon
+            currentPath === fullPath(item.path) ? item.iconActive : item.icon
           }}</v-icon>
           <span
             :class="[
               [$style.headerTitle],
-              { [$style.headerTitleActive]: route.name === item.title },
+              { [$style.headerTitleActive]: currentPath === fullPath(item.path) },
             ]"
           >
             {{ item.title }}
