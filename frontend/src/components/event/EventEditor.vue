@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
-import EventEditorSettings from '@/components/EventEditorSettings.vue'
-import MarkdownPlatform from '@/components/MarkdownPlatform.vue'
+import EventEditorSettings from '@/components/event/EventEditorSettings.vue'
+import MarkdownPlatform from '@/components/markdown/MarkdownPlatform.vue'
 import { useDisplay } from 'vuetify'
 const { smAndDown } = useDisplay()
 

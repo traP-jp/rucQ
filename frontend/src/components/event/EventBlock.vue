@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EventDialog from '@/components/EventDialog.vue'
+import EventDialog from '@/components/event/EventDialog.vue'
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']

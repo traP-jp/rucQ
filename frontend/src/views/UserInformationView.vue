@@ -7,7 +7,6 @@ import { useUserStore } from '@/store'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
-import MobileHeader from '@/components/layout/MobileHeader.vue'
 import { useDisplay } from 'vuetify'
 const { xs } = useDisplay()
 
@@ -36,7 +35,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="ユーザー情報" />
   <v-container v-if="xs" class="d-flex flex-column ga-4">
     <payment-information-panel :data="paymentData" />
     <information-group-item

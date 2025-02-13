@@ -60,7 +60,7 @@ const vuetify = createVuetify({
 })
 
 // 調べた限りでは、Vuetify のテーマ設定は基本的にこの createVuetify の中をいじって行うらしい
-// base.css の色定義は準備が整い次第廃止したい
+// base.css の色定義が必要な場面も多いので、どうにか同期させられたら嬉しいんだけれdお
 
 app.use(pinia)
 app.use(router)
