@@ -1,6 +1,4 @@
 <template>
-  <mobile-header v-if="xs" title="合宿のしおり" />
-
   <div :class="['guidebook-markdown', 'markdown']" v-html="htmlContent"></div>
 
   <footer class="guidebook-footer">
@@ -12,10 +10,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { apiClient } from '@/api/apiClient'
 import { marked } from 'marked'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { useDisplay } from 'vuetify'
-
-const { xs } = useDisplay()
 
 const markdown = ref(``)
 const htmlContent = computed(() => marked(markdown.value))

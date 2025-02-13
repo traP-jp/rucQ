@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { useDisplay } from 'vuetify'
-import SideBar from '@/components/layout/SideBar.vue'
-import MobileFooter from '@/components/layout/MobileFooter.vue'
+import PageNavigation from '@/components/layout/PageNavigation.vue'
+import MobileHeader from '@/components/layout/MobileHeader.vue'
 
 const { xs } = useDisplay()
 </script>
 
 <template>
   <v-app>
-    <side-bar />
+    <mobile-header v-if="xs" />
+    <page-navigation />
     <v-main>
       <router-view />
     </v-main>
-    <mobile-footer v-if="xs" />
   </v-app>
 </template>

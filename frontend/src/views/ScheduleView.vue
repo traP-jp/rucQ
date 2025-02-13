@@ -2,12 +2,9 @@
 import { onMounted, ref } from 'vue'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { useDisplay } from 'vuetify'
 import EventBlock from '@/components/event/EventBlock.vue'
 import EventDialog from '@/components/event/EventDialog.vue'
 import { events, camp } from '@/lib/sample-data'
-const { xs } = useDisplay()
 
 const dayGroups = ref<DayGroup[]>([])
 const currentTime = ref(new Date('2024-09-10T16:15:01.000000+09:00'))
@@ -19,7 +16,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="スケジュール" />
   <div :class="$style.container" v-if="dayGroups.length > 0">
     <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
       <h2 style="margin: 10px 0; font-weight: 900">

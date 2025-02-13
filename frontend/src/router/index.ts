@@ -5,12 +5,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Root',
       component: () => import('@/views/RootView.vue'),
     },
     {
       path: '/camps',
-      name: 'Camps',
+      name: '合宿一覧',
       component: () => import('@/views/CampSelectView.vue'),
     },
     {
@@ -18,32 +17,32 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'Guidebook',
+          name: '合宿のしおり',
           component: () => import('@/views/GuidebookView.vue'),
         },
         {
           path: 'schedule',
-          name: 'Schedule',
+          name: 'スケジュール',
           component: () => import('@/views/ScheduleView.vue'),
         },
         {
           path: 'personal-notes',
-          name: 'PersonalNotes',
+          name: 'ノート',
           component: () => import('@/views/PersonalNotesView.vue'),
         },
         {
           path: 'chat',
-          name: 'Chat',
+          name: 'チャット',
           component: () => import('@/views/ChatView.vue'),
         },
         {
           path: 'info',
-          name: 'UserInformation',
+          name: 'ユーザー情報',
           component: () => import('@/views/UserInformationView.vue'),
         },
         {
           path: 'info/users',
-          name: 'UserRoomInformation',
+          name: '部屋情報',
           component: () => import('@/views/UserRoomInformationView.vue'),
         },
         {
@@ -51,7 +50,7 @@ const router = createRouter({
           children: [
             {
               path: '',
-              name: 'AdminSettings',
+              name: '管理者ツール',
               component: () => import('@/views/admin/AdminSettings.vue'),
             },
             {
