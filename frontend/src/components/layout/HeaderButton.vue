@@ -24,7 +24,7 @@ const options = [
     >
     <v-menu>
       <template v-slot:activator="{ props: activatorProps }">
-        <v-app-bar-nav-icon v-bind="activatorProps" color="orange"></v-app-bar-nav-icon>
+        <v-btn icon="mdi-dots-horizontal" v-bind="activatorProps" color="orange"></v-btn>
       </template>
       <v-list>
         <v-list-item v-for="(option, i) in options" :key="i" @click="option.func">
