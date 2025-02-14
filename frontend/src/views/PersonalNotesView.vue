@@ -3,17 +3,11 @@ import { ref } from 'vue'
 import MarkdownPlatform from '@/components/markdown/MarkdownPlatform.vue'
 
 const text = ref('')
-
-const isPreview = ref(false)
 </script>
 
 <template>
   <div :class="$style.container">
-    <MarkdownPlatform
-      v-model:isPreview="isPreview"
-      v-model:text="text"
-      color="orange"
-    ></MarkdownPlatform>
+    <MarkdownPlatform v-model:text="text" color="orange"></MarkdownPlatform>
   </div>
 </template>
 

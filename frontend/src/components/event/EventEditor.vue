@@ -24,8 +24,6 @@ onMounted(() => {
   text.value = props.event.description
   color.value = props.event.display_color
 })
-
-const isPreview = ref(false)
 </script>
 
 <!-- v-card じゃなくて v-sheet の方がよかったか -->
@@ -75,11 +73,7 @@ const isPreview = ref(false)
         </v-tabs-window-item>
 
         <v-tabs-window-item value="two" style="height: 100%">
-          <MarkdownPlatform
-            v-model:isPreview="isPreview"
-            v-model:text="text"
-            :color="color"
-          ></MarkdownPlatform>
+          <MarkdownPlatform v-model:text="text" :color="color"></MarkdownPlatform>
         </v-tabs-window-item>
       </v-tabs-window>
       <div v-else style="display: flex; width: 100%; height: 100%">
@@ -93,11 +87,7 @@ const isPreview = ref(false)
           v-model:color="color"
         />
         <div style="width: 100%; height: 100%; position: relative">
-          <MarkdownPlatform
-            v-model:isPreview="isPreview"
-            v-model:text="text"
-            :color="color"
-          ></MarkdownPlatform>
+          <MarkdownPlatform v-model:text="text" :color="color"></MarkdownPlatform>
         </div>
       </div>
     </v-sheet>

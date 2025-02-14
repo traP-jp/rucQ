@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import MarkdownEditor from './MarkdownEditor.vue'
 import MarkdownPreview from './MarkdownPreview.vue'
 const text = defineModel<string>('text')
-const isPreview = defineModel<boolean>('isPreview')
+const isPreview = ref<boolean>(false)
 
 defineProps<{ color: string }>()
 </script>
@@ -10,12 +11,7 @@ defineProps<{ color: string }>()
 <template>
   <div style="width: 100%; height: 100%">
     <div style="width: 100%; height: 100%; position: absolute">
-      <MarkdownEditor
-        :color="color"
-        v-model:text="text"
-        v-model:isPreview="isPreview"
-        v-if="!isPreview"
-      >
+      <MarkdownEditor :color="color" v-model:text="text" v-if="!isPreview">
         <v-btn
           @click="isPreview = true"
           density="comfortable"
@@ -26,12 +22,7 @@ defineProps<{ color: string }>()
           style="margin-bottom: 10px"
         ></v-btn>
       </MarkdownEditor>
-      <MarkdownPreview
-        v-else
-        v-model:text="text"
-        v-model:isPreview="isPreview"
-        style="height: 100%; width: 100%; padding: 0 8px"
-      >
+      <MarkdownPreview v-else v-model:text="text" style="height: 100%; width: 100%; padding: 0 8px">
         <div :class="$style.button">
           <v-btn
             @click="isPreview = false"
