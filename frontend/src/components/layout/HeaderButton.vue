@@ -36,7 +36,12 @@ const options = [
   <div v-if="!xs && route.name === '合宿のしおり'" style="position: absolute; top: 6px; right: 6px">
     <v-menu>
       <template v-slot:activator="{ props: activatorProps }">
-        <v-app-bar-nav-icon v-bind="activatorProps" color="orange"></v-app-bar-nav-icon>
+        <v-btn
+          variant="text"
+          icon="mdi-dots-horizontal"
+          v-bind="activatorProps"
+          color="orange"
+        ></v-btn>
       </template>
       <v-list>
         <v-list-item v-for="(option, i) in options" :key="i" @click="option.func">
