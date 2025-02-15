@@ -19,11 +19,8 @@ const headers = [
 const isValid = computed(() => true)
 
 const groupColor = computed(() => {
-  console.log(questionItems.value[0]?.contentNew)
-  if (
-    questionItems.value[0]?.contentNew !== undefined &&
-    questionItems.value[0]?.contentNew !== null
-  ) {
+  console.log(questionItems.value[0]?.content)
+  if (questionItems.value[0]?.content !== undefined && questionItems.value[0]?.content !== null) {
     return 'orange' // 'green' だとちょっと不自然かもなので
   } else {
     return date > now ? 'orange' : 'red'
@@ -107,8 +104,7 @@ watch(
   async () => {
     questionItems.value = await constructQuestionItems()
     editMode.value =
-      questionItems.value[0]?.contentNew === undefined ||
-      questionItems.value[0]?.contentNew === null
+      questionItems.value[0]?.content === undefined || questionItems.value[0]?.content === null
   },
   { immediate: true },
 )
@@ -155,7 +151,7 @@ watch(
           :style="`grid-row: ${i + 1}; grid-column: 2; margin: 0 16px;`"
         >
           <div style="font-weight: bold; margin: 4px 0">
-            {{ qItem.contentNew }}
+            {{ qItem.content }}
           </div>
         </div>
       </div>
@@ -175,15 +171,13 @@ watch(
         </v-card-title>
       </div>
       <div
-        v-if="questionItems[0]?.contentNew === undefined || questionItems[0]?.contentNew === null"
+        v-if="questionItems[0]?.content === undefined || questionItems[0]?.content === null"
         style="display: flex; align-items: center; margin-right: 16px"
       >
         <div :style="`color: var(--color-${groupColor}); font-weight: bold; margin-right: 8px`">
           {{ getDayStringNoPad(new Date(questionGroup.due)) }}
         </div>
-        <!-- 最初の解答が済んでいるかどうかの情報って存在する？ -->
-        <v-icon v-if="true" size="24" icon="mdi-clock-outline" :color="groupColor"></v-icon>
-        <v-icon v-else size="24" icon="mdi-check" :color="groupColor"></v-icon>
+        <v-icon size="24" icon="mdi-clock-outline" :color="groupColor"></v-icon>
       </div>
       <v-btn
         v-else
