@@ -13,7 +13,7 @@ const props = defineProps<{
 const answer = defineModel<string>()
 
 const disabled = !(props.staff || props.questionItem.is_open)
-const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
+// const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
 const selectionItems = props.questionItem.options?.map((option) => option.content) ?? []
 </script>
 

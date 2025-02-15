@@ -16,7 +16,7 @@ const paid = computed(() => props.data?.amount_paid ?? 0)
 </script>
 
 <template>
-  <v-card v-if="status === 'paid'" color="greenPale" class="ma-4 pa-4">
+  <v-card elevation="0" v-if="status === 'paid'" color="greenPale" class="ma-4 pa-4">
     <v-card-title class="text-center pa-0">
       <span style="font-weight: 900; font-size: 24px; color: var(--color-green)">
         {{ billing.toLocaleString() }} 円

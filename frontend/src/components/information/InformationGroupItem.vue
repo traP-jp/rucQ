@@ -104,18 +104,24 @@ watch(
       </div>
       <v-btn
         v-if="!editMode"
-        :disabled="targetId === null"
-        icon
-        variant="plain"
-        size="small"
         @click="editMode = true"
-        style="margin-right: 8px"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-pencil"
+        baseColor="transparent"
+        :disabled="targetId === null"
+        style="margin-right: 8px; font-size: 12px"
       >
-        <v-icon>mdi-pencil</v-icon>
       </v-btn>
-      <v-btn v-else icon variant="plain" size="small" @click="cancel" style="margin-right: 8px">
-        <v-icon>mdi-file-undo</v-icon>
-      </v-btn>
+      <v-btn
+        v-else
+        @click="cancel"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-close"
+        baseColor="transparent"
+        style="margin-right: 8px"
+      ></v-btn>
     </div>
     <div
       v-if="editMode"
@@ -126,7 +132,7 @@ watch(
     <div style="padding-bottom: 8px">
       <div style="display: grid; grid-template-columns: 1fr 1fr">
         <div
-          :style="`grid-row: 1 / ${questionItems.length + 1}; grid-column: 1; border-right: 1px solid var(--color-gray)`"
+          :style="`grid-row: 1 / ${questionItems.length + 2}; grid-column: 1; border-right: 1px solid var(--color-gray)`"
         ></div>
         <div
           v-for="(qItem, i) in questionItems"
@@ -138,11 +144,11 @@ watch(
         <div
           v-for="(qItem, i) in questionItems"
           :key="qItem.id"
-          :style="`grid-row: ${i + 1}; grid-column: 2; margin: 4px 16px;`"
+          :style="`grid-row: ${i + 1}; grid-column: 2; margin: 0 16px;`"
         >
-          <span v-if="!editMode" style="font-weight: bold">
+          <div v-if="!editMode" style="font-weight: bold; margin: 4px 0">
             {{ qItem.contentNew }}
-          </span>
+          </div>
           <v-form v-else>
             <user-information-edit
               style="height: 10px !important; overflow: hidden"
@@ -152,6 +158,12 @@ watch(
               v-model="qItem.contentNew"
             />
           </v-form>
+        </div>
+        <div
+          v-if="editMode"
+          :style="`grid-row: ${questionItems.length + 1}; grid-column: 1; height: 16px;`"
+        >
+          <!-- 表示を整えるための余白 -->
         </div>
       </div>
       <v-btn
