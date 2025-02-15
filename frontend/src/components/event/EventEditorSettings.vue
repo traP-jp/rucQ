@@ -12,7 +12,7 @@ const color = defineModel<string>('color')
   <div :class="$style.container">
     <v-text-field
       v-model="title"
-      :rules="[(v) => !!v || '']"
+      :rules="[(v) => !!v || 'タイトルは必須です']"
       label="タイトル"
       variant="underlined"
       required
@@ -21,7 +21,7 @@ const color = defineModel<string>('color')
 
     <v-text-field
       v-model="place"
-      :rules="[(v) => !!v || '']"
+      :rules="[(v) => !!v || '場所は必須です']"
       label="場所"
       prepend-inner-icon="mdi-map-marker-outline"
       variant="underlined"
@@ -30,7 +30,7 @@ const color = defineModel<string>('color')
     <v-select
       v-model="day"
       :items="['1日目 (9/10)', '2日目 (9/11)', '3日目 (9/12)']"
-      :rules="[(v) => !!v || '']"
+      :rules="[(v) => !!v || '開催日は必須です']"
       label="開催日"
       prepend-inner-icon="mdi-calendar-blank"
       variant="underlined"
@@ -48,6 +48,8 @@ const color = defineModel<string>('color')
             readonly
             v-bind="activatorProps"
             style="margin-right: 10px"
+            :rules="[(v) => !!v || '開始時刻は必須です']"
+            required
           ></v-text-field>
         </template>
         <template v-slot:default="{ isActive }">
@@ -81,6 +83,8 @@ const color = defineModel<string>('color')
             readonly
             v-bind="activatorProps"
             style="margin-left: 10px"
+            :rules="[(v) => !!v || '開始時刻は必須です']"
+            required
           ></v-text-field>
         </template>
         <template v-slot:default="{ isActive }">

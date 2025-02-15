@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
+import { getDayStringNoPad } from '@/lib/date'
 
 type QuestionItem = components['schemas']['Question'] & {
   content?: string
@@ -95,7 +96,7 @@ watch(
 </script>
 
 <template>
-  <v-sheet class="mb-4" :color="editMode ? 'orangePale' : 'white'">
+  <v-sheet class="mb-4 pt-1" :color="editMode ? 'orangePale' : 'white'">
     <div class="d-flex align-center justify-space-between">
       <div class="d-flex flex-column">
         <v-card-title>
@@ -113,7 +114,15 @@ watch(
         style="margin-right: 8px; font-size: 12px"
       >
       </v-btn>
-      <v-btn
+      <div v-else style="display: flex; align-items: center; margin-right: 16px">
+        <div style="color: var(--color-orange); font-weight: bold; margin-right: 8px">
+          {{ getDayStringNoPad(new Date(questionGroup.due)) }}
+        </div>
+        <!-- 最初の解答が済んでいるかどうかの情報って存在する？ -->
+        <v-icon v-if="true" size="24" icon="mdi-clock-outline" color="orange"></v-icon>
+        <v-icon v-else size="24" icon="mdi-check" color="orange"></v-icon>
+      </div>
+      <!-- <v-btn
         v-else
         @click="cancel"
         density="comfortable"
@@ -121,7 +130,7 @@ watch(
         icon="mdi-close"
         baseColor="transparent"
         style="margin-right: 8px"
-      ></v-btn>
+      ></v-btn> -->
     </div>
     <div
       v-if="editMode"
@@ -129,7 +138,7 @@ watch(
     >
       {{ questionGroup.description }}
     </div>
-    <div style="padding-bottom: 8px">
+    <div v-if="!editMode" style="padding-bottom: 8px">
       <div style="display: grid; grid-template-columns: 1fr 1fr">
         <div
           :style="`grid-row: 1 / ${questionItems.length + 2}; grid-column: 1; border-right: 1px solid var(--color-gray)`"
@@ -137,7 +146,7 @@ watch(
         <div
           v-for="(qItem, i) in questionItems"
           :key="qItem.id"
-          :style="`align-self: ${editMode ? 'end' : 'center'}; grid-row: ${i + 1}; grid-column: 1; margin: 4px 16px;`"
+          :style="`align-self: center; grid-row: ${i + 1}; grid-column: 1; margin: 4px 16px;`"
         >
           {{ qItem.title }}
         </div>
@@ -149,15 +158,6 @@ watch(
           <div v-if="!editMode" style="font-weight: bold; margin: 4px 0">
             {{ qItem.contentNew }}
           </div>
-          <v-form v-else>
-            <user-information-edit
-              style="height: 10px !important; overflow: hidden"
-              :key="qItem.id"
-              :question-item="qItem"
-              :staff="targetId != null"
-              v-model="qItem.contentNew"
-            />
-          </v-form>
         </div>
         <div
           v-if="editMode"
@@ -166,15 +166,25 @@ watch(
           <!-- 表示を整えるための余白 -->
         </div>
       </div>
+    </div>
+
+    <div v-else style="padding: 0 16px">
+      <div v-for="qItem in questionItems" :key="qItem.id">
+        <user-information-edit
+          :question-item="qItem"
+          :staff="targetId != null"
+          v-model="qItem.contentNew"
+        />
+      </div>
       <v-btn
         v-if="editMode"
         elevation="0"
-        append-icon="mdi-check"
+        prepend-icon="mdi-check"
         :disabled="!isValid"
         variant="flat"
         color="orange"
         @click="submit"
-        style="width: calc(100% - 32px); font-size: 16px; margin: 16px 16px 8px 16px"
+        style="width: 100%; font-size: 16px; margin: 12px 0"
         >保存</v-btn
       >
     </div>
