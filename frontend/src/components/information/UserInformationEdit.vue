@@ -20,6 +20,17 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
 <template>
   <v-text-field
     :label="questionItem.title"
+    v-if="questionItem.type === 'free_number'"
+    v-model="answer"
+    :disabled="disabled"
+    variant="underlined"
+    :hint="hint"
+    :rules="[(v) => !!v || '？？？は必須です']"
+    required
+  />
+
+  <v-text-field
+    :label="questionItem.title"
     v-if="questionItem.type === 'free_text'"
     v-model="answer"
     :disabled="disabled"

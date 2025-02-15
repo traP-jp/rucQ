@@ -1,7 +1,9 @@
 <script setup lang="ts">
-defineProps<{ id?: string; size?: number }>()
 import { useUserStore } from '@/store'
-const userId = useUserStore().userId
+import { storeToRefs } from 'pinia'
+
+const { userId } = storeToRefs(useUserStore())
+defineProps<{ id?: string; size?: number }>()
 </script>
 
 <template>
