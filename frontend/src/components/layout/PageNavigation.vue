@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UserIcon from '@/components/generic/UserIcon.vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
@@ -53,9 +54,10 @@ const fullPath = (path: string) => `/${route.params.campname}/${path}`
       :key="i"
       @click="router.push(fullPath(item.path))"
     >
-      <v-icon size="24">{{
+      <v-icon v-if="item.path !== 'info'" size="24">{{
         currentPath === fullPath(item.path) ? item.iconActive : item.icon
       }}</v-icon>
+      <UserIcon v-else :size="24"></UserIcon>
     </v-btn>
   </v-bottom-navigation>
   <v-navigation-drawer

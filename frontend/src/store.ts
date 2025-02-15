@@ -8,12 +8,11 @@ import { apiClient } from '@/api/apiClient'
 export const useUserStore = defineStore('user', () => {
   const userId = ref<string | undefined>(undefined)
 
-  const getUserId = async () => {
-    if (userId.value) return userId.value
+  const initUserId = async () => {
     const { data, error } = await apiClient.GET('/api/me')
     if (error) console.error('Failed to initialize user store:', error)
     userId.value = data?.traq_id
-    return userId.value
   }
-  return { getUserId }
+
+  return { initUserId, userId }
 })

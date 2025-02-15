@@ -66,4 +66,8 @@ app.use(pinia)
 app.use(router)
 app.use(vuetify)
 
+// ユーザー ID を取得
+import { useUserStore } from './store'
+useUserStore().initUserId()
+
 app.mount('#app')

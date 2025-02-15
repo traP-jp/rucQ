@@ -75,6 +75,9 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
+/* 合宿のしおり、イベント告知文、個人メモのプレビューなどこのスタイルで統一する */
+/* 使いやすくてクセのないスタイルであることが望ましい。基本的には traQ に寄せる */
+
 .preview :global(p) {
   font-size: 1em;
   line-height: 1.4;

@@ -15,8 +15,6 @@ const makeInfo = (event: CampEvent) => {
 
 const text = ref('')
 
-const isPreview = ref(true)
-
 onMounted(() => {
   text.value = props.event.description
 })
@@ -62,7 +60,7 @@ onMounted(() => {
     </div>
     <div style="width: 100%; height: 100%; overflow-y: auto; background-color: var(--color-white)">
       <div style="height: 100%; padding: 4px 4px 40px 4px">
-        <MarkdownPreview :isEditable="false" v-model:text="text" v-model:isPreview="isPreview" />
+        <MarkdownPreview :isEditable="false" v-model:text="text" />
       </div>
     </div>
 

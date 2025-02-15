@@ -7,9 +7,6 @@ import { useUserStore } from '@/store'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
-import { useDisplay } from 'vuetify'
-const { xs } = useDisplay()
-
 const userId = ref<string>()
 // const roomData = ref()
 const paymentData = ref<components['schemas']['Budget']>()
@@ -28,37 +25,28 @@ const getInformationGroups = async () => {
 }
 
 onMounted(async () => {
-  userId.value = await useUserStore().getUserId()
+  userId.value = useUserStore().userId
   paymentData.value = await getPaymentData()
   questionGroups.value = (await getInformationGroups()) ?? []
 })
 </script>
 
 <template>
-  <v-container v-if="xs" class="d-flex flex-column ga-4">
+  <div :class="$style.container">
     <payment-information-panel :data="paymentData" />
     <information-group-item
       v-for="questionGroup in questionGroups"
       :key="questionGroup.id"
       :questionGroup="questionGroup"
     />
-  </v-container>
-
-  <v-container v-else class="d-flex flex-column align-center ga-4">
-    <v-sheet class="d-flex flex-column elevation-2 px-8 py-4" max-width="800" width="100%">
-      <v-card-item
-        class="px-0"
-        :title="userId ?? 'unknown'"
-        :prepend-avatar="`https://q.trap.jp/api/v3/public/icon/${userId ?? 'traP'}`"
-      />
-      <v-container class="d-flex flex-column ga-4 pa-0">
-        <payment-information-panel :data="paymentData" />
-        <information-group-item
-          v-for="questionGroup in questionGroups"
-          :key="questionGroup.id"
-          :questionGroup="questionGroup"
-        />
-      </v-container>
-    </v-sheet>
-  </v-container>
+  </div>
 </template>
+
+<style module>
+.container {
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  max-width: 600px;
+}
+</style>
