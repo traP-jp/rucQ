@@ -22,27 +22,19 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
     v-if="questionItem.type === 'free_text'"
     v-model="answer"
     :disabled="disabled"
-    :label="questionItem.title"
-    :hint="hint"
-    persistent-hint
-  />
-
-  <v-text-field
-    v-if="questionItem.type === 'free_number'"
-    v-model="answer"
-    :disabled="disabled"
-    :label="questionItem.title"
-    :hint="hint"
-    persistent-hint
+    density="comfortable"
+    hide-details="auto"
+    variant="underlined"
   />
 
   <v-select
     v-if="questionItem.type === 'single'"
     v-model="answer"
     :disabled="disabled"
-    :label="questionItem.title"
     :items="selectionItems"
-    :hint="hint"
-    persistent-hint
+    density="comfortable"
+    hide-details="auto"
+    hide-label="auto"
+    variant="underlined"
   />
 </template>

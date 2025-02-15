@@ -57,7 +57,7 @@ const fullPath = (path: string) => `/${route.params.campname}/${path}`
       <v-icon v-if="item.path !== 'info'" size="24">{{
         currentPath === fullPath(item.path) ? item.iconActive : item.icon
       }}</v-icon>
-      <UserIcon v-else :id="'mumumu'" :size="24"></UserIcon>
+      <UserIcon v-else :size="24"></UserIcon>
     </v-btn>
   </v-bottom-navigation>
   <v-navigation-drawer
