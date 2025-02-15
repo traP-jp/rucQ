@@ -4,6 +4,9 @@ import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import UserInformationEdit from '@/components/information/UserInformationEdit.vue'
 import { getDayStringNoPad } from '@/lib/date'
+import { useDisplay } from 'vuetify'
+
+const { xs } = useDisplay()
 
 type QuestionItem = components['schemas']['Question'] & {
   content?: string
@@ -21,7 +24,7 @@ const groupColor = computed(() => {
     questionItems.value[0]?.contentNew !== undefined &&
     questionItems.value[0]?.contentNew !== null
   ) {
-    return 'green'
+    return 'orange' // 'green' だとちょっと不自然かもなので
   } else {
     return date > now ? 'orange' : 'red'
   }
@@ -114,7 +117,7 @@ watch(
 <!-- こんがらがってきた、editMode と !editMode それぞれでちゃんと必要な情報は全て表示されているのか？ -->
 
 <template>
-  <v-sheet v-if="!editMode" class="mb-4 pt-1" color="white">
+  <v-sheet v-if="!editMode" :class="`${!xs ? 'mx-4' : ''} mb-4 pt-1`" color="white">
     <div class="d-flex align-center justify-space-between">
       <div class="d-flex flex-column">
         <v-card-title>
@@ -159,7 +162,12 @@ watch(
     </div>
   </v-sheet>
 
-  <v-sheet v-else class="mb-4 pt-1" :color="`${groupColor}Pale`">
+  <v-sheet
+    v-else
+    :class="`mb-4 ${!xs ? 'mx-4' : ''} pt-1`"
+    :color="`${groupColor}Pale`"
+    :rounded="!xs"
+  >
     <div class="d-flex align-center justify-space-between">
       <div class="d-flex flex-column">
         <v-card-title>
@@ -167,7 +175,7 @@ watch(
         </v-card-title>
       </div>
       <div
-        v-if="groupColor !== 'green'"
+        v-if="questionItems[0]?.contentNew === undefined || questionItems[0]?.contentNew === null"
         style="display: flex; align-items: center; margin-right: 16px"
       >
         <div :style="`color: var(--color-${groupColor}); font-weight: bold; margin-right: 8px`">
