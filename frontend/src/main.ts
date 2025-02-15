@@ -68,6 +68,6 @@ app.use(vuetify)
 
 // ユーザー ID を取得
 import { useUserStore } from './store'
-useUserStore().initUserId()
+await useUserStore().initUserId()
 
 app.mount('#app')
