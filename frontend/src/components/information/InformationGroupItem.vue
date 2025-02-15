@@ -143,7 +143,7 @@ watch(
           :key="qItem.id"
           :style="`align-self: center; grid-row: ${i + 1}; grid-column: 1; margin: 4px 16px;`"
         >
-          {{ qItem.type }}
+          {{ qItem.title }}
         </div>
         <div
           v-for="(qItem, i) in questionItems"

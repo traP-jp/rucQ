@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
   const initUserId = async () => {
     const { data, error } = await apiClient.GET('/api/me')
     if (error) console.error('Failed to initialize user store:', error)
+    console.log(data)
     userId.value = data?.traq_id
   }
 
