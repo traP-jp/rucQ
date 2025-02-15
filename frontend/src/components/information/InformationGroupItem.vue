@@ -15,6 +15,18 @@ const headers = [
 ]
 const isValid = computed(() => true)
 
+const groupColor = computed(() => {
+  console.log(questionItems.value[0]?.contentNew)
+  if (
+    questionItems.value[0]?.contentNew !== undefined &&
+    questionItems.value[0]?.contentNew !== null
+  ) {
+    return 'green'
+  } else {
+    return date > now ? 'orange' : 'red'
+  }
+})
+
 // targetIdは、undefined: 自分, null: 選択なし
 const props = defineProps<{
   questionGroup: components['schemas']['QuestionGroup']
@@ -23,8 +35,9 @@ const props = defineProps<{
 
 const questionItems = ref<QuestionItem[]>([])
 const date = new Date(props.questionGroup.due)
+const now = new Date()
 
-const editMode = ref(false)
+const editMode = ref<boolean>(false)
 
 const constructQuestionItems = async () => {
   const res: QuestionItem[] = []
@@ -90,13 +103,18 @@ watch(
   () => props.targetId,
   async () => {
     questionItems.value = await constructQuestionItems()
+    editMode.value =
+      questionItems.value[0]?.contentNew === undefined ||
+      questionItems.value[0]?.contentNew === null
   },
   { immediate: true },
 )
 </script>
 
+<!-- こんがらがってきた、editMode と !editMode それぞれでちゃんと必要な情報は全て表示されているのか？ -->
+
 <template>
-  <v-sheet class="mb-4 pt-1" :color="editMode ? 'orangePale' : 'white'">
+  <v-sheet v-if="!editMode" class="mb-4 pt-1" color="white">
     <div class="d-flex align-center justify-space-between">
       <div class="d-flex flex-column">
         <v-card-title>
@@ -104,41 +122,19 @@ watch(
         </v-card-title>
       </div>
       <v-btn
-        v-if="!editMode"
         @click="editMode = true"
         density="comfortable"
         elevation="0"
         icon="mdi-pencil"
-        baseColor="transparent"
+        color="orange"
+        variant="text"
         :disabled="targetId === null"
         style="margin-right: 8px; font-size: 12px"
       >
       </v-btn>
-      <div v-else style="display: flex; align-items: center; margin-right: 16px">
-        <div style="color: var(--color-orange); font-weight: bold; margin-right: 8px">
-          {{ getDayStringNoPad(new Date(questionGroup.due)) }}
-        </div>
-        <!-- 最初の解答が済んでいるかどうかの情報って存在する？ -->
-        <v-icon v-if="true" size="24" icon="mdi-clock-outline" color="orange"></v-icon>
-        <v-icon v-else size="24" icon="mdi-check" color="orange"></v-icon>
-      </div>
-      <!-- <v-btn
-        v-else
-        @click="cancel"
-        density="comfortable"
-        elevation="0"
-        icon="mdi-close"
-        baseColor="transparent"
-        style="margin-right: 8px"
-      ></v-btn> -->
     </div>
-    <div
-      v-if="editMode"
-      style="padding: 0 16px; overflow-wrap: break-word; line-height: 1.4em; margin-bottom: 8px"
-    >
-      {{ questionGroup.description }}
-    </div>
-    <div v-if="!editMode" style="padding-bottom: 8px">
+
+    <div style="padding-bottom: 8px">
       <div style="display: grid; grid-template-columns: 1fr 1fr">
         <div
           :style="`grid-row: 1 / ${questionItems.length + 2}; grid-column: 1; border-right: 1px solid var(--color-gray)`"
@@ -155,20 +151,49 @@ watch(
           :key="qItem.id"
           :style="`grid-row: ${i + 1}; grid-column: 2; margin: 0 16px;`"
         >
-          <div v-if="!editMode" style="font-weight: bold; margin: 4px 0">
+          <div style="font-weight: bold; margin: 4px 0">
             {{ qItem.contentNew }}
           </div>
         </div>
-        <div
-          v-if="editMode"
-          :style="`grid-row: ${questionItems.length + 1}; grid-column: 1; height: 16px;`"
-        >
-          <!-- 表示を整えるための余白 -->
-        </div>
       </div>
     </div>
+  </v-sheet>
 
-    <div v-else style="padding: 0 16px">
+  <v-sheet v-else class="mb-4 pt-1" :color="`${groupColor}Pale`">
+    <div class="d-flex align-center justify-space-between">
+      <div class="d-flex flex-column">
+        <v-card-title>
+          <span style="font-size: 20px; font-weight: bold">{{ questionGroup.name }}</span>
+        </v-card-title>
+      </div>
+      <div
+        v-if="groupColor !== 'green'"
+        style="display: flex; align-items: center; margin-right: 16px"
+      >
+        <div :style="`color: var(--color-${groupColor}); font-weight: bold; margin-right: 8px`">
+          {{ getDayStringNoPad(new Date(questionGroup.due)) }}
+        </div>
+        <!-- 最初の解答が済んでいるかどうかの情報って存在する？ -->
+        <v-icon v-if="true" size="24" icon="mdi-clock-outline" :color="groupColor"></v-icon>
+        <v-icon v-else size="24" icon="mdi-check" :color="groupColor"></v-icon>
+      </div>
+      <v-btn
+        v-else
+        @click="editMode = false"
+        density="comfortable"
+        elevation="0"
+        icon="mdi-close"
+        baseColor="transparent"
+        class="text-black"
+        style="margin: 8px"
+      ></v-btn>
+    </div>
+
+    <div style="padding: 0 16px; overflow-wrap: break-word; line-height: 1.4em; margin-bottom: 8px">
+      {{ questionGroup.description }}
+    </div>
+
+    <div style="padding: 0 16px">
       <div v-for="qItem in questionItems" :key="qItem.id">
         <user-information-edit
           :question-item="qItem"
@@ -177,37 +202,16 @@ watch(
         />
       </div>
       <v-btn
-        v-if="editMode"
         elevation="0"
         prepend-icon="mdi-check"
         :disabled="!isValid"
         variant="flat"
-        color="orange"
+        :color="groupColor"
         @click="submit"
         style="width: 100%; font-size: 16px; margin: 12px 0"
-        >保存</v-btn
       >
+        保存
+      </v-btn>
     </div>
-
-    <!-- <v-data-table
-      v-if="!editMode"
-      class="px-4"
-      :headers="headers"
-      :items="questionItems"
-      density="compact"
-      hide-default-header
-      hide-default-footer
-    /> -->
-
-    <!-- <v-form v-else class="d-flex flex-column ga-3 pa-2">
-      <user-information-edit
-        v-for="questionItem in questionItems"
-        :key="questionItem.id"
-        :question-item="questionItem"
-        :staff="targetId != null"
-        v-model="questionItem.contentNew"
-      />
-      <v-btn :disabled="!isValid" type="submit" @click="submit">保存</v-btn>
-    </v-form> -->
   </v-sheet>
 </template>
