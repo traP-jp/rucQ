@@ -68,6 +68,11 @@ app.use(vuetify)
 
 // ユーザー ID を取得
 import { useUserStore } from './store'
-await useUserStore().initUserId()
+
+useUserStore()
+  .initUserId()
+  .catch((error) => {
+    console.error('Failed to initialize user store:', error)
+  })
 
 app.mount('#app')
