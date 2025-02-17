@@ -216,3 +216,127 @@ export const camp = {
   start_date: '2024-09-10T00:00:00.000000+09:00',
   end_date: '2024-09-11T00:00:00.000000+09:00',
 }
+
+export const sampleTweets = [
+  {
+    id: 1,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:00:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 2,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:01:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 3,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:02:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 4,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:03:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 5,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:04:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 6,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:05:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 7,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:06:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 8,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:07:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 9,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:08:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 10,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:09:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 11,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:10:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 12,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:11:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 13,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:12:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 14,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:13:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 15,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:14:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 16,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:15:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 17,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:16:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 18,
+    content:
+      '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890',
+    created_at: '2024-09-10T00:17:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 19,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:18:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 20,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:19:00.000000+09:00',
+    author: 'kitsne',
+  },
+]

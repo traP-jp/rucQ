@@ -6,6 +6,8 @@ import hljs from 'highlight.js'
 
 const text = defineModel<string>('text')
 
+defineProps<{ pad?: number }>()
+
 const html = computed(() => {
   const tempHtml = marked.parse(text.value || '') as string
   return tempHtml.replace('<pre><code>', '<pre><code class="hljs">')
@@ -43,14 +45,17 @@ onMounted(async () => {
   <div :class="$style.container">
     <slot></slot>
     <div :class="$style.content">
-      <div v-html="html" :class="$style.preview"></div>
+      <div
+        v-html="html"
+        :class="$style.preview"
+        :style="`padding: ${pad !== undefined ? pad : 12}px;`"
+      ></div>
     </div>
   </div>
 </template>
 
 <style module>
 .container {
-  background-color: var(--color-white);
   color: var(--color-text);
   position: relative;
   width: 100%;
@@ -68,7 +73,6 @@ onMounted(async () => {
 
 .preview {
   width: 100%;
-  padding: 12px;
   height: fit-content;
   min-height: 100%;
   max-width: 1000px;

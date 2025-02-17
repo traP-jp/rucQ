@@ -58,7 +58,7 @@ body {
     color 0.5s,
     background-color 0.5s;
   line-height: 1.6;
-  font-family: 'M PLUS 1p', 'Avenir Next', sans-serif;
+  font-family: 'M PLUS 1p', sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
