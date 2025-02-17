@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/event/EventBlock.vue'
 import EventDialog from '@/components/event/EventDialog.vue'
-import { events, camp } from '@/lib/sample-data'
+import EventEditor from '@/components/event/EventEditor.vue'
+// import { events, camp } from '@/lib/sample-data'
+import { apiClient } from '@/api/apiClient'
+import { useCampStore } from '@/store'
+
+const route = useRoute()
+
+const campStore = useCampStore()
 
 const dayGroups = ref<DayGroup[]>([])
-const currentTime = ref(new Date('2024-09-10T16:15:01.000000+09:00'))
+const currentTime = new Date()
+const isDialogActive = ref(false)
 
-onMounted(() => {
-  dayGroups.value = getLayout(events, camp, currentTime.value)
-  // 現在時刻が既存のタイムスタンプと 0.001 秒単位で完全に被った場合に限り表示がおかしくなるが、とりあえず放置でよさそう
+onMounted(async () => {
+  const events = (await apiClient.GET('/api/events')).data!
+  const camp = campStore.camp!
+  dayGroups.value = getLayout(events, camp, currentTime)
+  if (route.query.action === 'newevent') {
+    isDialogActive.value = true
+  }
 })
 </script>
 
@@ -119,6 +132,10 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
+  <v-dialog v-model="isDialogActive" fullscreen transition="dialog-bottom-transition">
+    <EventEditor :event="null" @close="isDialogActive = false" />
+  </v-dialog>
 </template>
 
 <style module>

@@ -1,17 +1,86 @@
 <script setup lang="ts">
+import { ref, watch, onMounted, nextTick } from 'vue'
+import { getTimeString, getDayStringNoPad } from '@/lib/date'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
-const title = defineModel<string>('title')
-const place = defineModel<string>('place')
-const day = defineModel<string>('day')
-const startTime = defineModel<string>('startTime')
-const endTime = defineModel<string>('endTime')
+import { useCampStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+defineProps<{ id?: string; size?: number }>()
+
+const { camp } = storeToRefs(useCampStore())
+
+const isTimeChanged = ref(false)
+
+const name = defineModel<string>('name')
+const location = defineModel<string>('location')
+const startTime = defineModel<Date>('startTime')
+const endTime = defineModel<Date>('endTime')
 const color = defineModel<string>('color')
+
+const startTimePick = ref('')
+const endTimePick = ref('')
+const dayNum = ref(0)
+
+const timeCalc = (time: string, addMin: number) => {
+  const date = new Date()
+  const [h, m] = time.split(':').map(Number)
+  date.setHours(h, m + addMin, 0, 0)
+  return getTimeString(date)
+}
+
+const updateTime = () => {
+  console.log(startTimePick.value, endTimePick.value)
+  startTime.value!.setDate(new Date(camp.value!.start_date).getDate() + dayNum.value)
+  endTime.value!.setDate(new Date(camp.value!.start_date).getDate() + dayNum.value)
+  const [startH, startM] = startTimePick.value.split(':').map(Number)
+  startTime.value!.setHours(startH, startM, 0, 0)
+  const [endH, endM] = endTimePick.value.split(':').map(Number)
+  endTime.value!.setHours(endH, endM, 0, 0)
+}
+
+watch(() => startTimePick.value, updateTime)
+watch(() => endTimePick.value, updateTime)
+watch(() => dayNum.value, updateTime)
+
+const getDays = () => {
+  const start_date = new Date(camp.value!.start_date)
+  const end_date = new Date(camp.value!.end_date)
+  const date = new Date(start_date)
+  const days: { id: number; name: string }[] = []
+  let count = 0
+
+  while (date <= end_date) {
+    days.push({ id: count, name: `${count + 1}日目 (${getDayStringNoPad(date)})` })
+    date.setDate(date.getDate() + 1)
+    count++
+  }
+
+  return days
+}
+
+const getDayNum = () => {
+  const campStartDate = new Date(camp.value!.start_date)
+  const eventStartDate = new Date(startTime.value!)
+  eventStartDate.setHours(0, 0, 0, 0)
+  const diffTime = eventStartDate.getTime() - campStartDate.getTime()
+  return Math.round(diffTime / (1000 * 60 * 60 * 24))
+}
+
+onMounted(() => {
+  nextTick(() => {
+    // startTime と endTime に値が入るのを待つ
+    startTimePick.value = getTimeString(startTime.value!)
+    endTimePick.value = getTimeString(endTime.value!)
+    dayNum.value = getDayNum()
+    updateTime()
+  })
+})
 </script>
 
 <template>
   <div :class="$style.container">
     <v-text-field
-      v-model="title"
+      v-model="name"
       :rules="[(v) => !!v || 'タイトルは必須です']"
       label="タイトル"
       variant="underlined"
@@ -20,7 +89,7 @@ const color = defineModel<string>('color')
     ></v-text-field>
 
     <v-text-field
-      v-model="place"
+      v-model="location"
       :rules="[(v) => !!v || '場所は必須です']"
       label="場所"
       prepend-inner-icon="mdi-map-marker-outline"
@@ -28,8 +97,10 @@ const color = defineModel<string>('color')
       required
     ></v-text-field>
     <v-select
-      v-model="day"
-      :items="['1日目 (9/10)', '2日目 (9/11)', '3日目 (9/12)']"
+      v-model="dayNum"
+      :items="getDays()"
+      item-value="id"
+      item-title="name"
       :rules="[(v) => !!v || '開催日は必須です']"
       label="開催日"
       prepend-inner-icon="mdi-calendar-blank"
@@ -38,10 +109,10 @@ const color = defineModel<string>('color')
     ></v-select>
 
     <div style="display: flex">
-      <v-dialog ref="dialog" :v-model:propName="startTime">
+      <v-dialog persistent ref="dialog" :v-model:propName="startTimePick">
         <template v-slot:activator="{ props: activatorProps }">
           <v-text-field
-            v-model="startTime"
+            v-model="startTimePick"
             label="開始時刻"
             prepend-inner-icon="mdi-clock-time-four-outline"
             variant="underlined"
@@ -50,6 +121,7 @@ const color = defineModel<string>('color')
             style="margin-right: 10px"
             :rules="[(v) => !!v || '開始時刻は必須です']"
             required
+            @click="isTimeChanged = false"
           ></v-text-field>
         </template>
         <template v-slot:default="{ isActive }">
@@ -57,11 +129,14 @@ const color = defineModel<string>('color')
             <v-time-picker
               format="24hr"
               :color="color"
-              v-model="startTime"
+              :max="timeCalc(endTimePick, -1)"
+              v-model="startTimePick"
+              @update:modelValue="isTimeChanged = true"
               title="開始時刻を設定"
             />
             <v-btn
               @click="isActive.value = false"
+              :disabled="!isTimeChanged"
               elevation="0"
               rounded="0"
               width="100%"
@@ -73,10 +148,10 @@ const color = defineModel<string>('color')
           </v-sheet>
         </template>
       </v-dialog>
-      <v-dialog ref="dialog" :v-model:propName="endTime">
+      <v-dialog persistent ref="dialog" :v-model:propName="endTimePick">
         <template v-slot:activator="{ props: activatorProps }">
           <v-text-field
-            v-model="endTime"
+            v-model="endTimePick"
             label="終了時刻"
             prepend-inner-icon="mdi-clock-time-four-outline"
             variant="underlined"
@@ -85,13 +160,22 @@ const color = defineModel<string>('color')
             style="margin-left: 10px"
             :rules="[(v) => !!v || '開始時刻は必須です']"
             required
+            @click="isTimeChanged = false"
           ></v-text-field>
         </template>
         <template v-slot:default="{ isActive }">
           <v-sheet width="fit-content" style="margin: 0 auto">
-            <v-time-picker format="24hr" :color="color" v-model="endTime" title="終了時刻を設定" />
+            <v-time-picker
+              format="24hr"
+              :color="color"
+              :min="timeCalc(startTimePick, 1)"
+              v-model="endTimePick"
+              @update:modelValue="isTimeChanged = true"
+              title="終了時刻を設定"
+            />
             <v-btn
               @click="isActive.value = false"
+              :disabled="!isTimeChanged"
               elevation="0"
               rounded="0"
               width="100%"

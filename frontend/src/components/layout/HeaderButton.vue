@@ -7,7 +7,12 @@ const router = useRouter()
 const { xs } = useDisplay()
 
 const options = [
-  { name: '新規イベント作成', func: () => {} },
+  {
+    name: '新規イベント作成',
+    func: () => {
+      router.push({ path: `/${route.params.campname}/schedule`, query: { action: 'newevent' } })
+    },
+  },
   { name: '管理者ツール', func: () => router.push(`/${route.params.campname}/admin`) },
   { name: '別の合宿を表示', func: () => router.push(`/camps`) },
 ]
@@ -33,7 +38,10 @@ const options = [
       </v-list>
     </v-menu>
   </v-app-bar>
-  <div v-if="!xs && route.name === '合宿のしおり'" style="position: absolute; top: 6px; right: 6px">
+  <div
+    v-if="!xs && route.name === '合宿のしおり'"
+    style="position: fixed; top: 6px; right: 6px; z-index: 3"
+  >
     <v-menu>
       <template v-slot:activator="{ props: activatorProps }">
         <v-btn
