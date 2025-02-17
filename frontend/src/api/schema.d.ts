@@ -270,7 +270,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/users/answers/{question_id}": {
+    "/api/answers/{question_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -491,10 +491,6 @@ export interface components {
             question_id: number;
             user_traq_id: string;
             content?: (string | string[]) | null;
-        };
-        GetQuestionAnswers: {
-            question_id?: number;
-            answers?: unknown[];
         };
         PutAnswerRequest: {
             content?: (string | string[]) | null;
@@ -1335,7 +1331,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetQuestionAnswers"][];
+                    "application/json": components["schemas"]["Answer"][];
                 };
             };
             500: components["responses"]["InternalServerError"];

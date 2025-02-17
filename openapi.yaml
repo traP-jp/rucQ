@@ -588,7 +588,7 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /api/users/answers/{question_id}:
+  /api/answers/{question_id}:
     get:
       summary: 質問に対するユーザーの回答一覧を取得
       tags:
@@ -605,7 +605,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/GetQuestionAnswers"
+                  $ref: "#/components/schemas/Answer"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /api/users/{traq_id}/answers/{question_id}:
@@ -1245,16 +1245,6 @@ components:
         - id
         - question_id
         - user_traq_id
-    GetQuestionAnswers:
-      type: object
-      properties:
-        question_id:
-          type: integer
-        answers:
-          type: array
-          items:
-            user_traq_id:
-              type: string
     PutAnswerRequest:
       type: object
       properties:
