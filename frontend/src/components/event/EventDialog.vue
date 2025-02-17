@@ -64,9 +64,9 @@ onMounted(() => {
       </div>
     </div>
 
-    <v-btn variant="flat" :class="[$style.join, 'text-white']" :baseColor="event.display_color">
+    <!-- <v-btn variant="flat" :class="[$style.join, 'text-white']" :baseColor="event.display_color">
       <span style="font-weight: bold">参　加　す　る</span>
-    </v-btn>
+    </v-btn> -->
   </v-card>
 </template>
 

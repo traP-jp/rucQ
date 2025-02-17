@@ -66,13 +66,12 @@ app.use(pinia)
 app.use(router)
 app.use(vuetify)
 
-// ユーザー ID を取得
-import { useUserStore } from './store'
+import { useUserStore, useCampStore } from './store'
 
-useUserStore()
-  .initUserId()
-  .catch((error) => {
-    console.error('Failed to initialize user store:', error)
-  })
+const initApp = async () => {
+  useUserStore().initUserId()
+  useCampStore().initCamp()
+  app.mount('#app')
+}
 
-app.mount('#app')
+initApp()
