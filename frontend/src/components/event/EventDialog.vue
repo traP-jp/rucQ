@@ -4,7 +4,7 @@ const emit = defineEmits(['close', 'refresh'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
-import { getTimeString } from '@/lib/date'
+import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import { useUserStore } from '@/store'
@@ -16,7 +16,7 @@ type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
 
 const makeInfo = (event: CampEvent) => {
-  return `${getTimeString(new Date(event.time_start))} ~ ${getTimeString(new Date(event.time_end))} @${event.location}`
+  return `${getDayStringNoPad(new Date(event.time_start))} ${getTimeStringNoPad(new Date(event.time_start))} ~ ${getTimeStringNoPad(new Date(event.time_end))} @${event.location}`
 }
 
 const text = ref('')
