@@ -47,5 +47,14 @@ func (r *Repository) CreateRoom(room *model.Room) error {
 }
 
 func (r *Repository) UpdateRoom(room *model.Room) error {
-	return r.db.Save(room).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(room).Association("Members").Replace(room.Members); err != nil {
+			return err
+		}
+
+		return tx.Model(room).Updates(map[string]interface{}{
+			"Name":   room.Name,
+			"CampID": room.CampID,
+		}).Error
+	})
 }
