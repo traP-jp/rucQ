@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { sampleRooms } from '@/lib/sample-data'
+import { sampleRooms } from '@/lib/sample-data'
 import { ref, onMounted } from 'vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
 import { apiClient } from '@/api/apiClient'
@@ -15,12 +15,13 @@ type Room = {
 const myRoom = ref<Room>()
 
 onMounted(async () => {
-  myRoom.value = (await apiClient.GET('/api/me/room')).data!
+  // myRoom.value = (await apiClient.GET('/api/me/room')).data!
+  myRoom.value = sampleRooms[0]
 })
 </script>
 
 <template>
-  <v-card elevation="0" color="orangePale" class="mx-4 mt-4 pa-4">
+  <v-card v-if="myRoom" elevation="0" color="orangePale" class="mx-4 mt-4 pa-4">
     <v-card-title class="text-center pa-0">
       <span :class="$style.roomName">
         {{ myRoom.name.slice(0, -1)

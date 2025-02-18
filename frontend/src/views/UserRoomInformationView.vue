@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-// import { sampleRooms } from '@/lib/sample-data'
+import { sampleRooms } from '@/lib/sample-data'
 import { apiClient } from '@/api/apiClient'
 import UserIcon from '@/components/generic/UserIcon.vue'
 
@@ -38,7 +38,8 @@ const getFloors = (rooms: Room[]): Floor[] => {
 }
 
 onMounted(async () => {
-  rooms.value = (await apiClient.GET('/api/floors')).data!
+  //rooms.value = (await apiClient.GET('/api/floors')).data!
+  rooms.value = sampleRooms
   floors.value = getFloors(rooms.value)
 })
 </script>
