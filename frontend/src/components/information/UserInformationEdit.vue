@@ -10,7 +10,7 @@ const props = defineProps<{
   questionItem: QuestionItem
   staff: boolean
 }>()
-const answer = defineModel<string>()
+const answer = defineModel<string>('')
 
 const disabled = !(props.staff || props.questionItem.is_open)
 const hint = `${props.questionItem.description ?? ''}${props.questionItem.is_public ? '' : ' (private)'}`
@@ -25,7 +25,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
     :disabled="disabled"
     variant="underlined"
     :hint="hint"
-    :rules="[(v) => !!v || '？？？は必須です']"
+    :rules="[(v) => !!v || `${questionItem.title}は必須です`]"
     required
   />
 
@@ -36,7 +36,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
     :disabled="disabled"
     variant="underlined"
     :hint="hint"
-    :rules="[(v) => !!v || '？？？は必須です']"
+    :rules="[(v) => !!v || `${questionItem.title}は必須です`]"
     required
   />
 
@@ -49,7 +49,7 @@ const selectionItems = props.questionItem.options?.map((option) => option.conten
     hide-label="auto"
     variant="underlined"
     :hint="hint"
-    :rules="[(v) => !!v || '？？？は必須です']"
+    :rules="[(v) => !!v || `${questionItem.title}は必須です`]"
     required
   />
 </template>

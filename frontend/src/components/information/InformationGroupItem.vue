@@ -12,16 +12,12 @@ type QuestionItem = components['schemas']['Question'] & {
   content?: string
   contentNew?: string
 }
-const headers = [
-  { title: 'label', key: 'title' },
-  { title: 'answer', key: 'content' },
-]
-const isValid = computed(() => true)
+
+// バリデーション関数未搭載
 
 const groupColor = computed(() => {
-  console.log(questionItems.value[0]?.content)
   if (questionItems.value[0]?.content !== undefined && questionItems.value[0]?.content !== null) {
-    return 'orange' // 'green' だとちょっと不自然かもなので
+    return 'orange'
   } else {
     return date > now ? 'orange' : 'red'
   }
@@ -52,15 +48,15 @@ const constructQuestionItems = async () => {
   return res
 }
 
+// 入力を送信する
 const submit = async () => {
-  let submitSuccess = true
   for (const questionItem of questionItems.value) {
-    const putAnswerSuccess = await putAnswer(questionItem)
-    if (!putAnswerSuccess) submitSuccess = false
+    await editAnswer(questionItem)
   }
-  if (submitSuccess) editMode.value = false
+  editMode.value = false
 }
 
+// 入力をなかったことにする
 const cancel = () => {
   questionItems.value.forEach((questionItem) => {
     questionItem.contentNew = questionItem.content
@@ -82,7 +78,7 @@ const getAnswer = async (questionId: number) => {
   return data
 }
 
-const putAnswer = async (questionItem: QuestionItem) => {
+const editAnswer = async (questionItem: QuestionItem) => {
   if (props.targetId === null) return false
   const { error } =
     props.targetId === undefined
@@ -96,7 +92,6 @@ const putAnswer = async (questionItem: QuestionItem) => {
         })
   if (error) console.error('Failed to edit question answer:', error.message)
   else questionItem.content = questionItem.contentNew
-  return error == null
 }
 
 watch(
@@ -181,7 +176,7 @@ watch(
       </div>
       <v-btn
         v-else
-        @click="editMode = false"
+        @click="cancel"
         density="comfortable"
         elevation="0"
         icon="mdi-close"
@@ -206,7 +201,6 @@ watch(
       <v-btn
         elevation="0"
         prepend-icon="mdi-check"
-        :disabled="!isValid"
         variant="flat"
         :color="groupColor"
         @click="submit"
