@@ -17,4 +17,6 @@ type Event struct {
 	OrganizerTraqID string
 	ByStaff         bool
 	DisplayColor    string
+	Participants    []Participant 
 }
+

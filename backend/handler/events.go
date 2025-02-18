@@ -151,7 +151,7 @@ func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEvent
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	if user.TraqID != deleteEvent.OrganizerTraqID && !user.IsStaff{ // イベントの主催者でない場合は削除できない
+	if user.TraqID != deleteEvent.OrganizerTraqID && !user.IsStaff { // イベントの主催者でない場合は削除できない
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 
@@ -164,14 +164,4 @@ func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEvent
 	return e.NoContent(http.StatusNoContent)
 }
 
-func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
-	return nil
-}
 
-func (s *Server) UnregisterEvent(e echo.Context, eventID EventId, params UnregisterEventParams) error {
-	return nil
-}
-
-func (s *Server) RegisterEvent(e echo.Context, eventID EventId, params RegisterEventParams) error {
-	return nil
-}
