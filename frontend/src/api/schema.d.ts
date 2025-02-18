@@ -409,6 +409,7 @@ export interface components {
             organizer_traq_id: string;
             by_staff: boolean;
             display_color: string;
+            participants?: components["schemas"]["Participant"][];
         };
         PostEventRequest: {
             name: string;

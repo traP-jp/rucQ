@@ -1062,6 +1062,10 @@ components:
           type: boolean
         display_color:
           type: string
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Participant"
       required:
         - id
         - name

@@ -68,16 +68,17 @@ type Camp struct {
 
 // Event defines model for Event.
 type Event struct {
-	ByStaff         bool      `json:"by_staff"`
-	CampId          int       `json:"camp_id"`
-	Description     string    `json:"description"`
-	DisplayColor    string    `json:"display_color"`
-	Id              int       `json:"id"`
-	Location        string    `json:"location"`
-	Name            string    `json:"name"`
-	OrganizerTraqId string    `json:"organizer_traq_id"`
-	TimeEnd         time.Time `json:"time_end"`
-	TimeStart       time.Time `json:"time_start"`
+	ByStaff         bool           `json:"by_staff"`
+	CampId          int            `json:"camp_id"`
+	Description     string         `json:"description"`
+	DisplayColor    string         `json:"display_color"`
+	Id              int            `json:"id"`
+	Location        string         `json:"location"`
+	Name            string         `json:"name"`
+	OrganizerTraqId string         `json:"organizer_traq_id"`
+	Participants    *[]Participant `json:"participants,omitempty"`
+	TimeEnd         time.Time      `json:"time_end"`
+	TimeStart       time.Time      `json:"time_start"`
 }
 
 // Option defines model for Option.
