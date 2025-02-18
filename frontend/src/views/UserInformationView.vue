@@ -33,6 +33,7 @@ onMounted(async () => {
 
 <template>
   <div :class="$style.container">
+    <!-- <room-information-panel /> -->
     <payment-information-panel :data="paymentData" />
     <information-group-item
       v-for="questionGroup in questionGroups"

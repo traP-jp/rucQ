@@ -30,8 +30,8 @@ onMounted(async () => {
 
 <template>
   <div :class="$style.container" v-if="dayGroups.length > 0">
-    <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
-      <h2 style="margin: 10px 0; font-weight: 900">
+    <div v-for="(dayGroup, i) in dayGroups" :key="i">
+      <h2 style="margin: 20px 0 10px 0; font-weight: 900">
         {{ `Day ${i + 1} - ${getDayStringNoPad(dayGroup.date)}` }}
       </h2>
       <div

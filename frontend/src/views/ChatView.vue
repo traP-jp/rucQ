@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import ChatPost from '@/components/chat/ChatPost.vue'
-import { useDisplay } from 'vuetify'
 // import { sampleTweets } from '@/lib/sample-data'
-const { xs } = useDisplay()
+// import { useDisplay } from 'vuetify'
+// const { xs } = useDisplay()
 
 // 編集や削除機能もない、シンプルなリアルタイム呟き投稿場所
 
@@ -63,12 +63,13 @@ onUnmounted(() => {
         />
       </v-list>
     </v-infinite-scroll>
-    <div style="width: 100%; background-color: var(--color-orange-pale); padding: 12px">
+    <div style="width: 100%; background-color: var(--color-orange-pale); padding: 16px 12px">
       <v-textarea
+        :class="$style.tweetInput"
         max-rows="8"
         v-model="newTweet"
         rows="1"
-        variant="outlined"
+        variant="solo"
         auto-grow
         placeholder="メッセージを入力"
         prepend-inner-icon="mdi-comment"
@@ -103,5 +104,9 @@ onUnmounted(() => {
   height: 100%;
   width: 100%;
   position: relative;
+}
+
+.tweetInput :global(.v-field) {
+  box-shadow: none !important;
 }
 </style>

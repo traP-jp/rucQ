@@ -14,7 +14,6 @@ export const useUserStore = defineStore('user', () => {
     const { data, error } = await apiClient.GET('/api/me')
     if (error) console.error('Failed to initialize user store:', error)
     // rucQ にアクセスして一番にエラーが出るとすればここなので、エラーメッセージの出力は重要かも
-    console.log(data)
     userId.value = data?.traq_id
   }
 
@@ -45,7 +44,6 @@ export const useCampStore = defineStore('camp', () => {
         end_date: '2025-02-22T00:00:00.000000+09:00',
       }
     }
-    console.log(camp.value)
   }
 
   return { camp, initCamp }

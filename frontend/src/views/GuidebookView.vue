@@ -10,18 +10,7 @@ import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 const text = ref('')
 
 onMounted(async () => {
-  try {
-    const { data } = await apiClient.GET('/api/camps/default')
-    console.log('API response:', data)
-
-    if (data && typeof data.description === 'string') {
-      text.value = data.description
-    } else {
-      console.error('Invalid response format:', data)
-    }
-  } catch (error) {
-    console.error('Failed to fetch camps:', error)
-  }
+  text.value = (await apiClient.GET('/api/camps/default')).data!.description
 })
 </script>
 
