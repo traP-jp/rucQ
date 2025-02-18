@@ -5,7 +5,8 @@ import (
 )
 
 type Participant struct {
-	gorm.Model
-	User    User
-	EventID uint
+    gorm.Model
+    UserID  uint  
+    User    User  `gorm:"foreignKey:UserID"` // 外部キーを明示
+    EventID uint
 }

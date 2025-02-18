@@ -11,6 +11,7 @@ func (r *Repository) GetParticipants(eventID uint) ([]model.Participant, error) 
 	var participants []model.Participant
 
 	if err := r.db.
+		Preload("User").
 		Where("event_id = ?", eventID).
 		Find(&participants).
 		Error; err != nil {
@@ -23,7 +24,8 @@ func (r *Repository) GetParticipants(eventID uint) ([]model.Participant, error) 
 func (r *Repository) RegisterEvent(participant model.Participant) error {
 	var existing model.Participant
 	err := r.db.
-		Where("event_id = ? AND user_traq_id = ?", participant.EventID, participant.User.TraqID).
+		Joins("JOIN users ON users.id = participants.user_id").
+		Where("participants.event_id = ? AND users.traq_id = ?", participant.EventID, participant.User.TraqID).
 		First(&existing).Error
 	if err == nil {
 		// 同じデータが見つかった場合は作成せずに終了
@@ -41,12 +43,23 @@ func (r *Repository) RegisterEvent(participant model.Participant) error {
 }
 
 func (r *Repository) UnregisterEvent(eventID uint, traqID string) error {
-	if err := r.db.
-		Where("event_id = ? AND user_traq_id = ?", eventID, traqID).
-		Delete(&model.Participant{}).
-		Error; err != nil {
-		return err
-	}
+    var participant model.Participant
+    // 対象のレコードを取得
+    if err := r.db.
+        Joins("JOIN users ON users.id = participants.user_id").
+        Where("participants.event_id = ? AND users.traq_id = ?", eventID, traqID).
+        First(&participant).Error; err != nil {
+        // レコードが見つからなくても、削除処理は成功と見なすなら nil を返す
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil
+        }
+        return err
+    }
 
-	return nil
+    // 取得したレコードを削除
+    if err := r.db.Delete(&participant).Error; err != nil {
+        return err
+    }
+
+    return nil
 }
