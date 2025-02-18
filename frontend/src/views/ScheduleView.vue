@@ -1,26 +1,53 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { useDisplay } from 'vuetify'
-import EventBlock from '@/components/EventBlock.vue'
-import { events, camp } from '@/lib/sample-data'
-const { xs } = useDisplay()
+import EventBlock from '@/components/event/EventBlock.vue'
+import EventDialog from '@/components/event/EventDialog.vue'
+import EventEditor from '@/components/event/EventEditor.vue'
+// import { events, camp } from '@/lib/sample-data'
+import { apiClient } from '@/api/apiClient'
+import { useCampStore } from '@/store'
+
+const route = useRoute()
+const router = useRouter()
+
+const campStore = useCampStore()
+const currentTime = ref<Date>(new Date())
 
 const dayGroups = ref<DayGroup[]>([])
+const isDialogActive = ref(false)
+
+onMounted(async () => {
+  await refresh()
+  if (route.query.action === 'newevent') {
+    isDialogActive.value = true
+    router.replace({ path: route.path, query: {} })
+  }
+})
+
+const refresh = async () => {
+  const events = (await apiClient.GET('/api/events')).data!
+  const camp = campStore.camp!
+  dayGroups.value = getLayout(events, camp, currentTime.value)
+}
 
 onMounted(() => {
-  dayGroups.value = getLayout(events, camp)
-  console.log(dayGroups.value)
+  const interval = setInterval(() => {
+    currentTime.value = new Date()
+  }, 1000)
+
+  onBeforeUnmount(() => {
+    clearInterval(interval)
+  })
 })
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="スケジュール" />
   <div :class="$style.container" v-if="dayGroups.length > 0">
-    <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
-      <h2 style="margin: 10px 0; font-weight: 900">
+    <div v-for="(dayGroup, i) in dayGroups" :key="i">
+      <h2 style="margin: 20px 0 10px 0; font-weight: 900">
         {{ `Day ${i + 1} - ${getDayStringNoPad(dayGroup.date)}` }}
       </h2>
       <div
@@ -28,29 +55,6 @@ onMounted(() => {
         :key="j"
         :style="`display: grid; grid-template-columns: 42px repeat(${Math.max(eventGroup.columns, 1)}, 1fr);`"
       >
-        <div
-          v-for="(space, k) in eventGroup.spaces"
-          :key="k"
-          :style="`grid-row: ${k + 1}; grid-column: 2 / ${eventGroup.columns + 2};`"
-        >
-          <hr
-            v-if="space.line"
-            style="border: 0px; border-top: 1px dashed var(--color-line); margin-top: -0.5px"
-          />
-        </div>
-        <EventBlock
-          v-for="(event, k) in eventGroup.events"
-          :key="k"
-          :event="event.content"
-          :style="`grid-row: ${event.startRow + 1} / ${event.endRow + 1}; grid-column: ${event.column + 2}`"
-        />
-        <div
-          v-for="(moment, k) in eventGroup.moments"
-          :key="k"
-          :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
-        >
-          <h5 style="font-weight: 500; padding-left: 4px">{{ moment.content.name }}</h5>
-        </div>
         <div
           v-for="(space, k) in eventGroup.spaces"
           :key="k"
@@ -64,20 +68,95 @@ onMounted(() => {
               style="
                 height: 0px;
                 width: 100%;
+                position: relative;
                 display: flex;
                 align-items: center;
                 justify-content: center;
               "
             >
-              <h5 style="font-weight: 900; width: fit-content">
+              <h5
+                v-if="space.time.getTime() !== currentTime.getTime()"
+                :style="`font-weight: 900; width: fit-content; font-family: 'Roboto'`"
+              >
                 {{ getTimeStringNoPad(space.time) }}
               </h5>
+              <div v-else style="position: relative">
+                <v-icon
+                  icon="mdi-menu-right"
+                  color="red"
+                  style="transform: scaleX(4); position: absolute; top: -10.5px; left: -10px"
+                  height="20px"
+                ></v-icon>
+                <div
+                  style="
+                    top: -0.5px;
+                    width: 30px;
+                    height: 0px;
+                    border-top: 2px solid var(--color-red);
+                    position: absolute;
+                  "
+                ></div>
+              </div>
             </div>
           </div>
+        </div>
+        <div
+          v-for="(space, k) in eventGroup.spaces"
+          :key="k"
+          :style="`grid-row: ${k + 1}; grid-column: 2 / ${eventGroup.columns + 2};`"
+        >
+          <hr
+            v-if="space.line"
+            :style="
+              'border: 0px; margin-top: -0.5px; ' +
+              (space.time.getTime() === currentTime.getTime()
+                ? `border-top: 2px solid var(--color-red);`
+                : `border-top: 1px dashed var(--color-line);`)
+            "
+          />
+        </div>
+        <EventBlock
+          v-for="(event, k) in eventGroup.events"
+          :key="k"
+          :event="event.content"
+          :style="`grid-row: ${event.startRow + 1} / ${event.endRow + 1}; grid-column: ${event.column + 2}`"
+          @refresh="refresh"
+        />
+        <div
+          v-for="(moment, k) in eventGroup.moments"
+          :key="k"
+          :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
+        >
+          <v-dialog max-width="800">
+            <template v-slot:activator="{ props: activatorProps }">
+              <h5
+                :class="$style.momentText"
+                :style="
+                  new Date(moment.content.time_start).getTime() === currentTime.getTime()
+                    ? 'color: var(--color-red)'
+                    : ''
+                "
+                v-bind="activatorProps"
+              >
+                {{ moment.content.name }}
+              </h5>
+            </template>
+            <template v-slot:default="{ isActive }">
+              <EventDialog :event="moment.content" @close="isActive.value = false" />
+            </template>
+          </v-dialog>
         </div>
       </div>
     </div>
   </div>
+
+  <v-dialog v-model="isDialogActive" fullscreen transition="dialog-bottom-transition">
+    <EventEditor
+      :event="null"
+      @close="isDialogActive = false"
+      @refresh="(refresh(), (isDialogActive = false))"
+    />
+  </v-dialog>
 </template>
 
 <style module>
@@ -88,5 +167,15 @@ onMounted(() => {
   margin: auto;
   padding: 20px 10px;
   max-width: 600px;
+}
+
+.momentText {
+  font-weight: 500;
+  padding-left: 4px;
+  cursor: pointer;
+}
+
+.momentText:hover {
+  text-decoration: underline;
 }
 </style>

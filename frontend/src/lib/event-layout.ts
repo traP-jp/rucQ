@@ -64,10 +64,11 @@ export type DayGroup = {
 }
 
 // events を groups に仕分け、各 groups の列を決定する
-const arrangeEvents = (events: CampEvent[]) => {
+const arrangeEvents = (events: CampEvent[], currentTime?: Date) => {
   const epochTimeSet = new Set<number>([
     ...Array.from(events, (event) => epoch(event.time_start)),
     ...Array.from(events, (event) => epoch(event.time_end)),
+    ...(currentTime ? [currentTime.getTime()] : []),
   ])
 
   // それぞれのタイムスタンプに対応した要素をもつ配列 arranged
@@ -83,6 +84,12 @@ const arrangeEvents = (events: CampEvent[]) => {
   for (const moment of events.filter((event) => isMoment(event))) {
     const index = arranged.findIndex((el) => el.time.getTime() === epoch(moment.time_start))
     arranged[index].events.push(moment)
+  }
+
+  // もし arranged の最初が瞬間イベントでなかった場合、見た目の調整のためにその手前に空の領域を追加
+  if (arranged.length > 0 && arranged[0].events.length === 0) {
+    arranged.unshift({ time: new Date(0), events: [] })
+    // time は 1970/01/01 で全ての日付より手前に来ることが保証されている
   }
 
   // 連続する瞬間イベントの最後に空の要素を追加
@@ -149,9 +156,15 @@ const arrangeEvents = (events: CampEvent[]) => {
     line: true,
   }))
 
+  if (arranged.length > 0 && arranged[0].time.getTime() === 0) {
+    times[0].stamp = 'none'
+    times[0].minHeight = 'narrow'
+    times[0].line = false
+  }
+
   for (let i = 0; i < arranged.length; i++) {
-    if (arranged[i].events.length > 0 && arranged[i].events[0] !== null) {
-      if (isMoment(arranged[i].events[0]!)) {
+    if (arranged[i].events.length > 0) {
+      if (arranged[i].events[0] !== null && isMoment(arranged[i].events[0]!)) {
         times[i].stamp = 'center'
         times[i].line = false
         if (i + 1 < arranged.length) {
@@ -170,11 +183,13 @@ const arrangeEvents = (events: CampEvent[]) => {
             times[i - 1].minHeight = 'narrow'
           }
         }
+      } else if (i + 2 === arranged.length) {
+        times[i + 1].minHeight = 'narrow'
       }
     }
   }
 
-  console.log(arranged)
+  // console.log(arranged)
 
   // この日の全ての event の配置の配列とイベントグループの境界番号の配列を返す
   return { events: eventPos, border: groupBorder, times: times }
@@ -183,13 +198,18 @@ const arrangeEvents = (events: CampEvent[]) => {
 }
 
 // 日付 > イベントグループ（時間の重なるイベントの集まり） > イベント という配列を返す
-export const getLayout = (events: CampEvent[], camp: Camp) => {
+export const getLayout = (events: CampEvent[], camp: Camp, currentTime: Date) => {
   const dayGroups: DayGroup[] = []
+  const currentDate = new Date(currentTime)
+  currentDate.setHours(0, 0, 0, 0)
 
   for (const day of sortDayEvents(events, camp)) {
     const eventGroups: EventGroup[] = []
 
-    const result = arrangeEvents(day.events)
+    const result = arrangeEvents(
+      day.events,
+      day.date.getTime() === currentDate.getTime() ? currentTime : undefined,
+    )
 
     const assign: number[] = [0] // この日の第 n 行にあるイベントは第 assign[n] グループに割り当てられる
     while (assign.length < result.border[result.border.length - 1]) {

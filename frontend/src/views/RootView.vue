@@ -6,7 +6,7 @@ const router = useRouter()
 
 onMounted(() => {
   // 最新の合宿へリダイレクトする機能をあとで実装
-  router.push({ path: '/camp24_summer' })
+  router.push({ path: '/camp25_spring' })
 })
 </script>
 

@@ -1,24 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import MarkdownEditor from '@/components/MarkdownEditor.vue'
-import MarkdownPreview from '@/components/MarkdownPreview.vue'
-import EditPreviewButton from '@/components/EditPreviewButton.vue'
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { useDisplay } from 'vuetify'
-
-const { xs } = useDisplay()
+import MarkdownPlatform from '@/components/markdown/MarkdownPlatform.vue'
 
 const text = ref('')
-
-const isPreview = ref(false)
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="ユーザー情報" />
   <div :class="$style.container">
-    <MarkdownEditor v-if="!isPreview" v-model:text="text" />
-    <MarkdownPreview v-else v-model:text="text" />
-    <EditPreviewButton :class="$style.button" v-model:isPreview="isPreview" />
+    <MarkdownPlatform v-model:text="text" color="theme"></MarkdownPlatform>
   </div>
 </template>
 
@@ -30,7 +19,7 @@ const isPreview = ref(false)
 
 .button {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
 }
 </style>

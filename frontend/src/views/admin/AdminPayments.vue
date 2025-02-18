@@ -5,10 +5,6 @@ import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 
-import MobileHeader from '@/components/layout/MobileHeader.vue'
-import { useDisplay } from 'vuetify'
-const { xs } = useDisplay()
-
 const autocompleteRef = ref()
 const confirmButtonRef = ref()
 type PaymentData = components['schemas']['Budget'] & {
@@ -113,7 +109,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <mobile-header v-if="xs" title="振込み確認" />
   <v-container class="d-flex flex-column align-center ga-4">
     <v-sheet class="d-flex flex-column elevation-2 px-8 py-4" max-width="800" width="100%">
       <v-autocomplete

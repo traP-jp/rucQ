@@ -1,6 +1,4 @@
 <template>
-  <mobile-header v-if="xs" title="ユーザー情報閲覧" />
-
   <div :class="$style.allAnketo">
     <div :class="$style.anketoTitle">項目一覧</div>
     <table :class="$style.anketoTable">
@@ -154,10 +152,9 @@
 </template>
 
 <script setup lang="ts">
-import MobileHeader from '@/components/layout/MobileHeader.vue'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 

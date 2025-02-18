@@ -39,3 +39,23 @@ func (r *Repository) GetQuestionGroup(ID uint) (*model.QuestionGroup, error) {
 	return &questionGroup, nil
 }
 
+func (r *Repository) UpdateQuestionGroup(ID uint, questionGroup *model.QuestionGroup) error {
+	if err := r.db.
+		Where("id = ?", ID).
+		Updates(questionGroup).
+		Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) DeleteQuestionGroup(ID uint) error {
+	if err := r.db.
+		Delete(&model.QuestionGroup{}, ID).
+		Error; err != nil {
+		return err
+	}
+
+	return nil
+}

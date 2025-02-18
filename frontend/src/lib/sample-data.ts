@@ -9,7 +9,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -21,7 +21,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -33,7 +33,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9FB0E4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -45,7 +45,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '2444A4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -57,7 +57,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9FB0E4',
+    display_color: 'navy',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -68,8 +68,9 @@ export const events: components['schemas']['Event'][] = [
     time_end: '2024-09-10T16:00:00.000000+09:00',
     camp_id: 1,
     by_staff: true,
-    description: 'sample',
-    display_color: '9DD8FF',
+    description:
+      '## 合宿1日目到着後に20mシャトルランをやります\nハンドボールコートの短辺は20mらしいですよ！これはもうシャトルランをやるためのコートといって過言ではないですよね？\nということで合宿1日目到着後シャトルランをやります！\n\n参加費：たぶん数百円（ハンドボールコート利用料(2750円)を人数で割った金額）\n\nどのぐらいの需要がありそうかを把握したいので、多分行くよ！という人はこの投稿に:ikimasu:スタンプを付けてください\n（単なる需要調査です。スタンプを付けて当日「やっぱやめた」をすることも、スタンプを付けずに「やっぱ行きたい」をするのも自由です！）\nhttps://q.trap.jp/messages/9b8389de-0a5b-4842-8a29-4c48feebe54b\n\n## 合宿1日目到着後に20mシャトルランをやります\nハンドボールコートの短辺は20mらしいですよ！これはもうシャトルランをやるためのコートといって過言ではないですよね？\nということで合宿1日目到着後シャトルランをやります！\n\n参加費：たぶん数百円（ハンドボールコート利用料(2750円)を人数で割った金額）\n\nどのぐらいの需要がありそうかを把握したいので、多分行くよ！という人はこの投稿に:ikimasu:スタンプを付けてください\n（単なる需要調査です。スタンプを付けて当日「やっぱやめた」をすることも、スタンプを付けずに「やっぱ行きたい」をするのも自由です！）\nhttps://q.trap.jp/messages/9b8389de-0a5b-4842-8a29-4c48feebe54b',
+    display_color: 'blue',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -81,7 +82,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '9DD8FF',
+    display_color: 'green',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -93,7 +94,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FFD0C2',
+    display_color: 'red',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -105,7 +106,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'CEED94',
+    display_color: 'orange',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -117,7 +118,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FFDAA3',
+    display_color: 'blue',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -129,7 +130,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: 'FF9900',
+    display_color: 'orange',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -141,7 +142,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -153,7 +154,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -165,7 +166,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -177,7 +178,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -189,7 +190,7 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
   {
@@ -201,7 +202,31 @@ export const events: components['schemas']['Event'][] = [
     camp_id: 1,
     by_staff: true,
     description: 'sample',
-    display_color: '444444',
+    display_color: 'ash',
+    organizer_traq_id: 'kitsne',
+  },
+  {
+    id: 18,
+    name: '朝食',
+    location: '???',
+    time_start: '2024-09-10T23:45:00.000000+09:00',
+    time_end: '2024-09-10T23:45:00.000000+09:00',
+    camp_id: 1,
+    by_staff: true,
+    description: 'sample',
+    display_color: 'ash',
+    organizer_traq_id: 'kitsne',
+  },
+  {
+    id: 19,
+    name: '朝食',
+    location: '???',
+    time_start: '2024-09-10T03:00:00.000000+09:00',
+    time_end: '2024-09-10T05:00:00.000000+09:00',
+    camp_id: 1,
+    by_staff: true,
+    description: 'sample',
+    display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
 ]
@@ -215,3 +240,160 @@ export const camp = {
   start_date: '2024-09-10T00:00:00.000000+09:00',
   end_date: '2024-09-11T00:00:00.000000+09:00',
 }
+
+export const sampleTweets = [
+  {
+    id: 1,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:00:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 2,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:01:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 3,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:02:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 4,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:03:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 5,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:04:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 6,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:05:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 7,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:06:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 8,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:07:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 9,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:08:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 10,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:09:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 11,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:10:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 12,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:11:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 13,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:12:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 14,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:13:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 15,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:14:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 16,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:15:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 17,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:16:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 18,
+    content:
+      '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890',
+    created_at: '2024-09-10T00:17:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 19,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:18:00.000000+09:00',
+    author: 'kitsne',
+  },
+  {
+    id: 20,
+    content: '合宿楽しみ〜',
+    created_at: '2024-09-10T00:19:00.000000+09:00',
+    author: 'kitsne',
+  },
+]
+
+export const sampleRooms = [
+  {
+    id: 1,
+    name: '201',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 2,
+    name: '202',
+    members: ['mumumu', 'akimo', 'ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 3,
+    name: '203',
+    members: ['akimo', 'ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 4,
+    name: '204',
+    members: ['ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 5,
+    name: '301',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 6,
+    name: '302',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya', 'kitsne'],
+  },
+]
