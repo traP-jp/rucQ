@@ -426,6 +426,10 @@ export interface components {
             traq_id: string;
             is_staff: boolean;
         };
+        Participant: {
+            user: components["schemas"]["User"];
+            event_id: number;
+        };
         QuestionGroup: {
             id: number;
             name: string;
@@ -919,7 +923,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"][];
+                    "application/json": components["schemas"]["Participant"][];
                 };
             };
             404: components["responses"]["NotFound"];

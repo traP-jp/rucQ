@@ -87,6 +87,12 @@ type Option struct {
 	QuestionId int    `json:"question_id"`
 }
 
+// Participant defines model for Participant.
+type Participant struct {
+	EventId int  `json:"event_id"`
+	User    User `json:"user"`
+}
+
 // PostBudgetRequest defines model for PostBudgetRequest.
 type PostBudgetRequest struct {
 	Amount     *int `json:"amount"`

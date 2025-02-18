@@ -280,7 +280,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/Participant"
         "404":
           $ref: "#/components/responses/NotFound"
         "500":
@@ -1113,6 +1113,16 @@ components:
       required:
         - traq_id
         - is_staff
+    Participant:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        event_id:
+          type: integer
+      required:
+        - user
+        - event_id
     QuestionGroup:
       type: object
       properties:
