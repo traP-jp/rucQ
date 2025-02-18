@@ -39,3 +39,12 @@ func (r *Repository) UpdateEvent(ID uint, event *model.Event) error {
 
 	return nil
 }
+
+func (r *Repository) DeleteEvent(ID uint) error {
+	if err := r.db.
+		Delete(&model.Event{}, ID).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
