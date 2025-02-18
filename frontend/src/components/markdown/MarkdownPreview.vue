@@ -127,9 +127,9 @@ onMounted(async () => {
 
 .preview :global(p code) {
   margin: 0 0px;
-  background-color: var(--color-orange-pale);
+  background-color: var(--color-theme-pale);
   border-radius: 4px;
-  border: 2px solid var(--color-orange-pale);
+  border: 2px solid var(--color-theme-pale);
 }
 
 .preview :global(ul),

@@ -47,6 +47,9 @@ const vuetify = createVuetify({
           pink: '#EE4DBE',
           pinkPale: '#FFB6E9',
 
+          theme: '#ff7300',
+          themePale: '#ffc9b2',
+
           text: '#000000', // var(--color-black)
           background: '#f6f6f6', // var(--color-background)
           surface: '#f6f6f6',

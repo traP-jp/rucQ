@@ -110,8 +110,6 @@ watch(
 )
 </script>
 
-<!-- こんがらがってきた、editMode と !editMode それぞれでちゃんと必要な情報は全て表示されているのか？ -->
-
 <template>
   <v-sheet v-if="!editMode" :class="`${!xs ? 'mx-4' : ''} mb-4 pt-1`" color="white">
     <div class="d-flex align-center justify-space-between">

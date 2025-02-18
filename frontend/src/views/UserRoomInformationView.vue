@@ -53,9 +53,9 @@ onMounted(async () => {
     <div style="display: grid; grid-template-columns: 1fr 1fr; margin: 8px">
       <v-dialog max-width="400" v-for="room in floor.rooms" :key="room.id">
         <template v-slot:activator="{ props: activatorProps }">
-          <v-card elevation="0" color="orangePale" class="ma-2 pa-2" v-bind="activatorProps">
+          <v-card elevation="0" color="themePale" class="ma-2 pa-2" v-bind="activatorProps">
             <v-card-title class="text-center pa-0">
-              <span style="font-weight: 900; font-size: 20px; color: var(--color-orange)">
+              <span style="font-weight: 900; font-size: 20px; color: var(--color-theme)">
                 {{ room.name }}
               </span>
             </v-card-title>
@@ -71,7 +71,7 @@ onMounted(async () => {
           </v-card>
         </template>
         <template v-slot:default="{}">
-          <v-card color="orangePale" class="pa-4">
+          <v-card color="themePale" class="pa-4">
             <v-card-title class="text-center pa-0">
               <span :class="$style.roomName">
                 {{ room.name.slice(0, -1)
@@ -79,7 +79,7 @@ onMounted(async () => {
               </span>
             </v-card-title>
             <hr
-              style="border: none; border-bottom: 1px solid var(--color-orange); margin-bottom: 8px"
+              style="border: none; border-bottom: 1px solid var(--color-theme); margin-bottom: 8px"
             />
             <div
               v-for="user in room.members"
@@ -110,7 +110,7 @@ onMounted(async () => {
   display: block;
   width: 100%;
   text-align: center;
-  color: var(--color-orange);
+  color: var(--color-theme);
   margin-bottom: 4;
 }
 
@@ -122,6 +122,6 @@ onMounted(async () => {
   font-weight: 900;
   font-size: 24px;
   letter-spacing: 0.5em;
-  color: var(--color-orange);
+  color: var(--color-theme);
 }
 </style>

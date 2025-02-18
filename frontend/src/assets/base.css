@@ -24,16 +24,13 @@
   --color-pink: #EE4DBE;
   --color-pink-pale: #FFB6E9;
 
+  --color-theme: var(--color-orange);
+  --color-theme-pale: var(--color-orange-pale);
+
   --color-text: var(--color-black);
   --color-background: var(--color-white);
   --color-line: var(--color-gray);
   --color-text-sub: var(--color-dark-gray);
-  --color-theme: var(--color-orange);
-  --color-theme-pale: var(--color-orange-pale);
-  --color-trap: var(--color-navy); /* 実際にロゴから色をとってきたわけではない */
-
-  --color-error: #f26451;
-  --color-focus: #005bacc0;
 }
 
 /* @media (prefers-color-scheme: dark) {

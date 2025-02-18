@@ -7,7 +7,7 @@ const text = ref('')
 
 <template>
   <div :class="$style.container">
-    <MarkdownPlatform v-model:text="text" color="orange"></MarkdownPlatform>
+    <MarkdownPlatform v-model:text="text" color="theme"></MarkdownPlatform>
   </div>
 </template>
 
