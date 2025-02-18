@@ -87,7 +87,8 @@ export interface paths {
         /** イベントを更新 */
         put: operations["putEvent"];
         post?: never;
-        delete?: never;
+        /** イベントを削除 */
+        delete: operations["deleteEvent"];
         options?: never;
         head?: never;
         patch?: never;
@@ -830,6 +831,28 @@ export interface operations {
                     "application/json": components["schemas"]["Event"];
                 };
             };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    deleteEvent: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与） */
+                "X-Forwarded-User"?: components["parameters"]["X-Forwarded-User"];
+            };
+            path: {
+                /** @description イベントID */
+                event_id: components["parameters"]["EventId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: components["responses"]["NoContent"];
             400: components["responses"]["BadRequest"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
