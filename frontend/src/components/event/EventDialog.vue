@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'refresh'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
@@ -82,7 +82,11 @@ onMounted(() => {
             ></v-btn>
           </template>
           <template v-slot:default="{ isActive }">
-            <EventEditor :event="event" @close="isActive.value = false" />
+            <EventEditor
+              :event="event"
+              @close="isActive.value = false"
+              @refresh="(emit('refresh'), (isActive.value = false))"
+            />
           </template>
         </v-dialog>
       </div>

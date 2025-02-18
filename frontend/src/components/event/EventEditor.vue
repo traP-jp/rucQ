@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-const emit = defineEmits(['close'])
 import EventEditorSettings from '@/components/event/EventEditorSettings.vue'
 import MarkdownPlatform from '@/components/markdown/MarkdownPlatform.vue'
 import { useDisplay } from 'vuetify'
@@ -8,6 +7,8 @@ const { smAndDown } = useDisplay()
 import { apiClient } from '@/api/apiClient'
 import { useCampStore } from '@/store'
 import { storeToRefs } from 'pinia'
+
+const emit = defineEmits(['close', 'refresh'])
 
 const { camp } = storeToRefs(useCampStore())
 
@@ -47,7 +48,7 @@ const newEvent = async () => {
       display_color: color.value,
     },
   })
-  emit('close')
+  emit('refresh')
 }
 
 const editEvent = async () => {
@@ -64,7 +65,7 @@ const editEvent = async () => {
       display_color: color.value,
     },
   })
-  emit('close')
+  emit('refresh')
 }
 
 onMounted(() => {

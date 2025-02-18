@@ -5,6 +5,8 @@ import EventDialog from '@/components/event/EventDialog.vue'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
+const emit = defineEmits(['refresh'])
+
 const { userId } = storeToRefs(useUserStore())
 
 import type { components } from '@/api/schema'
@@ -52,6 +54,7 @@ onMounted(async () => {
         <EventDialog
           :event="event"
           @close="isActive.value = false"
+          @refresh="emit('refresh')"
           style="height: 100%; overflow: hidden"
           v-model:participants="participants"
         />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
@@ -14,23 +14,38 @@ const route = useRoute()
 const router = useRouter()
 
 const campStore = useCampStore()
+const currentTime = ref<Date>(new Date())
 
 const dayGroups = ref<DayGroup[]>([])
-const currentTime = new Date()
 const isDialogActive = ref(false)
 
 onMounted(async () => {
-  const events = (await apiClient.GET('/api/events')).data!
-  const camp = campStore.camp!
-  dayGroups.value = getLayout(events, camp, currentTime)
+  await refresh()
   if (route.query.action === 'newevent') {
     isDialogActive.value = true
     router.replace({ path: route.path, query: {} })
   }
 })
+
+const refresh = async () => {
+  const events = (await apiClient.GET('/api/events')).data!
+  const camp = campStore.camp!
+  dayGroups.value = getLayout(events, camp, currentTime.value)
+}
+
+onMounted(() => {
+  const interval = setInterval(() => {
+    currentTime.value = new Date()
+  }, 1000)
+
+  onBeforeUnmount(() => {
+    clearInterval(interval)
+  })
+})
 </script>
 
 <template>
+  {{ currentTime }}
   <div :class="$style.container" v-if="dayGroups.length > 0">
     <div v-for="(dayGroup, i) in dayGroups" :key="i">
       <h2 style="margin: 20px 0 10px 0; font-weight: 900">
@@ -106,6 +121,7 @@ onMounted(async () => {
           :key="k"
           :event="event.content"
           :style="`grid-row: ${event.startRow + 1} / ${event.endRow + 1}; grid-column: ${event.column + 2}`"
+          @refresh="refresh"
         />
         <div
           v-for="(moment, k) in eventGroup.moments"
@@ -136,7 +152,11 @@ onMounted(async () => {
   </div>
 
   <v-dialog v-model="isDialogActive" fullscreen transition="dialog-bottom-transition">
-    <EventEditor :event="null" @close="isDialogActive = false" />
+    <EventEditor
+      :event="null"
+      @close="isDialogActive = false"
+      @refresh="(refresh(), (isDialogActive = false))"
+    />
   </v-dialog>
 </template>
 
