@@ -93,11 +93,47 @@ func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-
 	return e.JSON(http.StatusOK, event)
 }
 
 func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	updateEvent, err := s.repo.GetEventByID(uint(eventID))
+	if err != nil {
+		e.Logger().Errorf("failed to get event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if user.TraqID != updateEvent.OrganizerTraqID { // イベントの主催者でない場合は更新できない
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	var req PutEventJSONRequestBody
+
+	if err:= e.Bind(&req); err != nil {
+		return e.JSON(http.StatusBadRequest, err)
+	}
+
+	if err := copier.Copy(updateEvent, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.UpdateEvent(uint(eventID), updateEvent); err != nil {
+		e.Logger().Errorf("failed to update event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+
 	return nil
 }
 

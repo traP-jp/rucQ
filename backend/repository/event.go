@@ -29,3 +29,13 @@ func (r *Repository) CreateEvent(event *model.Event) error {
 
 	return nil
 }
+
+func (r *Repository) UpdateEvent(ID uint, event *model.Event) error {
+	if err := r.db.
+		Where("id = ?", ID).
+		Save(event).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
