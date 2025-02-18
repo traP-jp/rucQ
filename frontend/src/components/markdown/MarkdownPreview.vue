@@ -3,6 +3,8 @@ import { onMounted, computed } from 'vue'
 import { markedHighlight } from 'marked-highlight'
 import { Marked } from 'marked'
 import hljs from 'highlight.js'
+import darkStyle from 'highlight.js/styles/github-dark.css?inline'
+// ?inline をつけて読み込むことでCSSファイルもテキストデータになる
 
 const text = defineModel<string>('text')
 
@@ -30,9 +32,6 @@ const marked = new Marked(
     breaks: true, // 1段の改行を有効にする
   },
 )
-
-import darkStyle from 'highlight.js/styles/github-dark.css?inline'
-// ?inline をつけて読み込むことでCSSファイルもテキストデータになる
 
 onMounted(async () => {
   const highlightStyleTag = document.createElement('style')
@@ -123,7 +122,7 @@ onMounted(async () => {
   border-radius: 4px;
   max-height: 400px;
   overflow: scroll;
-  background-color: var(--color-gray) !important;
+  background-color: var(--color-dark-gray) !important;
 }
 
 .preview :global(p code) {
@@ -146,7 +145,7 @@ onMounted(async () => {
 
 .preview :global(blockquote) {
   border-radius: 0px;
-  color: var(--color-darkgray);
+  color: var(--color-gray);
   padding: 0px 0px 0px 10px;
   border-left: 4px solid var(--color-gray);
   margin: 0 0 8px 4px;

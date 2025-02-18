@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/event/EventBlock.vue'
@@ -11,6 +11,7 @@ import { apiClient } from '@/api/apiClient'
 import { useCampStore } from '@/store'
 
 const route = useRoute()
+const router = useRouter()
 
 const campStore = useCampStore()
 
@@ -24,6 +25,7 @@ onMounted(async () => {
   dayGroups.value = getLayout(events, camp, currentTime)
   if (route.query.action === 'newevent') {
     isDialogActive.value = true
+    router.replace({ path: route.path, query: {} })
   }
 })
 </script>

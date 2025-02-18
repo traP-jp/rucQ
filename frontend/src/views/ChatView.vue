@@ -63,7 +63,7 @@ onUnmounted(() => {
         />
       </v-list>
     </v-infinite-scroll>
-    <div style="width: 100%; background-color: var(--color-orange-pale); padding: 16px 12px">
+    <div style="width: 100%; background-color: var(--color-theme-pale); padding: 16px 12px">
       <v-textarea
         :class="$style.tweetInput"
         max-rows="8"

@@ -21,7 +21,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card v-if="myRoom" elevation="0" color="orangePale" class="mx-4 mt-4 pa-4">
+  <v-card v-if="myRoom" elevation="0" color="themePale" class="mx-4 mt-4 pa-4">
     <v-card-title class="text-center pa-0">
       <span :class="$style.roomName">
         {{ myRoom.name.slice(0, -1)
@@ -48,14 +48,14 @@ onMounted(async () => {
   font-weight: 900;
   font-size: 24px;
   letter-spacing: 0.5em;
-  color: var(--color-orange);
+  color: var(--color-theme);
 }
 
 .link {
   display: block;
   width: 100%;
   text-align: center;
-  color: var(--color-orange);
+  color: var(--color-theme);
   margin-bottom: 4;
 }
 

@@ -24,12 +24,12 @@ const options = [
       <img src="/icons/icon-transparent.svg" alt="rucQ Icon" :class="$style.icon" />
     </template>
 
-    <v-app-bar-title class="text-orange"
+    <v-app-bar-title class="text-theme"
       ><span style="font-weight: bold">{{ route.name }}</span></v-app-bar-title
     >
     <v-menu>
       <template v-slot:activator="{ props: activatorProps }">
-        <v-btn icon="mdi-dots-horizontal" v-bind="activatorProps" color="orange"></v-btn>
+        <v-btn icon="mdi-dots-horizontal" v-bind="activatorProps" color="theme"></v-btn>
       </template>
       <v-list>
         <v-list-item v-for="(option, i) in options" :key="i" @click="option.func">
@@ -48,7 +48,7 @@ const options = [
           variant="text"
           icon="mdi-dots-horizontal"
           v-bind="activatorProps"
-          color="orange"
+          color="theme"
         ></v-btn>
       </template>
       <v-list>
