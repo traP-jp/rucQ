@@ -52,9 +52,9 @@ func (r *Repository) UpdateRoom(room *model.Room) error {
 			return err
 		}
 
-		return tx.Model(room).Updates(map[string]interface{}{
-			"Name":   room.Name,
-			"CampID": room.CampID,
+		return tx.Model(room).Updates(&model.Room{
+			Name:   room.Name,
+			CampID: room.CampID,
 		}).Error
 	})
 }
