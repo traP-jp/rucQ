@@ -364,3 +364,36 @@ export const sampleTweets = [
     author: 'kitsne',
   },
 ]
+
+export const sampleRooms = [
+  {
+    id: 1,
+    name: '201',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 2,
+    name: '202',
+    members: ['mumumu', 'akimo', 'ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 3,
+    name: '203',
+    members: ['akimo', 'ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 4,
+    name: '204',
+    members: ['ogu_kazemiya', 'kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 5,
+    name: '301',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya'],
+  },
+  {
+    id: 6,
+    name: '302',
+    members: ['kitsne', 'mumumu', 'akimo', 'ogu_kazemiya', 'kitsne'],
+  },
+]

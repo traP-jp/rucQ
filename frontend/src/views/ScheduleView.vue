@@ -6,7 +6,7 @@ import { getLayout, type DayGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/event/EventBlock.vue'
 import EventDialog from '@/components/event/EventDialog.vue'
 import EventEditor from '@/components/event/EventEditor.vue'
-import { events, camp } from '@/lib/sample-data'
+// import { events, camp } from '@/lib/sample-data'
 import { apiClient } from '@/api/apiClient'
 import { useCampStore } from '@/store'
 
@@ -19,8 +19,8 @@ const currentTime = new Date()
 const isDialogActive = ref(false)
 
 onMounted(async () => {
-  // const events = (await apiClient.GET('/api/events')).data!
-  // const camp = campStore.camp!
+  const events = (await apiClient.GET('/api/events')).data!
+  const camp = campStore.camp!
   dayGroups.value = getLayout(events, camp, currentTime)
   if (route.query.action === 'newevent') {
     isDialogActive.value = true
