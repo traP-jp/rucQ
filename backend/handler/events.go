@@ -85,7 +85,16 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 }
 
 func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
-	return nil
+
+	event, err := s.repo.GetEventByID(uint(eventID))
+	if err != nil {
+		e.Logger().Errorf("failed to get event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+
+	return e.JSON(http.StatusOK, event)
 }
 
 func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
