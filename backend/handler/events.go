@@ -133,7 +133,7 @@ func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return nil
+	return e.JSON(http.StatusOK, updateEvent)
 }
 
 func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEventParams) error {
@@ -161,7 +161,7 @@ func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEvent
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return nil
+	return e.NoContent(http.StatusNoContent)
 }
 
 func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
