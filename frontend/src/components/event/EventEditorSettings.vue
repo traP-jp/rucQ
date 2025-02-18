@@ -4,8 +4,10 @@ import { getTimeString, getDayStringNoPad } from '@/lib/date'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { useCampStore } from '@/store'
 import { storeToRefs } from 'pinia'
-
-defineProps<{ id?: string; size?: number }>()
+import type { components } from '@/api/schema'
+type CampEvent = components['schemas']['Event']
+defineProps<{ event: CampEvent | null }>()
+const emit = defineEmits(['delete'])
 
 const { camp } = storeToRefs(useCampStore())
 
@@ -207,6 +209,41 @@ onMounted(() => {
         </template>
       </v-item>
     </v-item-group>
+
+    <v-dialog persistent max-width="400">
+      <template v-slot:activator="{ props: activatorProps }">
+        <div v-if="event" :class="$style.link" v-bind="activatorProps">イベントを削除する</div>
+      </template>
+      <template v-slot:default="{ isActive }">
+        <v-card :class="$style.card">
+          <template v-slot:title> イベントを削除 </template>
+          <template v-slot:subtitle> 続行しますか？ この操作は取り消せません </template>
+          <div style="display: grid; grid-template-columns: 1fr 1fr">
+            <v-btn
+              @click="isActive.value = false"
+              elevation="0"
+              rounded="0"
+              width="100%"
+              variant="text"
+              color="theme"
+              size="large"
+            >
+              <span style="font-weight: bold">戻る</span>
+            </v-btn>
+            <v-btn
+              @click="(emit('delete'), (isActive.value = false))"
+              elevation="0"
+              rounded="0"
+              width="100%"
+              color="theme"
+              size="large"
+            >
+              <span style="font-weight: bold">OK</span>
+            </v-btn>
+          </div>
+        </v-card>
+      </template>
+    </v-dialog>
   </div>
 </template>
 
@@ -218,5 +255,23 @@ onMounted(() => {
 
 .titleInput :global(input) {
   font-size: 20px !important;
+}
+
+.card :global(.v-card-subtitle) {
+  opacity: 1 !important;
+}
+
+.link {
+  margin-top: 10px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: var(--color-theme);
+  margin-bottom: 4;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 </style>

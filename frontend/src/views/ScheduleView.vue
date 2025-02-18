@@ -45,7 +45,6 @@ onMounted(() => {
 </script>
 
 <template>
-  {{ currentTime }}
   <div :class="$style.container" v-if="dayGroups.length > 0">
     <div v-for="(dayGroup, i) in dayGroups" :key="i">
       <h2 style="margin: 20px 0 10px 0; font-weight: 900">

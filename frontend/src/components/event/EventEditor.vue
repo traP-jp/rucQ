@@ -68,6 +68,13 @@ const editEvent = async () => {
   emit('refresh')
 }
 
+const deleteEvent = async () => {
+  // await apiClient.DELETE('/api/events/{event_id}', {
+  //   params: { path: { event_id: props.event!.id } },
+  // })
+  emit('refresh')
+}
+
 onMounted(() => {
   if (props.event) {
     color.value = props.event.display_color
@@ -122,11 +129,13 @@ onMounted(() => {
       <v-tabs-window v-model="tab" v-if="smAndDown" style="height: 100%; flex-shrink: 1">
         <v-tabs-window-item value="設定" style="height: 100%; padding: 20px">
           <EventEditorSettings
+            :event="event"
             v-model:name="name"
             v-model:location="location"
             v-model:startTime="startTime"
             v-model:endTime="endTime"
             v-model:color="color"
+            @delete="deleteEvent"
           />
         </v-tabs-window-item>
 
@@ -136,12 +145,14 @@ onMounted(() => {
       </v-tabs-window>
       <div v-else style="display: flex; width: 100%; height: 100%">
         <EventEditorSettings
+          :event="event"
           style="width: 400px; height: 100%; padding: 20px; flex-shrink: 0"
           v-model:name="name"
           v-model:location="location"
           v-model:startTime="startTime"
           v-model:endTime="endTime"
           v-model:color="color"
+          @delete="deleteEvent"
         />
         <div style="width: 100%; height: 100%; position: relative">
           <MarkdownPlatform v-model:text="description" :color="color"></MarkdownPlatform>

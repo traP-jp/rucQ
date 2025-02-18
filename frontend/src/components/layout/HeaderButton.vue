@@ -14,7 +14,7 @@ const options = [
     },
   },
   { name: '管理者ツール', func: () => router.push(`/${route.params.campname}/admin`) },
-  { name: '別の合宿を表示', func: () => router.push(`/camps`) },
+  // { name: '別の合宿を表示', func: () => router.push(`/camps`) },
 ]
 </script>
 
