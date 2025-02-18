@@ -26,7 +26,11 @@ const props = defineProps<{ event: CampEvent }>()
       </template>
 
       <template v-slot:default="{ isActive }">
-        <EventDialog :event="event" @close="isActive.value = false" />
+        <EventDialog
+          :event="event"
+          @close="isActive.value = false"
+          style="height: 100%; overflow: hidden"
+        />
       </template>
     </v-dialog>
   </div>

@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 const emit = defineEmits(['close'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
+import UserIcon from '@/components/generic/UserIcon.vue'
 import { getTimeString } from '@/lib/date'
 import type { components } from '@/api/schema'
 
@@ -15,13 +16,20 @@ const makeInfo = (event: CampEvent) => {
 
 const text = ref('')
 
+const participants = ref<string[]>(['kitsne', 'mumumu', 'akimo'])
+// 必ず長さ 3 以下。下から順に並べていくので、最後のアイコンが一番上に来る
+const enumHeight = (i: number) => {
+  if (i === 0) return 0
+  return 66 - 16 * (3 - i)
+}
+
 onMounted(() => {
   text.value = props.event.description
 })
 </script>
 
 <template>
-  <v-card :class="`bg-white`" style="position: relative">
+  <v-card :class="`bg-white`">
     <div :class="$style.title" :style="`background-color: var(--color-${event.display_color})`">
       <v-card rounded="0" elevation="0" :class="[$style.card, `bg-${event.display_color}`]">
         <template v-slot:title>
@@ -58,8 +66,34 @@ onMounted(() => {
         </v-dialog>
       </div>
     </div>
-    <div style="width: 100%; height: 100%; overflow-y: auto; background-color: var(--color-white)">
-      <div style="height: 100%; padding: 4px 4px 40px 4px">
+    <div
+      :style="`display: flex; background-color: var(--color-light-gray); height: 100%; overflow: hidden;`"
+    >
+      <div :class="$style.sideIcons">
+        <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
+          <UserIcon :id="event.organizer_traq_id" :size="30" />
+        </div>
+        <div
+          :style="`position: relative; width: 30px; height: ${enumHeight(participants.length)}px`"
+        >
+          <UserIcon
+            v-for="(user, i) in participants"
+            :key="i"
+            :id="user"
+            :size="24"
+            :style="`border: 3px solid var(--color-light-gray); box-sizing: content-box; position: absolute; top: ${16 * (participants.length - 1 - i)}px`"
+          />
+        </div>
+        <v-btn
+          elevation="0"
+          :color="event.display_color"
+          variant="text"
+          density="compact"
+          icon="mdi-plus"
+          style="background-color: var(--color-white)"
+        ></v-btn>
+      </div>
+      <div :class="$style.description">
         <MarkdownPreview :isEditable="false" v-model:text="text" />
       </div>
     </div>
@@ -100,5 +134,23 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 6px;
+}
+
+.description {
+  width: 100%;
+  overflow-y: auto;
+  background-color: var(--color-white);
+  margin: 6px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.sideIcons {
+  width: 30px;
+  height: fit-content;
+  margin: 6px 0 6px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
