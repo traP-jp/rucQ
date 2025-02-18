@@ -205,6 +205,30 @@ export const events: components['schemas']['Event'][] = [
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
   },
+  {
+    id: 18,
+    name: '朝食',
+    location: '???',
+    time_start: '2024-09-10T23:45:00.000000+09:00',
+    time_end: '2024-09-10T23:45:00.000000+09:00',
+    camp_id: 1,
+    by_staff: true,
+    description: 'sample',
+    display_color: 'ash',
+    organizer_traq_id: 'kitsne',
+  },
+  {
+    id: 19,
+    name: '朝食',
+    location: '???',
+    time_start: '2024-09-10T03:00:00.000000+09:00',
+    time_end: '2024-09-10T05:00:00.000000+09:00',
+    camp_id: 1,
+    by_staff: true,
+    description: 'sample',
+    display_color: 'ash',
+    organizer_traq_id: 'kitsne',
+  },
 ]
 
 export const camp = {

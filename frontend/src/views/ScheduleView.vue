@@ -6,7 +6,7 @@ import { getLayout, type DayGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/event/EventBlock.vue'
 import EventDialog from '@/components/event/EventDialog.vue'
 import EventEditor from '@/components/event/EventEditor.vue'
-// import { events, camp } from '@/lib/sample-data'
+import { events, camp } from '@/lib/sample-data'
 import { apiClient } from '@/api/apiClient'
 import { useCampStore } from '@/store'
 
@@ -19,8 +19,8 @@ const currentTime = new Date()
 const isDialogActive = ref(false)
 
 onMounted(async () => {
-  const events = (await apiClient.GET('/api/events')).data!
-  const camp = campStore.camp!
+  // const events = (await apiClient.GET('/api/events')).data!
+  // const camp = campStore.camp!
   dayGroups.value = getLayout(events, camp, currentTime)
   if (route.query.action === 'newevent') {
     isDialogActive.value = true
@@ -30,8 +30,8 @@ onMounted(async () => {
 
 <template>
   <div :class="$style.container" v-if="dayGroups.length > 0">
-    <div v-for="(dayGroup, i) in dayGroups" :key="i" :class="$style.day">
-      <h2 style="margin: 10px 0; font-weight: 900">
+    <div v-for="(dayGroup, i) in dayGroups" :key="i">
+      <h2 style="margin: 20px 0 10px 0; font-weight: 900">
         {{ `Day ${i + 1} - ${getDayStringNoPad(dayGroup.date)}` }}
       </h2>
       <div
