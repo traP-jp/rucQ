@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { sampleRooms } from '@/lib/sample-data'
+import { ref, onMounted } from 'vue'
+// import { sampleRooms } from '@/lib/sample-data'
+import { apiClient } from '@/api/apiClient'
 import UserIcon from '@/components/generic/UserIcon.vue'
 
 type Floor = {
@@ -14,7 +16,8 @@ type Room = {
   members: string[]
 }
 
-// const floors = (await apiClient.GET('/api/floors')).data!
+const floors = ref<Floor[]>()
+const rooms = ref<Room[]>()
 // このページの将来的な実装についての提案は用件定義のコメントにまとめました
 
 const getFloors = (rooms: Room[]): Floor[] => {
@@ -33,11 +36,16 @@ const getFloors = (rooms: Room[]): Floor[] => {
   }
   return floors
 }
+
+onMounted(async () => {
+  rooms.value = (await apiClient.GET('/api/floors')).data!
+  floors.value = getFloors(rooms.value)
+})
 </script>
 
 <template>
   <div style="margin-top: 16px"></div>
-  <div v-for="floor in getFloors(sampleRooms)" :key="floor.id">
+  <div v-for="floor in floors" :key="floor.id">
     <div :class="$style.floorName">
       {{ floor.name }}
     </div>

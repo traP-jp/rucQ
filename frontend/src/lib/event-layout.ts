@@ -87,7 +87,7 @@ const arrangeEvents = (events: CampEvent[], currentTime?: Date) => {
   }
 
   // もし arranged の最初が瞬間イベントでなかった場合、見た目の調整のためにその手前に空の領域を追加
-  if (arranged[0].events.length === 0) {
+  if (arranged.length > 0 && arranged[0].events.length === 0) {
     arranged.unshift({ time: new Date(0), events: [] })
     // time は 1970/01/01 で全ての日付より手前に来ることが保証されている
   }
@@ -156,7 +156,7 @@ const arrangeEvents = (events: CampEvent[], currentTime?: Date) => {
     line: true,
   }))
 
-  if (arranged[0].time.getTime() === 0) {
+  if (arranged.length > 0 && arranged[0].time.getTime() === 0) {
     times[0].stamp = 'none'
     times[0].minHeight = 'narrow'
     times[0].line = false
