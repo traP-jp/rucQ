@@ -1,9 +1,32 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { apiClient } from '@/api/apiClient'
 import EventDialog from '@/components/event/EventDialog.vue'
+import { useUserStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+const { userId } = storeToRefs(useUserStore())
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
+
+const participants = ref<string[]>([])
+
+onMounted(async () => {
+  const participantsData = (
+    await apiClient.GET('/api/events/{event_id}/participants', {
+      params: { path: { event_id: props.event!.id } },
+    })
+  ).data!
+  participants.value = Array.from(
+    participantsData.filter((el) => el.traq_id !== userId.value),
+    (el) => el.traq_id,
+  )
+  if (participantsData.some((el) => el.traq_id === userId.value)) {
+    participants.value.unshift(userId.value!)
+  }
+})
 </script>
 
 <template>
@@ -30,6 +53,7 @@ const props = defineProps<{ event: CampEvent }>()
           :event="event"
           @close="isActive.value = false"
           style="height: 100%; overflow: hidden"
+          v-model:participants="participants"
         />
       </template>
     </v-dialog>

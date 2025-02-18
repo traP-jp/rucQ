@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 const emit = defineEmits(['close'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
 import { getTimeString } from '@/lib/date'
 import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
+import { useUserStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+const { userId } = storeToRefs(useUserStore())
 
 type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
@@ -15,9 +20,25 @@ const makeInfo = (event: CampEvent) => {
 }
 
 const text = ref('')
+const participants = defineModel<string[]>('participants')
+const isToParticipate = computed(
+  () => participants.value!.length > 0 && participants.value![0] === userId.value,
+)
 
-const participants = ref<string[]>(['kitsne', 'mumumu', 'akimo'])
-// 必ず長さ 3 以下。下から順に並べていくので、最後のアイコンが一番上に来る
+const participate = async () => {
+  await apiClient.POST('/api/events/{event_id}/register', {
+    params: { path: { event_id: props.event!.id } },
+  })
+  participants.value!.unshift(userId.value!)
+}
+
+const withdraw = async () => {
+  await apiClient.DELETE('/api/events/{event_id}/register', {
+    params: { path: { event_id: props.event!.id } },
+  })
+  participants.value!.shift()
+}
+
 const enumHeight = (i: number) => {
   if (i === 0) return 0
   return 66 - 16 * (3 - i)
@@ -74,14 +95,15 @@ onMounted(() => {
           <UserIcon :id="event.organizer_traq_id" :size="30" />
         </div>
         <div
-          :style="`position: relative; width: 30px; height: ${enumHeight(participants.length)}px`"
+          :style="`position: relative; width: 30px; height: ${enumHeight(participants!.slice(0, 3).length)}px`"
         >
           <UserIcon
-            v-for="(user, i) in participants"
+            v-for="(user, i) in participants!.slice(0, 3).reverse()"
             :key="i"
             :id="user"
             :size="24"
-            :style="`border: 3px solid var(--color-light-gray); box-sizing: content-box; position: absolute; top: ${16 * (participants.length - 1 - i)}px`"
+            :class="$style.participants"
+            :style="`top: ${16 * (participants!.slice(0, 3).length - 1 - i)}px`"
           />
         </div>
         <v-btn
@@ -89,8 +111,9 @@ onMounted(() => {
           :color="event.display_color"
           variant="text"
           density="compact"
-          icon="mdi-plus"
+          :icon="isToParticipate ? 'mdi-minus' : 'mdi-plus'"
           style="background-color: var(--color-white)"
+          @click="isToParticipate ? withdraw() : participate()"
         ></v-btn>
       </div>
       <div :class="$style.description">
@@ -152,5 +175,11 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.participants {
+  border: 3px solid var(--color-light-gray);
+  box-sizing: content-box;
+  position: absolute;
 }
 </style>
