@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
@@ -19,13 +19,16 @@ const currentTime = ref<Date>(new Date())
 const dayGroups = ref<DayGroup[]>([])
 const isDialogActive = ref(false)
 
-onMounted(async () => {
-  await refresh()
-  if (route.query.action === 'newevent') {
-    isDialogActive.value = true
-    router.replace({ path: route.path, query: {} })
-  }
-})
+watch(
+  () => route.query.action,
+  () => {
+    if (route.query.action === 'newevent') {
+      isDialogActive.value = true
+      router.replace({ path: route.path, query: {} })
+    }
+  },
+  { immediate: true },
+)
 
 const refresh = async () => {
   const events = (await apiClient.GET('/api/events')).data!
@@ -33,7 +36,8 @@ const refresh = async () => {
   dayGroups.value = getLayout(events, camp, currentTime.value)
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await refresh()
   const interval = setInterval(() => {
     currentTime.value = new Date()
   }, 1000)

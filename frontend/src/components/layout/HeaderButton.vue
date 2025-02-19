@@ -39,16 +39,18 @@ const options = [
     </v-menu>
   </v-app-bar>
   <div
-    v-if="!xs && route.name === '合宿のしおり'"
-    style="position: fixed; top: 6px; right: 6px; z-index: 3"
+    v-if="!xs && route.name !== 'ノート'"
+    style="position: fixed; top: 10px; right: 10px; z-index: 3"
   >
     <v-menu>
       <template v-slot:activator="{ props: activatorProps }">
         <v-btn
-          variant="text"
+          density="comfortable"
           icon="mdi-dots-horizontal"
           v-bind="activatorProps"
-          color="theme"
+          color="white"
+          baseColor="white"
+          :class="`text-theme`"
         ></v-btn>
       </template>
       <v-list>
