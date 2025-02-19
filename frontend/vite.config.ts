@@ -20,6 +20,19 @@ export default defineConfig({
         // 追加
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // キャッシュ上限 5 MB
         globPatterns: ['**/*.{css,html,ico,js,png,webmanifest}'], // プリキャッシュ
+        runtimeCaching: [
+          {
+            urlPattern: /\/api\/.*/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 24 * 60 * 60,
+              },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'rucQ',
