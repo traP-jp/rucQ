@@ -409,7 +409,7 @@ export interface components {
             organizer_traq_id: string;
             by_staff: boolean;
             display_color: string;
-            participants?: components["schemas"]["Participant"][];
+            participants: components["schemas"]["User"][];
         };
         PostEventRequest: {
             name: string;
@@ -426,10 +426,6 @@ export interface components {
         User: {
             traq_id: string;
             is_staff: boolean;
-        };
-        Participant: {
-            user: components["schemas"]["User"];
-            event_id: number;
         };
         QuestionGroup: {
             id: number;
@@ -924,7 +920,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Participant"][];
+                    "application/json": components["schemas"]["User"][];
                 };
             };
             404: components["responses"]["NotFound"];

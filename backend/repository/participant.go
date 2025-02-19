@@ -1,65 +1,57 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/traP-jp/rucQ/backend/model"
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetParticipants(eventID uint) ([]model.Participant, error) {
-	var participants []model.Participant
+func (r *Repository) GetParticipants(eventID uint) ([]model.User, error) {
+	event, err := r.GetEventByID(eventID)
 
-	if err := r.db.
-		Preload("User").
-		Where("event_id = ?", eventID).
-		Find(&participants).
-		Error; err != nil {
+	if err != nil {
 		return nil, err
 	}
 
-	return participants, nil
+	return event.Participants, nil
 }
 
-func (r *Repository) RegisterEvent(participant model.Participant) error {
-	var existing model.Participant
-	err := r.db.
-		Joins("JOIN users ON users.id = participants.user_id").
-		Where("participants.event_id = ? AND users.traq_id = ?", participant.EventID, participant.User.TraqID).
-		First(&existing).Error
-	if err == nil {
-		// 同じデータが見つかった場合は作成せずに終了
-		return nil
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		// 他のエラーが発生した場合はエラーを返す
+func (r *Repository) RegisterEvent(eventID uint, participant *model.User) error {
+	event, err := r.GetEventByID(eventID)
+
+	if err != nil {
 		return err
 	}
 
-	if err := r.db.Create(&participant).Error; err != nil {
+	count := r.db.
+		Model(event).
+		Where(&model.User{TraqID: participant.TraqID}).
+		Association("Participants").
+		Count()
+
+	if count == 1 {
+		// 同じデータが見つかった場合は作成せずに終了
+		return nil
+	}
+
+	// TODO: 1より大きい場合はエラーを返す
+
+	if err := r.db.
+		Model(event).
+		Association("Participants").
+		Append(participant); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *Repository) UnregisterEvent(eventID uint, traqID string) error {
-    var participant model.Participant
-    // 対象のレコードを取得
-    if err := r.db.
-        Joins("JOIN users ON users.id = participants.user_id").
-        Where("participants.event_id = ? AND users.traq_id = ?", eventID, traqID).
-        First(&participant).Error; err != nil {
-        // レコードが見つからなくても、削除処理は成功と見なすなら nil を返す
-        if errors.Is(err, gorm.ErrRecordNotFound) {
-            return nil
-        }
-        return err
-    }
+func (r *Repository) UnregisterEvent(eventID uint, user *model.User) error {
+	if err := r.db.
+		Where(&model.Event{Model: gorm.Model{ID: eventID}}).
+		Association("Participants").
+		Delete(user); err != nil {
+		return err
+	}
 
-    // 取得したレコードを削除
-    if err := r.db.Delete(&participant).Error; err != nil {
-        return err
-    }
-
-    return nil
+	return nil
 }
