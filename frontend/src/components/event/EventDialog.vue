@@ -10,7 +10,7 @@ import { apiClient } from '@/api/apiClient'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
-const { userId } = storeToRefs(useUserStore())
+const { user } = storeToRefs(useUserStore())
 
 type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
@@ -22,14 +22,14 @@ const makeInfo = (event: CampEvent) => {
 const text = ref('')
 const participants = defineModel<string[]>('participants')
 const isToParticipate = computed(
-  () => participants.value!.length > 0 && participants.value![0] === userId.value,
+  () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
 )
 
 const participate = async () => {
   await apiClient.POST('/api/events/{event_id}/register', {
     params: { path: { event_id: props.event!.id } },
   })
-  participants.value!.unshift(userId.value!)
+  participants.value!.unshift(user.value!.traq_id)
 }
 
 const withdraw = async () => {
@@ -44,7 +44,7 @@ const enumHeight = (i: number) => {
   return 66 - 16 * (3 - i)
 }
 
-onMounted(() => {
+onMounted(async () => {
   text.value = props.event.description
 })
 </script>
@@ -72,6 +72,7 @@ onMounted(() => {
         <v-dialog fullscreen transition="dialog-bottom-transition">
           <template v-slot:activator="{ props: activatorProps }">
             <v-btn
+              v-if="!(event.by_staff && !user?.is_staff)"
               density="comfortable"
               elevation="0"
               icon="mdi-square-edit-outline"

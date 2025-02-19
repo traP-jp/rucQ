@@ -8,9 +8,9 @@ import { apiClient } from '@/api/apiClient'
 import { useCampStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
-const emit = defineEmits(['close', 'refresh'])
-
 const { camp } = storeToRefs(useCampStore())
+
+const emit = defineEmits(['close', 'refresh'])
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
@@ -19,6 +19,8 @@ const props = defineProps<{ event: CampEvent | null }>()
 const isValid = computed(() => {
   if (!name.value) return false
   if (!location.value) return false
+  if (!startTime.value) return false
+  if (!endTime.value) return false
   return true
 })
 
@@ -44,7 +46,7 @@ const newEvent = async () => {
       time_start: dateToText(startTime.value!),
       time_end: dateToText(endTime.value!),
       camp_id: camp.value!.id,
-      create_as_staff: false,
+      create_as_staff: color.value === 'navy',
       display_color: color.value,
     },
   })
@@ -61,7 +63,7 @@ const editEvent = async () => {
       time_start: dateToText(startTime.value!),
       time_end: dateToText(endTime.value!),
       camp_id: camp.value!.id,
-      create_as_staff: false,
+      create_as_staff: color.value === 'navy',
       display_color: color.value,
     },
   })
@@ -75,7 +77,7 @@ const deleteEvent = async () => {
   emit('refresh')
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (props.event) {
     color.value = props.event.display_color
     name.value = props.event.name

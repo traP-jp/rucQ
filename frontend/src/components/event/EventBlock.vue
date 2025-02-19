@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 
 const emit = defineEmits(['refresh'])
 
-const { userId } = storeToRefs(useUserStore())
+const { user } = storeToRefs(useUserStore())
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
@@ -17,11 +17,11 @@ const participants = ref<string[]>([])
 onMounted(async () => {
   const participantsData = props.event.participants
   participants.value = Array.from(
-    participantsData.filter((el) => el.traq_id !== userId.value),
+    participantsData.filter((el) => el.traq_id !== user.value?.traq_id),
     (el) => el.traq_id,
   )
-  if (participantsData.some((el) => el.traq_id === userId.value)) {
-    participants.value.unshift(userId.value!)
+  if (participantsData.some((el) => el.traq_id === user.value?.traq_id)) {
+    participants.value.unshift(user.value!.traq_id)
   }
 })
 </script>
@@ -34,7 +34,9 @@ onMounted(async () => {
           link
           :class="$style.card"
           :color="
-            participants[0] === userId ? `${event.display_color}` : `${event.display_color}Pale`
+            participants[0] === user?.traq_id
+              ? `${event.display_color}`
+              : `${event.display_color}Pale`
           "
           height="100%"
           variant="flat"
