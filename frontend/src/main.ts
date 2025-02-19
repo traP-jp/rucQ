@@ -35,7 +35,7 @@ const vuetify = createVuetify({
           orange: '#ff7300',
           orangePale: '#ffe2b2',
           green: '#178000',
-          greenPale: '#ccffc1',
+          greenPale: '#acf69c',
           red: '#ff4d00',
           redPale: '#ffc9b2',
           blue: '#008cff',
