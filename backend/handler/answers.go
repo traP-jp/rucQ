@@ -328,3 +328,48 @@ func (s *Server) PutUserAnswer(e echo.Context, traqID TraqId, questionID Questio
 
 	return e.JSON(http.StatusOK, res)
 }
+
+func (s *Server) GetQuestionAnswers(e echo.Context, questionID QuestionId, params GetQuestionAnswersParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	targetQuestion, err := s.repo.GetQuestionByID(uint(questionID))
+	if err != nil {
+		e.Logger().Errorf("failed to get question: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !targetQuestion.IsOpen && !user.IsStaff { // 公開じゃない場合はスタッフ以外は見れない
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	answers, err := s.repo.GetAnswersByID(uint(questionID))
+	if err != nil {
+		e.Logger().Errorf("failed to get answers: %v", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var res GetQuestionAnswers
+
+	questionIDInt := int(questionID)
+	res.QuestionId = &questionIDInt
+	res.Answers = new([]interface{})
+
+	for _, answer := range answers {
+		answeredUesr, err := s.repo.GetUserTraqID(answer.UserID)
+		if err != nil {
+			e.Logger().Errorf("failed to get user: %v", err)
+
+			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		}
+
+		*res.Answers = append(*res.Answers, answeredUesr)
+	}
+
+	return e.JSON(http.StatusOK, res)
+}
