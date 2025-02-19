@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 const emit = defineEmits(['close', 'refresh'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
@@ -19,7 +19,7 @@ const makeInfo = (event: CampEvent) => {
   return `${getDayStringNoPad(new Date(event.time_start))} ${getTimeStringNoPad(new Date(event.time_start))} ~ ${getTimeStringNoPad(new Date(event.time_end))} @${event.location}`
 }
 
-const text = ref('')
+const text = computed(() => props.event.description)
 const participants = defineModel<string[]>('participants')
 const isToParticipate = computed(
   () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
@@ -43,10 +43,6 @@ const enumHeight = (i: number) => {
   if (i === 0) return 0
   return 66 - 16 * (3 - i)
 }
-
-onMounted(async () => {
-  text.value = props.event.description
-})
 </script>
 
 <template>
