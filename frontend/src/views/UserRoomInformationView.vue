@@ -55,7 +55,7 @@ onMounted(async () => {
       <div
         style="
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
           margin: 8px;
         "
       >
