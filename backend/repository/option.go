@@ -29,3 +29,21 @@ func (r *Repository) GetOptions(query *GetOptionsQuery) ([]model.Option, error) 
 
 	return options, nil
 }
+
+func (r *Repository) UpdateOption(ID uint, option *model.Option) error {
+
+	if err := r.db.Where("id = ?", ID).Updates(option).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) DeleteOption(ID uint) error {
+
+	if err := r.db.Delete(&model.Option{}, ID).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
