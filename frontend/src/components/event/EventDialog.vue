@@ -70,7 +70,6 @@ onMounted(() => {
           class="text-white"
         ></v-btn>
         <v-dialog fullscreen transition="dialog-bottom-transition">
-          <!-- PC からの操作を可能にするなら別の表示方法を考える -->
           <template v-slot:activator="{ props: activatorProps }">
             <v-btn
               density="comfortable"

@@ -11,6 +11,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'navy',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'navy',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'navy',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 4,
@@ -47,6 +50,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'navy',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 5,
@@ -59,6 +63,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'navy',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 6,
@@ -72,6 +77,7 @@ export const events: components['schemas']['Event'][] = [
       '## 合宿1日目到着後に20mシャトルランをやります\nハンドボールコートの短辺は20mらしいですよ！これはもうシャトルランをやるためのコートといって過言ではないですよね？\nということで合宿1日目到着後シャトルランをやります！\n\n参加費：たぶん数百円（ハンドボールコート利用料(2750円)を人数で割った金額）\n\nどのぐらいの需要がありそうかを把握したいので、多分行くよ！という人はこの投稿に:ikimasu:スタンプを付けてください\n（単なる需要調査です。スタンプを付けて当日「やっぱやめた」をすることも、スタンプを付けずに「やっぱ行きたい」をするのも自由です！）\nhttps://q.trap.jp/messages/9b8389de-0a5b-4842-8a29-4c48feebe54b\n\n## 合宿1日目到着後に20mシャトルランをやります\nハンドボールコートの短辺は20mらしいですよ！これはもうシャトルランをやるためのコートといって過言ではないですよね？\nということで合宿1日目到着後シャトルランをやります！\n\n参加費：たぶん数百円（ハンドボールコート利用料(2750円)を人数で割った金額）\n\nどのぐらいの需要がありそうかを把握したいので、多分行くよ！という人はこの投稿に:ikimasu:スタンプを付けてください\n（単なる需要調査です。スタンプを付けて当日「やっぱやめた」をすることも、スタンプを付けずに「やっぱ行きたい」をするのも自由です！）\nhttps://q.trap.jp/messages/9b8389de-0a5b-4842-8a29-4c48feebe54b',
     display_color: 'blue',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 7,
@@ -84,6 +90,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'green',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 8,
@@ -96,6 +103,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'red',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 9,
@@ -108,6 +116,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'orange',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 10,
@@ -120,6 +129,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'blue',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 11,
@@ -132,6 +142,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'orange',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 12,
@@ -144,6 +155,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 13,
@@ -156,6 +168,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 14,
@@ -168,6 +181,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 15,
@@ -180,6 +194,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 16,
@@ -192,6 +207,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 17,
@@ -204,6 +220,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 18,
@@ -216,6 +233,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
   {
     id: 19,
@@ -228,6 +246,7 @@ export const events: components['schemas']['Event'][] = [
     description: 'sample',
     display_color: 'ash',
     organizer_traq_id: 'kitsne',
+    participants: [{ traq_id: 'mumumu', is_staff: false }],
   },
 ]
 

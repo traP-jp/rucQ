@@ -69,9 +69,9 @@ const editEvent = async () => {
 }
 
 const deleteEvent = async () => {
-  // await apiClient.DELETE('/api/events/{event_id}', {
-  //   params: { path: { event_id: props.event!.id } },
-  // })
+  await apiClient.DELETE('/api/events/{event_id}', {
+    params: { path: { event_id: props.event!.id } },
+  })
   emit('refresh')
 }
 

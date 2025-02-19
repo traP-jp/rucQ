@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { apiClient } from '@/api/apiClient'
 import EventDialog from '@/components/event/EventDialog.vue'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
@@ -16,11 +15,7 @@ const props = defineProps<{ event: CampEvent }>()
 const participants = ref<string[]>([])
 
 onMounted(async () => {
-  const participantsData = (
-    await apiClient.GET('/api/events/{event_id}/participants', {
-      params: { path: { event_id: props.event!.id } },
-    })
-  ).data!
+  const participantsData = props.event.participants
   participants.value = Array.from(
     participantsData.filter((el) => el.traq_id !== userId.value),
     (el) => el.traq_id,
@@ -38,7 +33,9 @@ onMounted(async () => {
         <v-card
           link
           :class="$style.card"
-          :color="event.display_color"
+          :color="
+            participants[0] === userId ? `${event.display_color}` : `${event.display_color}Pale`
+          "
           height="100%"
           variant="flat"
           v-bind="activatorProps"

@@ -103,7 +103,7 @@ onMounted(() => {
       :items="getDays()"
       item-value="id"
       item-title="name"
-      :rules="[(v) => !!v || '開催日は必須です']"
+      :rules="[(v) => v !== undefined || '開催日は必須です']"
       label="開催日"
       prepend-inner-icon="mdi-calendar-blank"
       variant="underlined"
