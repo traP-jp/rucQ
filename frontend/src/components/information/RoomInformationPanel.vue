@@ -28,23 +28,49 @@ onMounted(async () => {
 
 <template>
   <div v-if="myRoom">
-    <v-card elevation="0" color="themePale" class="mx-4 mt-4 pa-4">
-      <v-card-title class="text-center pa-0">
-        <span :class="$style.roomName">
-          {{ myRoom.name.slice(0, -1)
-          }}<span style="font-weight: 900; letter-spacing: 0">{{ myRoom.name.slice(-1) }}</span>
-        </span>
-      </v-card-title>
-      <div style="width: 100%; display: flex; justify-content: center">
-        <UserIcon
-          v-for="user in myRoom.members"
-          :key="user.traq_id"
-          :id="user.traq_id"
-          :size="30"
-          style="margin: 4px"
-        />
-      </div>
-    </v-card>
+    <v-dialog max-width="400">
+      <template v-slot:activator="{ props: activatorProps }">
+        <v-card elevation="0" v-bind="activatorProps" color="themePale" class="mx-4 mt-4 pa-4">
+          <v-card-title class="text-center pa-0">
+            <span :class="$style.roomName">
+              {{ myRoom.name.slice(0, -1)
+              }}<span style="font-weight: 900; letter-spacing: 0">{{ myRoom.name.slice(-1) }}</span>
+            </span>
+          </v-card-title>
+          <div style="width: 100%; display: flex; justify-content: center">
+            <UserIcon
+              v-for="user in myRoom.members"
+              :key="user.traq_id"
+              :id="user.traq_id"
+              :size="30"
+              style="margin: 4px"
+            />
+          </div>
+        </v-card>
+      </template>
+      <template v-slot:default="{}">
+        <v-card color="themePale" class="pa-4">
+          <v-card-title class="text-center pa-0">
+            <span :class="$style.roomName">
+              {{ myRoom.name.slice(0, -1)
+              }}<span style="font-weight: 900; letter-spacing: 0">{{ myRoom.name.slice(-1) }}</span>
+            </span>
+          </v-card-title>
+          <hr
+            style="border: none; border-bottom: 1px solid var(--color-theme); margin-bottom: 8px"
+          />
+          <div
+            v-for="user in myRoom.members"
+            :key="user.traq_id"
+            style="display: flex; align-items: center"
+          >
+            <UserIcon :id="user.traq_id" :size="30" style="margin: 4px" />
+            <div style="margin-left: 4px; font-weight: bold">@{{ user.traq_id }}</div>
+          </div>
+        </v-card>
+      </template>
+    </v-dialog>
+
     <router-link :class="$style.link" :to="`/${route.params.campname}/info/users`">
       合宿メンバーの部屋一覧
     </router-link>
