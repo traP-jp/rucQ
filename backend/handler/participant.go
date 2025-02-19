@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,7 +16,15 @@ func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, participants)
+	var response []User
+
+	if err := copier.Copy(&response, participants); err != nil {
+		e.Logger().Errorf("failed to copy participants: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, response)
 }
 
 func (s *Server) UnregisterEvent(e echo.Context, eventID EventId, params UnregisterEventParams) error {
@@ -49,5 +58,13 @@ func (s *Server) RegisterEvent(e echo.Context, eventID EventId, params RegisterE
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusCreated, user)
+	var response User
+
+	if err := copier.Copy(&response, user); err != nil {
+		e.Logger().Errorf("failed to copy user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusCreated, &response)
 }

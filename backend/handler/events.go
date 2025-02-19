@@ -93,7 +93,15 @@ func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, event)
+	var response Event
+
+	if err := copier.Copy(&response, event); err != nil {
+		e.Logger().Errorf("failed to copy event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, &response)
 }
 
 func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
@@ -133,7 +141,15 @@ func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return e.JSON(http.StatusOK, updateEvent)
+	var response Event
+
+	if err := copier.Copy(&response, updateEvent); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, &response)
 }
 
 func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEventParams) error {
@@ -163,5 +179,3 @@ func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEvent
 
 	return e.NoContent(http.StatusNoContent)
 }
-
-
