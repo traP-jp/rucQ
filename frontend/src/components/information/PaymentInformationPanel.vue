@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { components } from '@/api/schema'
+import { apiClient } from '@/api/apiClient'
 
-const props = defineProps<{
-  data?: components['schemas']['Budget']
-}>()
+const paymentData = ref<components['schemas']['Budget']>()
 
 const status = computed(() => {
-  if (props.data?.amount == null) return 'none'
-  return props.data.amount === props.data.amount_paid ? 'paid' : 'unpaid'
+  if (paymentData.value?.amount == null) return 'none'
+  return paymentData.value?.amount === paymentData.value?.amount_paid ? 'paid' : 'unpaid'
 })
+const billing = computed(() => paymentData.value?.amount ?? 0)
+const paid = computed(() => paymentData.value?.amount_paid ?? 0)
 
-const billing = computed(() => props.data?.amount ?? 0)
-const paid = computed(() => props.data?.amount_paid ?? 0)
+onMounted(async () => {
+  paymentData.value = (await apiClient.GET('/api/me/budgets')).data!
+})
 </script>
 
 <template>
