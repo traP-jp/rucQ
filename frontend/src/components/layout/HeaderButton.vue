@@ -17,7 +17,7 @@ const options = [
       router.push({ path: `/${route.params.campname}/schedule`, query: { action: 'newevent' } })
     },
   },
-  ...(user.value!.is_staff
+  ...(user.value?.is_staff
     ? [
         {
           name: '管理者ツール',
