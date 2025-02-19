@@ -46,6 +46,11 @@ const adminTools = ref([
     icon: 'mdi-cash',
     path: 'payments',
   },
+  {
+    title: '部屋の編集',
+    icon: 'mdi-list-box-outline',
+    path: 'rooms',
+  },
   // 必要に応じて他の管理者ツールを追加
 ])
 
