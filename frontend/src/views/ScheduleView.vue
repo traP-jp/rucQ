@@ -40,7 +40,8 @@ onMounted(async () => {
   await refresh()
   const interval = setInterval(() => {
     currentTime.value = new Date()
-  }, 1000)
+    refresh()
+  }, 10000)
 
   onBeforeUnmount(() => {
     clearInterval(interval)
