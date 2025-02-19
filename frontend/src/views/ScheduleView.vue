@@ -40,7 +40,7 @@ const refresh = async () => {
 
 onMounted(async () => {
   await refresh()
-  const interval = setInterval(async () => {
+  const interval = setInterval(() => {
     currentTime.value = new Date()
     dayGroups.value = getLayout(events.value!, campStore.camp!, currentTime.value)
   }, 10000) // 10 秒ごと

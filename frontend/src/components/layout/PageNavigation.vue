@@ -63,6 +63,7 @@ const fullPath = (path: string) => `/${route.params.campname}/${path}`
   <v-navigation-drawer
     width="230"
     :mobile-breakpoint="600"
+    v-else
     style="z-index: 1; border-right: 1.5px solid var(--color-line) !important"
     app
   >
