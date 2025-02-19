@@ -10,13 +10,15 @@ import { storeToRefs } from 'pinia'
 const route = useRoute()
 
 const { camp } = storeToRefs(useCampStore())
-const { userId } = storeToRefs(useUserStore())
+const { user } = storeToRefs(useUserStore())
 
 type Room = components['schemas']['Room']
 
 const rooms = ref<Room[]>()
 const myRoom = computed(() => {
-  return rooms.value?.find((room) => room.members.some((member) => member.traq_id === userId.value))
+  return rooms.value?.find((room) =>
+    room.members.some((member) => member.traq_id === user.value?.traq_id),
+  )
 })
 
 onMounted(async () => {

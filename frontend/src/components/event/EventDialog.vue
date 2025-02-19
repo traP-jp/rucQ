@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 const emit = defineEmits(['close', 'refresh'])
 import MarkdownPreview from '@/components/markdown/MarkdownPreview.vue'
 import EventEditor from './EventEditor.vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import type { components } from '@/api/schema'
-import { apiClient } from '@/api/apiClient'
+// import { apiClient } from '@/api/apiClient'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
-const { userId } = storeToRefs(useUserStore())
+const { user } = storeToRefs(useUserStore())
 
 type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent }>()
@@ -19,34 +19,30 @@ const makeInfo = (event: CampEvent) => {
   return `${getDayStringNoPad(new Date(event.time_start))} ${getTimeStringNoPad(new Date(event.time_start))} ~ ${getTimeStringNoPad(new Date(event.time_end))} @${event.location}`
 }
 
-const text = ref('')
-const participants = defineModel<string[]>('participants')
-const isToParticipate = computed(
-  () => participants.value!.length > 0 && participants.value![0] === userId.value,
-)
+const text = computed(() => props.event.description)
+// const participants = defineModel<string[]>('participants')
+// const isToParticipate = computed(
+//   () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
+// )
 
-const participate = async () => {
-  await apiClient.POST('/api/events/{event_id}/register', {
-    params: { path: { event_id: props.event!.id } },
-  })
-  participants.value!.unshift(userId.value!)
-}
+// const participate = async () => {
+//   await apiClient.POST('/api/events/{event_id}/register', {
+//     params: { path: { event_id: props.event!.id } },
+//   })
+//   participants.value!.unshift(user.value!.traq_id)
+// }
 
-const withdraw = async () => {
-  await apiClient.DELETE('/api/events/{event_id}/register', {
-    params: { path: { event_id: props.event!.id } },
-  })
-  participants.value!.shift()
-}
+// const withdraw = async () => {
+//   await apiClient.DELETE('/api/events/{event_id}/register', {
+//     params: { path: { event_id: props.event!.id } },
+//   })
+//   participants.value!.shift()
+// }
 
-const enumHeight = (i: number) => {
-  if (i === 0) return 0
-  return 66 - 16 * (3 - i)
-}
-
-onMounted(() => {
-  text.value = props.event.description
-})
+// const enumHeight = (i: number) => {
+//   if (i === 0) return 0
+//   return 66 - 16 * (3 - i)
+// }
 </script>
 
 <template>
@@ -72,6 +68,7 @@ onMounted(() => {
         <v-dialog fullscreen transition="dialog-bottom-transition">
           <template v-slot:activator="{ props: activatorProps }">
             <v-btn
+              v-if="!(event.by_staff && !user?.is_staff)"
               density="comfortable"
               elevation="0"
               icon="mdi-square-edit-outline"
@@ -94,7 +91,8 @@ onMounted(() => {
       :style="`display: flex; background-color: var(--color-light-gray); height: 100%; overflow: hidden;`"
     >
       <div :class="$style.sideIcons">
-        <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
+        <UserIcon :id="event.organizer_traq_id" :size="30" />
+        <!-- <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
           <UserIcon :id="event.organizer_traq_id" :size="30" />
         </div>
         <div
@@ -117,7 +115,7 @@ onMounted(() => {
           :icon="isToParticipate ? 'mdi-minus' : 'mdi-plus'"
           style="background-color: var(--color-white)"
           @click="isToParticipate ? withdraw() : participate()"
-        ></v-btn>
+        ></v-btn> -->
       </div>
       <div :class="$style.description">
         <MarkdownPreview :isEditable="false" v-model:text="text" />

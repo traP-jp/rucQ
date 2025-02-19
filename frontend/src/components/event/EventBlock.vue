@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 
 const emit = defineEmits(['refresh'])
 
-const { userId } = storeToRefs(useUserStore())
+const { user } = storeToRefs(useUserStore())
 
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
@@ -17,11 +17,11 @@ const participants = ref<string[]>([])
 onMounted(async () => {
   const participantsData = props.event.participants
   participants.value = Array.from(
-    participantsData.filter((el) => el.traq_id !== userId.value),
+    participantsData.filter((el) => el.traq_id !== user.value?.traq_id),
     (el) => el.traq_id,
   )
-  if (participantsData.some((el) => el.traq_id === userId.value)) {
-    participants.value.unshift(userId.value!)
+  if (participantsData.some((el) => el.traq_id === user.value?.traq_id)) {
+    participants.value.unshift(user.value!.traq_id)
   }
 })
 </script>
@@ -33,13 +33,12 @@ onMounted(async () => {
         <v-card
           link
           :class="$style.card"
-          :color="
-            participants[0] === userId ? `${event.display_color}` : `${event.display_color}Pale`
-          "
+          :color="event.display_color"
           height="100%"
           variant="flat"
           v-bind="activatorProps"
         >
+          <!-- イベントの参加効果が不明瞭である以上、イベントに参加しているか否かでイベントの表示色を変えるのはやや -->
           <div :class="$style.content">
             <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
             <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>

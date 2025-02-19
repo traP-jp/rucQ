@@ -2,13 +2,14 @@
 import { ref, watch, onMounted, nextTick } from 'vue'
 import { getTimeString, getDayStringNoPad } from '@/lib/date'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { useCampStore } from '@/store'
+import { useUserStore, useCampStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import type { components } from '@/api/schema'
 type CampEvent = components['schemas']['Event']
-defineProps<{ event: CampEvent | null }>()
+const props = defineProps<{ event: CampEvent | null }>()
 const emit = defineEmits(['delete'])
 
+const { user } = storeToRefs(useUserStore())
 const { camp } = storeToRefs(useCampStore())
 
 const isTimeChanged = ref(false)
@@ -31,7 +32,6 @@ const timeCalc = (time: string, addMin: number) => {
 }
 
 const updateTime = () => {
-  console.log(startTimePick.value, endTimePick.value)
   startTime.value!.setDate(new Date(camp.value!.start_date).getDate() + dayNum.value)
   endTime.value!.setDate(new Date(camp.value!.start_date).getDate() + dayNum.value)
   const [startH, startM] = startTimePick.value.split(':').map(Number)
@@ -68,7 +68,10 @@ const getDayNum = () => {
   return Math.round(diffTime / (1000 * 60 * 60 * 24))
 }
 
+const createAsStaff = ref(false)
+
 onMounted(() => {
+  createAsStaff.value = props.event?.by_staff || false
   nextTick(() => {
     // startTime と endTime に値が入るのを待つ
     startTimePick.value = getTimeString(startTime.value!)
@@ -204,11 +207,19 @@ onMounted(() => {
             width="40"
             style="margin: 6px"
             elevation="0"
-            @click="color = myColor"
+            @click="((color = myColor), (createAsStaff = false))"
           ></v-btn>
         </template>
       </v-item>
     </v-item-group>
+
+    <v-checkbox
+      v-model="createAsStaff"
+      @click="color = !createAsStaff ? 'navy' : 'orange'"
+      :disabled="!user!.is_staff"
+      label="合宿公式のイベント"
+      hide-details
+    ></v-checkbox>
 
     <v-dialog persistent max-width="400">
       <template v-slot:activator="{ props: activatorProps }">
@@ -262,7 +273,6 @@ onMounted(() => {
 }
 
 .link {
-  margin-top: 10px;
   cursor: pointer;
   display: block;
   width: 100%;

@@ -4,20 +4,21 @@ import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 
 type Camp = components['schemas']['Camp'] & { start_date: string; end_date: string }
+type User = components['schemas']['User']
 
 // ユーザーIDの保存
 
 export const useUserStore = defineStore('user', () => {
-  const userId = ref<string | undefined>(undefined)
+  const user = ref<User | undefined>(undefined)
 
-  const initUserId = async () => {
+  const initUser = async () => {
     const { data, error } = await apiClient.GET('/api/me')
     if (error) console.error('Failed to initialize user store:', error)
     // rucQ にアクセスして一番にエラーが出るとすればここなので、エラーメッセージの出力は重要かも
-    userId.value = data?.traq_id
+    user.value = data!
   }
 
-  return { initUserId, userId }
+  return { initUser, user }
 })
 
 // 表示する合宿の情報

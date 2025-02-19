@@ -72,7 +72,7 @@ app.use(vuetify)
 import { useUserStore, useCampStore } from './store'
 
 const initApp = async () => {
-  useUserStore().initUserId()
+  useUserStore().initUser()
   useCampStore().initCamp()
   app.mount('#app')
 }

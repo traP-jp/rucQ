@@ -2,12 +2,10 @@
 import { ref, onMounted } from 'vue'
 import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
-import { useUserStore } from '@/store'
 import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
 // import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
-const userId = ref<string>()
 const questionGroups = ref<components['schemas']['QuestionGroup'][]>([])
 
 const getInformationGroups = async () => {
@@ -17,7 +15,6 @@ const getInformationGroups = async () => {
 }
 
 onMounted(async () => {
-  userId.value = useUserStore().userId
   questionGroups.value = (await getInformationGroups()) ?? []
 })
 </script>
