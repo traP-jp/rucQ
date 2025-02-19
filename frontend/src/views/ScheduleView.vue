@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
+import type { components } from '@/api/schema'
 import { getLayout, type DayGroup } from '@/lib/event-layout'
 import EventBlock from '@/components/event/EventBlock.vue'
 import EventDialog from '@/components/event/EventDialog.vue'
@@ -30,18 +31,19 @@ watch(
   { immediate: true },
 )
 
+const events = ref<components['schemas']['Event'][]>()
+
 const refresh = async () => {
-  const events = (await apiClient.GET('/api/events')).data!
-  const camp = campStore.camp!
-  dayGroups.value = getLayout(events, camp, currentTime.value)
+  events.value = (await apiClient.GET('/api/events')).data
+  dayGroups.value = getLayout(events.value!, campStore.camp!, currentTime.value)
 }
 
 onMounted(async () => {
   await refresh()
-  const interval = setInterval(() => {
+  const interval = setInterval(async () => {
     currentTime.value = new Date()
-    refresh()
-  }, 10000)
+    dayGroups.value = getLayout(events.value!, campStore.camp!, currentTime.value)
+  }, 10000) // 10 秒ごと
 
   onBeforeUnmount(() => {
     clearInterval(interval)
