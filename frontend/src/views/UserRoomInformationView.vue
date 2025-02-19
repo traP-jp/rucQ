@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { sampleRooms } from '@/lib/sample-data'
+// import { sampleRooms } from '@/lib/sample-data'
 import { apiClient } from '@/api/apiClient'
+import type { components } from '@/api/schema'
 import UserIcon from '@/components/generic/UserIcon.vue'
+import { useCampStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+const { camp } = storeToRefs(useCampStore())
 
 type Floor = {
   id: number
@@ -10,11 +15,7 @@ type Floor = {
   rooms: Room[]
 }
 
-type Room = {
-  id: number
-  name: string
-  members: string[]
-}
+type Room = components['schemas']['Room']
 
 const floors = ref<Floor[]>()
 const rooms = ref<Room[]>()
@@ -38,66 +39,85 @@ const getFloors = (rooms: Room[]): Floor[] => {
 }
 
 onMounted(async () => {
-  //rooms.value = (await apiClient.GET('/api/floors')).data!
-  rooms.value = sampleRooms
+  rooms.value = (await apiClient.GET('/api/rooms')).data!.filter(
+    (room) => room.camp_id === camp.value?.id,
+  )
   floors.value = getFloors(rooms.value)
 })
 </script>
 
 <template>
-  <div style="margin-top: 16px"></div>
-  <div v-for="floor in floors" :key="floor.id">
-    <div :class="$style.floorName">
-      {{ floor.name }}
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; margin: 8px">
-      <v-dialog max-width="400" v-for="room in floor.rooms" :key="room.id">
-        <template v-slot:activator="{ props: activatorProps }">
-          <v-card elevation="0" color="themePale" class="ma-2 pa-2" v-bind="activatorProps">
-            <v-card-title class="text-center pa-0">
-              <span style="font-weight: 900; font-size: 20px; color: var(--color-theme)">
-                {{ room.name }}
-              </span>
-            </v-card-title>
-            <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: center">
-              <UserIcon
-                v-for="user in room.members"
-                :key="user"
-                :id="user"
-                :size="30"
-                style="margin: 4px"
+  <div :class="$style.container">
+    <div v-for="floor in floors" :key="floor.id">
+      <div :class="$style.floorName">
+        {{ floor.name }}
+      </div>
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          margin: 8px;
+        "
+      >
+        <v-dialog max-width="400" v-for="room in floor.rooms" :key="room.id">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-card elevation="0" color="themePale" class="ma-2 pa-2" v-bind="activatorProps">
+              <v-card-title class="text-center pa-0">
+                <span style="font-weight: 900; font-size: 20px; color: var(--color-theme)">
+                  {{ room.name }}
+                </span>
+              </v-card-title>
+              <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: center">
+                <UserIcon
+                  v-for="user in room.members"
+                  :key="user.traq_id"
+                  :id="user.traq_id"
+                  :size="30"
+                  style="margin: 4px"
+                />
+              </div>
+            </v-card>
+          </template>
+          <template v-slot:default="{}">
+            <v-card color="themePale" class="pa-4">
+              <v-card-title class="text-center pa-0">
+                <span :class="$style.roomName">
+                  {{ room.name.slice(0, -1)
+                  }}<span style="font-weight: 900; letter-spacing: 0">{{
+                    room.name.slice(-1)
+                  }}</span>
+                </span>
+              </v-card-title>
+              <hr
+                style="
+                  border: none;
+                  border-bottom: 1px solid var(--color-theme);
+                  margin-bottom: 8px;
+                "
               />
-            </div>
-          </v-card>
-        </template>
-        <template v-slot:default="{}">
-          <v-card color="themePale" class="pa-4">
-            <v-card-title class="text-center pa-0">
-              <span :class="$style.roomName">
-                {{ room.name.slice(0, -1)
-                }}<span style="font-weight: 900; letter-spacing: 0">{{ room.name.slice(-1) }}</span>
-              </span>
-            </v-card-title>
-            <hr
-              style="border: none; border-bottom: 1px solid var(--color-theme); margin-bottom: 8px"
-            />
-            <div
-              v-for="user in room.members"
-              :key="user"
-              style="display: flex; align-items: center"
-            >
-              <UserIcon :id="user" :size="30" style="margin: 4px" />
-              <div style="margin-left: 4px; font-weight: bold">@{{ user }}</div>
-            </div>
-          </v-card>
-        </template>
-      </v-dialog>
+              <div
+                v-for="user in room.members"
+                :key="user.traq_id"
+                style="display: flex; align-items: center"
+              >
+                <UserIcon :id="user.traq_id" :size="30" style="margin: 4px" />
+                <div style="margin-left: 4px; font-weight: bold">@{{ user.traq_id }}</div>
+              </div>
+            </v-card>
+          </template>
+        </v-dialog>
+      </div>
     </div>
   </div>
   <!-- <router-link :class="$style.link" :to="``"> フロアマップを見る </router-link> -->
 </template>
 
 <style module>
+.container {
+  max-width: 800px;
+  margin: 16px auto;
+}
+
 .floorName {
   width: 200px;
   font-weight: bold;

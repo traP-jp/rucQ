@@ -4,7 +4,7 @@ import type { components } from '@/api/schema'
 import { apiClient } from '@/api/apiClient'
 import { useUserStore } from '@/store'
 import RoomInformationPanel from '@/components/information/RoomInformationPanel.vue'
-import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
+// import PaymentInformationPanel from '@/components/information/PaymentInformationPanel.vue'
 import InformationGroupItem from '@/components/information/InformationGroupItem.vue'
 
 const userId = ref<string>()
@@ -24,8 +24,8 @@ onMounted(async () => {
 
 <template>
   <div :class="$style.container">
-    <!-- <room-information-panel /> -->
-    <payment-information-panel />
+    <room-information-panel />
+    <!-- <payment-information-panel /> -->
     <information-group-item
       v-for="questionGroup in questionGroups"
       :key="questionGroup.id"
