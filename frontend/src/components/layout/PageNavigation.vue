@@ -62,7 +62,7 @@ const fullPath = (path: string) => `/${route.params.campname}/${path}`
   </v-bottom-navigation>
   <v-navigation-drawer
     width="230"
-    :mobile-breakpoint="600"
+    permanent
     v-else
     style="z-index: 1; border-right: 1.5px solid var(--color-line) !important"
     app
