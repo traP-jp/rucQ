@@ -85,21 +85,97 @@ func (s *Server) PostEvent(e echo.Context, params PostEventParams) error {
 }
 
 func (s *Server) GetEvent(e echo.Context, eventID EventId) error {
-	return nil
+
+	event, err := s.repo.GetEventByID(uint(eventID))
+	if err != nil {
+		e.Logger().Errorf("failed to get event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Event
+
+	if err := copier.Copy(&response, event); err != nil {
+		e.Logger().Errorf("failed to copy event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, &response)
 }
 
 func (s *Server) PutEvent(e echo.Context, eventID EventId, params PutEventParams) error {
-	return nil
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	updateEvent, err := s.repo.GetEventByID(uint(eventID))
+	if err != nil {
+		e.Logger().Errorf("failed to get event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if user.TraqID != updateEvent.OrganizerTraqID && !user.IsStaff { // イベントの主催者orスタッフでない場合は更新できない
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	var req PutEventJSONRequestBody
+
+	if err := e.Bind(&req); err != nil {
+		return e.JSON(http.StatusBadRequest, err)
+	}
+
+	if err := copier.Copy(updateEvent, &req); err != nil {
+		e.Logger().Errorf("failed to copy request to model: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.UpdateEvent(uint(eventID), updateEvent); err != nil {
+		e.Logger().Errorf("failed to update event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var response Event
+
+	if err := copier.Copy(&response, updateEvent); err != nil {
+		e.Logger().Errorf("failed to copy model to response: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, &response)
 }
 
-func (s *Server) GetParticipants(e echo.Context, eventID EventId) error {
-	return nil
-}
+func (s *Server) DeleteEvent(e echo.Context, eventID EventId, params DeleteEventParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
 
-func (s *Server) UnregisterEvent(e echo.Context, eventID EventId, params UnregisterEventParams) error {
-	return nil
-}
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
 
-func (s *Server) RegisterEvent(e echo.Context, eventID EventId, params RegisterEventParams) error {
-	return nil
+	deleteEvent, err := s.repo.GetEventByID(uint(eventID))
+	if err != nil {
+		e.Logger().Errorf("failed to get event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if user.TraqID != deleteEvent.OrganizerTraqID && !user.IsStaff { // イベントの主催者でない場合は削除できない
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	if err := s.repo.DeleteEvent(uint(eventID)); err != nil {
+		e.Logger().Errorf("failed to delete event: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
 }

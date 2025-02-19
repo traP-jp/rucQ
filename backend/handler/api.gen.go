@@ -76,6 +76,7 @@ type Event struct {
 	Location        string    `json:"location"`
 	Name            string    `json:"name"`
 	OrganizerTraqId string    `json:"organizer_traq_id"`
+	Participants    []User    `json:"participants"`
 	TimeEnd         time.Time `json:"time_end"`
 	TimeStart       time.Time `json:"time_start"`
 }
@@ -299,6 +300,12 @@ type PostDirectMessageParams struct {
 
 // PostEventParams defines parameters for PostEvent.
 type PostEventParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// DeleteEventParams defines parameters for DeleteEvent.
+type DeleteEventParams struct {
 	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
@@ -657,6 +664,9 @@ type ServerInterface interface {
 	// イベントを作成
 	// (POST /api/events)
 	PostEvent(ctx echo.Context, params PostEventParams) error
+	// イベントを削除
+	// (DELETE /api/events/{event_id})
+	DeleteEvent(ctx echo.Context, eventId EventId, params DeleteEventParams) error
 	// イベントの詳細を取得
 	// (GET /api/events/{event_id})
 	GetEvent(ctx echo.Context, eventId EventId) error
@@ -958,6 +968,42 @@ func (w *ServerInterfaceWrapper) PostEvent(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.PostEvent(ctx, params)
+	return err
+}
+
+// DeleteEvent converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteEvent(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "event_id" -------------
+	var eventId EventId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "event_id", ctx.Param("event_id"), &eventId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter event_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteEventParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteEvent(ctx, eventId, params)
 	return err
 }
 
@@ -1928,6 +1974,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/api/dm", wrapper.PostDirectMessage)
 	router.GET(baseURL+"/api/events", wrapper.GetEvents)
 	router.POST(baseURL+"/api/events", wrapper.PostEvent)
+	router.DELETE(baseURL+"/api/events/:event_id", wrapper.DeleteEvent)
 	router.GET(baseURL+"/api/events/:event_id", wrapper.GetEvent)
 	router.PUT(baseURL+"/api/events/:event_id", wrapper.PutEvent)
 	router.GET(baseURL+"/api/events/:event_id/participants", wrapper.GetParticipants)

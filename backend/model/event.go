@@ -17,4 +17,5 @@ type Event struct {
 	OrganizerTraqID string
 	ByStaff         bool
 	DisplayColor    string
+	Participants    []User `gorm:"many2many:event_participants;ForeignKey:id;References:id"`
 }

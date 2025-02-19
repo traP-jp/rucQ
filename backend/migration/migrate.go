@@ -22,5 +22,6 @@ func getAllMigrations() []*gormigrate.Migration {
 		v2(),
 		v3(),
 		v4(),
+		v5(), // イベント参加者の追加
 	}
 }
