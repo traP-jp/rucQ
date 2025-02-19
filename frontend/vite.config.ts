@@ -16,6 +16,9 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // キャッシュ上限 5 MB
+      },
       manifest: {
         name: 'rucQ',
         short_name: 'rucQ',
