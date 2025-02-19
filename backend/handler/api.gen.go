@@ -149,6 +149,13 @@ type PostQuestionRequest struct {
 // PostQuestionRequestType defines model for PostQuestionRequest.Type.
 type PostQuestionRequestType string
 
+// PostRoomRequest defines model for PostRoomRequest.
+type PostRoomRequest struct {
+	CampId  int      `json:"camp_id"`
+	Members []string `json:"members"`
+	Name    string   `json:"name"`
+}
+
 // PostStaffRequest defines model for PostStaffRequest.
 type PostStaffRequest struct {
 	TraqId string `json:"traq_id"`
@@ -195,6 +202,14 @@ type QuestionGroup struct {
 	Questions   []Question `json:"questions"`
 }
 
+// Room defines model for Room.
+type Room struct {
+	CampId  int    `json:"camp_id"`
+	Id      int    `json:"id"`
+	Members []User `json:"members"`
+	Name    string `json:"name"`
+}
+
 // User defines model for User.
 type User struct {
 	IsStaff bool   `json:"is_staff"`
@@ -218,6 +233,9 @@ type QuestionGroupId = int
 
 // QuestionId defines model for QuestionId.
 type QuestionId = int
+
+// RoomId defines model for RoomId.
+type RoomId = int
 
 // StaffId defines model for StaffId.
 type StaffId = string
@@ -382,6 +400,18 @@ type PutQuestionParams struct {
 	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
 }
 
+// PostRoomParams defines parameters for PostRoom.
+type PostRoomParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
+// PutRoomParams defines parameters for PutRoom.
+type PutRoomParams struct {
+	// XForwardedUser ログインしているユーザーのtraQ ID（NeoShowcaseが自動で付与）
+	XForwardedUser *XForwardedUser `json:"X-Forwarded-User,omitempty"`
+}
+
 // DeleteStaffParams defines parameters for DeleteStaff.
 type DeleteStaffParams struct {
 	// StaffId 合宿係のtraQ ID
@@ -462,6 +492,12 @@ type PostQuestionJSONRequestBody = PostQuestionRequest
 
 // PutQuestionJSONRequestBody defines body for PutQuestion for application/json ContentType.
 type PutQuestionJSONRequestBody = PostQuestionRequest
+
+// PostRoomJSONRequestBody defines body for PostRoom for application/json ContentType.
+type PostRoomJSONRequestBody = PostRoomRequest
+
+// PutRoomJSONRequestBody defines body for PutRoom for application/json ContentType.
+type PutRoomJSONRequestBody = PostRoomRequest
 
 // PostStaffJSONRequestBody defines body for PostStaff for application/json ContentType.
 type PostStaffJSONRequestBody = PostStaffRequest
@@ -694,6 +730,15 @@ type ServerInterface interface {
 	// 質問を更新
 	// (PUT /api/questions/{question_id})
 	PutQuestion(ctx echo.Context, questionId QuestionId, params PutQuestionParams) error
+	// 部屋の一覧を取得
+	// (GET /api/rooms)
+	GetRooms(ctx echo.Context) error
+	// 部屋を作成
+	// (POST /api/rooms)
+	PostRoom(ctx echo.Context, params PostRoomParams) error
+	// 部屋を更新
+	// (PUT /api/rooms/{room_id})
+	PutRoom(ctx echo.Context, roomId RoomId, params PutRoomParams) error
 	// 合宿係を削除
 	// (DELETE /api/staffs)
 	DeleteStaff(ctx echo.Context, params DeleteStaffParams) error
@@ -1549,6 +1594,80 @@ func (w *ServerInterfaceWrapper) PutQuestion(ctx echo.Context) error {
 	return err
 }
 
+// GetRooms converts echo context to params.
+func (w *ServerInterfaceWrapper) GetRooms(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetRooms(ctx)
+	return err
+}
+
+// PostRoom converts echo context to params.
+func (w *ServerInterfaceWrapper) PostRoom(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostRoomParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PostRoom(ctx, params)
+	return err
+}
+
+// PutRoom converts echo context to params.
+func (w *ServerInterfaceWrapper) PutRoom(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "room_id" -------------
+	var roomId RoomId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "room_id", ctx.Param("room_id"), &roomId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter room_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutRoomParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser XForwardedUser
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Forwarded-User, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Forwarded-User: %s", err))
+		}
+
+		params.XForwardedUser = &XForwardedUser
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PutRoom(ctx, roomId, params)
+	return err
+}
+
 // DeleteStaff converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteStaff(ctx echo.Context) error {
 	var err error
@@ -1877,6 +1996,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/questions/:question_id", wrapper.DeleteQuestion)
 	router.GET(baseURL+"/api/questions/:question_id", wrapper.GetQuestion)
 	router.PUT(baseURL+"/api/questions/:question_id", wrapper.PutQuestion)
+	router.GET(baseURL+"/api/rooms", wrapper.GetRooms)
+	router.POST(baseURL+"/api/rooms", wrapper.PostRoom)
+	router.PUT(baseURL+"/api/rooms/:room_id", wrapper.PutRoom)
 	router.DELETE(baseURL+"/api/staffs", wrapper.DeleteStaff)
 	router.GET(baseURL+"/api/staffs", wrapper.GetStaffs)
 	router.POST(baseURL+"/api/staffs", wrapper.PostStaff)
