@@ -46,7 +46,7 @@ const newEvent = async () => {
       time_start: dateToText(startTime.value!),
       time_end: dateToText(endTime.value!),
       camp_id: camp.value!.id,
-      create_as_staff: color.value === 'navy',
+      create_as_staff: color.value === 'navy' || color.value === 'ash',
       display_color: color.value,
     },
   })
@@ -63,7 +63,7 @@ const editEvent = async () => {
       time_start: dateToText(startTime.value!),
       time_end: dateToText(endTime.value!),
       camp_id: camp.value!.id,
-      create_as_staff: color.value === 'navy',
+      create_as_staff: color.value === 'navy' || color.value === 'ash',
       display_color: color.value,
     },
   })

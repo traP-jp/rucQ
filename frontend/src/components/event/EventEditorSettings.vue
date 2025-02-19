@@ -38,6 +38,9 @@ const updateTime = () => {
   startTime.value!.setHours(startH, startM, 0, 0)
   const [endH, endM] = endTimePick.value.split(':').map(Number)
   endTime.value!.setHours(endH, endM, 0, 0)
+  if (createAsStaff.value) {
+    color.value = startTimePick.value === endTimePick.value ? 'ash' : 'navy'
+  }
 }
 
 watch(() => startTimePick.value, updateTime)
@@ -134,7 +137,7 @@ onMounted(() => {
             <v-time-picker
               format="24hr"
               :color="color"
-              :max="timeCalc(endTimePick, -1)"
+              :max="timeCalc(endTimePick, user?.is_staff ? 0 : -1)"
               v-model="startTimePick"
               @update:modelValue="isTimeChanged = true"
               title="開始時刻を設定"
@@ -173,7 +176,7 @@ onMounted(() => {
             <v-time-picker
               format="24hr"
               :color="color"
-              :min="timeCalc(startTimePick, 1)"
+              :min="timeCalc(startTimePick, user?.is_staff ? 0 : 1)"
               v-model="endTimePick"
               @update:modelValue="isTimeChanged = true"
               title="終了時刻を設定"
@@ -215,7 +218,7 @@ onMounted(() => {
 
     <v-checkbox
       v-model="createAsStaff"
-      @click="color = !createAsStaff ? 'navy' : 'orange'"
+      @click="color = !createAsStaff ? (startTimePick === endTimePick ? 'ash' : 'navy') : 'orange'"
       :disabled="!user!.is_staff"
       label="合宿公式のイベント"
       hide-details
