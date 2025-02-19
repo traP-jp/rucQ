@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/store'
@@ -10,7 +11,7 @@ const route = useRoute()
 const router = useRouter()
 const { xs } = useDisplay()
 
-const options = [
+const options = computed(() => [
   {
     name: '新規イベント作成',
     func: () => {
@@ -26,7 +27,7 @@ const options = [
       ]
     : []),
   // { name: '別の合宿を表示', func: () => router.push(`/camps`) },
-]
+])
 </script>
 
 <template>
