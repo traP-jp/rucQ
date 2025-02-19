@@ -6,7 +6,7 @@ import EventEditor from './EventEditor.vue'
 import UserIcon from '@/components/generic/UserIcon.vue'
 import { getDayStringNoPad, getTimeStringNoPad } from '@/lib/date'
 import type { components } from '@/api/schema'
-import { apiClient } from '@/api/apiClient'
+// import { apiClient } from '@/api/apiClient'
 import { useUserStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
@@ -20,29 +20,29 @@ const makeInfo = (event: CampEvent) => {
 }
 
 const text = computed(() => props.event.description)
-const participants = defineModel<string[]>('participants')
-const isToParticipate = computed(
-  () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
-)
+// const participants = defineModel<string[]>('participants')
+// const isToParticipate = computed(
+//   () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
+// )
 
-const participate = async () => {
-  await apiClient.POST('/api/events/{event_id}/register', {
-    params: { path: { event_id: props.event!.id } },
-  })
-  participants.value!.unshift(user.value!.traq_id)
-}
+// const participate = async () => {
+//   await apiClient.POST('/api/events/{event_id}/register', {
+//     params: { path: { event_id: props.event!.id } },
+//   })
+//   participants.value!.unshift(user.value!.traq_id)
+// }
 
-const withdraw = async () => {
-  await apiClient.DELETE('/api/events/{event_id}/register', {
-    params: { path: { event_id: props.event!.id } },
-  })
-  participants.value!.shift()
-}
+// const withdraw = async () => {
+//   await apiClient.DELETE('/api/events/{event_id}/register', {
+//     params: { path: { event_id: props.event!.id } },
+//   })
+//   participants.value!.shift()
+// }
 
-const enumHeight = (i: number) => {
-  if (i === 0) return 0
-  return 66 - 16 * (3 - i)
-}
+// const enumHeight = (i: number) => {
+//   if (i === 0) return 0
+//   return 66 - 16 * (3 - i)
+// }
 </script>
 
 <template>
@@ -91,7 +91,8 @@ const enumHeight = (i: number) => {
       :style="`display: flex; background-color: var(--color-light-gray); height: 100%; overflow: hidden;`"
     >
       <div :class="$style.sideIcons">
-        <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
+        <UserIcon :id="event.organizer_traq_id" :size="30" />
+        <!-- <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
           <UserIcon :id="event.organizer_traq_id" :size="30" />
         </div>
         <div
@@ -114,7 +115,7 @@ const enumHeight = (i: number) => {
           :icon="isToParticipate ? 'mdi-minus' : 'mdi-plus'"
           style="background-color: var(--color-white)"
           @click="isToParticipate ? withdraw() : participate()"
-        ></v-btn>
+        ></v-btn> -->
       </div>
       <div :class="$style.description">
         <MarkdownPreview :isEditable="false" v-model:text="text" />

@@ -33,15 +33,12 @@ onMounted(async () => {
         <v-card
           link
           :class="$style.card"
-          :color="
-            participants[0] === user?.traq_id
-              ? `${event.display_color}`
-              : `${event.display_color}Pale`
-          "
+          :color="event.display_color"
           height="100%"
           variant="flat"
           v-bind="activatorProps"
         >
+          <!-- イベントの参加効果が不明瞭である以上、イベントに参加しているか否かでイベントの表示色を変えるのはやや -->
           <div :class="$style.content">
             <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
             <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>
