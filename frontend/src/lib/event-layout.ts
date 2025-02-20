@@ -169,13 +169,9 @@ const arrangeEvents = (events: CampEvent[], currentTime?: Date) => {
         times[i].line = false
         if (i + 1 < arranged.length) {
           times[i + 1].line = false
+          times[i + 1].stamp = 'none'
           if (arranged[i + 1].events.length === 0) {
             times[i + 1].minHeight = 'narrow'
-            times[i + 1].stamp = 'none'
-          } else if (arranged[i + 1].events[0] === null) {
-            times[i + 1].stamp = 'none'
-          } else if (isMoment(arranged[i + 1].events[0]!)) {
-            times[i + 1].stamp = 'none'
           }
         }
         if (i - 1 >= 0) {
