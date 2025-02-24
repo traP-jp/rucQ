@@ -354,48 +354,39 @@ func (s *Server) GetQuestionAnswers(e echo.Context, questionID QuestionId, param
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	question, err := s.repo.GetQuestionByID(uint(questionID))
-	if err != nil {
-		e.Logger().Errorf("failed to get question: %v", err)
-
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
 	res := make([]Answer, len(answers))
 
+	// copyする
 	for i, answer := range answers {
-		answeredUesr, err := s.repo.GetUserTraqID(answer.UserID)
-		if err != nil {
-			e.Logger().Errorf("failed to get user: %v", err)
+        if err := copier.Copy(&res[i], &answer); err != nil {
+            e.Logger().Errorf("failed to copy model to response: %v", err)
+            return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+        }
 
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-		}
+        // Content の変換処理
+        if answer.Content != nil {
+            if targetQuestion.Type == string(QuestionTypeMultiple) {
+                if err := res[i].Content.FromAnswerContent1(*answer.Content); err != nil {
+                    e.Logger().Errorf("failed to convert content: %v", err)
+                    return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+                }
+            } else {
+                if err := res[i].Content.FromAnswerContent0((*answer.Content)[0]); err != nil {
+                    e.Logger().Errorf("failed to convert content: %v", err)
+                    return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+                }
+            }
+        }
 
-		if err := copier.Copy(&res[i], &answer); err != nil {
-			e.Logger().Errorf("failed to copy answer: %v", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-		}
-
-		if answer.Content != nil {
-			if question.Type == string(QuestionTypeMultiple) {
-				if err := res[i].Content.FromAnswerContent1(*answer.Content); err != nil {
-					e.Logger().Errorf("failed to convert content: %v", err)
-
-					return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-				}
-			} else {
-				if err := res[i].Content.FromAnswerContent0((*answer.Content)[0]); err != nil {
-					e.Logger().Errorf("failed to convert content: %v", err)
-
-					return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-				}
-			}
-
-			return e.JSON(http.StatusOK, res)
-		}
-
-		res[i].UserTraqId = answeredUesr
-	}
+        // UserTraqId の取得　n+1問題
+        answeredUser, err := s.repo.GetUserTraqID(answer.UserID)
+        if err != nil {
+            e.Logger().Errorf("failed to get user traq id: %v", err)
+            return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+        }
+        res[i].UserTraqId = answeredUser
+    }
+	
 
 	return e.JSON(http.StatusOK, res)
 }
