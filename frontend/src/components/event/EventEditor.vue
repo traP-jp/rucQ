@@ -95,8 +95,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :class="$style.container">
-    <v-sheet :class="[$style.sheet, `bg-white`]">
+  <div class="h-100">
+    <v-sheet class="h-100 bg-white d-flex flex-column position-relative">
       <div style="display: flex; align-items: center; justify-content: space-between">
         <v-btn
           @click="emit('close')"
@@ -119,11 +119,7 @@ onMounted(async () => {
           >{{ props.event ? '更新' : '作成' }}</v-btn
         >
       </div>
-      <v-tabs
-        v-if="smAndDown"
-        v-model="tab"
-        :style="`flex-shrink: 0; color: var(--color-${color}); transition: color 0s;`"
-      >
+      <v-tabs v-if="smAndDown" v-model="tab" :class="`flex-shrink-0 text-${color}`">
         <v-tab value="設定" width="50%"><span style="font-weight: bold">設 定</span></v-tab>
         <v-tab value="概要" width="50%"><span style="font-weight: bold">概 要</span></v-tab>
       </v-tabs>
@@ -163,18 +159,3 @@ onMounted(async () => {
     </v-sheet>
   </div>
 </template>
-
-<style module>
-.container {
-  height: 100%;
-}
-
-.sheet {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  height: fit-content;
-  height: 100%;
-}
-</style>

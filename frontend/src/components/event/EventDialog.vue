@@ -20,43 +20,20 @@ const makeInfo = (event: CampEvent) => {
 }
 
 const text = computed(() => props.event.description)
-// const participants = defineModel<string[]>('participants')
-// const isToParticipate = computed(
-//   () => participants.value!.length > 0 && participants.value![0] === user.value!.traq_id,
-// )
-
-// const participate = async () => {
-//   await apiClient.POST('/api/events/{event_id}/register', {
-//     params: { path: { event_id: props.event!.id } },
-//   })
-//   participants.value!.unshift(user.value!.traq_id)
-// }
-
-// const withdraw = async () => {
-//   await apiClient.DELETE('/api/events/{event_id}/register', {
-//     params: { path: { event_id: props.event!.id } },
-//   })
-//   participants.value!.shift()
-// }
-
-// const enumHeight = (i: number) => {
-//   if (i === 0) return 0
-//   return 66 - 16 * (3 - i)
-// }
 </script>
 
 <template>
-  <v-card :class="`bg-white`">
-    <div :class="$style.title" :style="`background-color: var(--color-${event.display_color})`">
-      <v-card rounded="0" elevation="0" :class="[$style.card, `bg-${event.display_color}`]">
+  <v-card :class="`bg-lightGray`">
+    <div :class="`d-flex justify-space-between bg-${event.display_color}`">
+      <v-card rounded="0" elevation="0" :color="event.display_color" :class="$style.card">
         <template v-slot:title>
-          <span style="font-weight: 700">{{ event.name }}</span>
+          <span class="font-weight-bold">{{ event.name }}</span>
         </template>
         <template v-slot:subtitle>
           <span>{{ makeInfo(event) }}</span>
         </template>
       </v-card>
-      <div :class="$style.buttons">
+      <div class="d-flex flex-column pa-1">
         <v-btn
           @click="emit('close')"
           density="comfortable"
@@ -87,37 +64,9 @@ const text = computed(() => props.event.description)
         </v-dialog>
       </div>
     </div>
-    <div
-      :style="`display: flex; background-color: var(--color-light-gray); height: 100%; overflow: hidden;`"
-    >
-      <div :class="$style.sideIcons">
-        <UserIcon :id="event.organizer_traq_id" :size="30" />
-        <!-- <div style="border-bottom: 1px solid var(--color-gray); margin-bottom: 4px">
-          <UserIcon :id="event.organizer_traq_id" :size="30" />
-        </div>
-        <div
-          :style="`position: relative; width: 30px; height: ${enumHeight(participants!.slice(0, 3).length)}px`"
-        >
-          <UserIcon
-            v-for="(user, i) in participants!.slice(0, 3).reverse()"
-            :key="i"
-            :id="user"
-            :size="24"
-            :class="$style.participants"
-            :style="`top: ${16 * (participants!.slice(0, 3).length - 1 - i)}px`"
-          />
-        </div>
-        <v-btn
-          elevation="0"
-          :color="event.display_color"
-          variant="text"
-          density="compact"
-          :icon="isToParticipate ? 'mdi-minus' : 'mdi-plus'"
-          style="background-color: var(--color-white)"
-          @click="isToParticipate ? withdraw() : participate()"
-        ></v-btn> -->
-      </div>
-      <div :class="$style.description">
+    <div class="d-flex h-100 overflow-hidden ga-2 ma-2">
+      <UserIcon :id="event.organizer_traq_id" :size="30" />
+      <div class="w-100 overflow-y-auto bg-white rounded position-relative">
         <MarkdownPreview :isEditable="false" v-model:text="text" />
       </div>
     </div>
@@ -125,58 +74,7 @@ const text = computed(() => props.event.description)
 </template>
 
 <style module>
-.join {
-  bottom: 0px;
-  width: calc(100% - 20px);
-  position: absolute;
-  margin: 10px;
-  z-index: 1;
-}
-
-.card {
-  height: fit-content;
-  margin: auto 0;
-}
-
 .card :global(.v-card-subtitle) {
   opacity: 1 !important;
-}
-
-.title {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.buttons {
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 6px;
-}
-
-.description {
-  width: 100%;
-  overflow-y: auto;
-  background-color: var(--color-white);
-  margin: 6px;
-  border-radius: 4px;
-  position: relative;
-}
-
-.sideIcons {
-  width: 30px;
-  height: fit-content;
-  margin: 6px 0 6px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.participants {
-  border: 3px solid var(--color-light-gray);
-  box-sizing: content-box;
-  position: absolute;
 }
 </style>

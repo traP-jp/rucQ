@@ -86,7 +86,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :class="$style.container">
+  <div class="w-100 h-100">
     <v-text-field
       v-model="name"
       :rules="[(v) => !!v || 'タイトルは必須です']"
@@ -262,11 +262,6 @@ onMounted(() => {
 </template>
 
 <style module>
-.container {
-  width: 100%;
-  height: 100%;
-}
-
 .titleInput :global(input) {
   font-size: 20px !important;
 }
