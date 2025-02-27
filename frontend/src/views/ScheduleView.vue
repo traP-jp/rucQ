@@ -74,25 +74,8 @@ onMounted(async () => {
             minHeight: `${space.minHeight === 'wide' ? 24 : 12}px`,
           }"
         >
-          <div
-            v-if="space.stamp !== 'none'"
-            :style="{
-              height: '100%',
-              display: 'flex',
-              alignItems: space.stamp,
-              paddingRight: '4px',
-            }"
-          >
-            <div
-              style="
-                height: 0px;
-                width: 100%;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
+          <div v-if="space.stamp !== 'none'" :class="`h-100 d-flex pr-1 align-${space.stamp}`">
+            <div class="w-100 h-0 position-relative d-flex align-center justify-center">
               <h5
                 v-if="space.time.getTime() !== currentTime.getTime()"
                 style="font-weight: 900; width: fit-content; font-family: Roboto"

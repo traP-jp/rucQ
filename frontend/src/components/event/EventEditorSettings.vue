@@ -5,6 +5,7 @@ import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { useUserStore, useCampStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import type { components } from '@/api/schema'
+import LinkText from '@/components/generic/LinkText.vue'
 type CampEvent = components['schemas']['Event']
 const props = defineProps<{ event: CampEvent | null }>()
 const emit = defineEmits(['delete'])
@@ -226,7 +227,7 @@ onMounted(() => {
 
     <v-dialog persistent max-width="400">
       <template v-slot:activator="{ props: activatorProps }">
-        <div v-if="event" :class="$style.link" v-bind="activatorProps">イベントを削除する</div>
+        <LinkText v-if="event" v-bind="activatorProps" text="イベントを削除する" />
       </template>
       <template v-slot:default="{ isActive }">
         <v-card :class="$style.card">
@@ -268,18 +269,5 @@ onMounted(() => {
 
 .card :global(.v-card-subtitle) {
   opacity: 1 !important;
-}
-
-.link {
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: center;
-  color: var(--color-theme);
-  margin-bottom: 4;
-}
-
-.link:hover {
-  text-decoration: underline;
 }
 </style>
