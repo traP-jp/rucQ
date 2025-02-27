@@ -579,6 +579,25 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: 選択肢を削除
+      tags:
+        - Questions
+      operationId: deleteOption
+      parameters:
+        - $ref: "#/components/parameters/OptionId"
+        - $ref: "#/components/parameters/X-Forwarded-User"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/me/answers/{question_id}:
     get:
       summary: 自分の回答を取得
