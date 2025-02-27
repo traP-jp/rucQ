@@ -87,13 +87,17 @@ onMounted(async () => {
   margin-bottom: 0.3lh;
 }
 
+.preview :global(p):last-child {
+  margin-bottom: 0 !important;
+}
+
 .preview :global(h1),
 .preview :global(h2),
 .preview :global(h3),
 .preview :global(h4),
 .preview :global(h5),
 .preview :global(h6) {
-  margin: calc(0.5em + 10px) 0 0.5em 0;
+  margin: 4px 0;
   font-weight: bold;
   letter-spacing: 0.05em;
 }
@@ -104,7 +108,7 @@ onMounted(async () => {
 .preview :global(h4):first-child,
 .preview :global(h5):first-child,
 .preview :global(h6):first-child {
-  margin-top: 0px !important;
+  margin-top: 0 !important;
 }
 
 .preview :global(strong) {

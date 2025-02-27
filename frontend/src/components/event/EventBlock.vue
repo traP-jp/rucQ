@@ -27,22 +27,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :class="$style.container">
+  <div class="pa-1">
     <v-dialog max-width="800">
       <template v-slot:activator="{ props: activatorProps }">
         <v-card
           link
-          :class="$style.card"
           :color="event.display_color"
           height="100%"
           variant="flat"
           v-bind="activatorProps"
+          class="pa-2"
         >
-          <!-- イベントの参加効果が不明瞭である以上、イベントに参加しているか否かでイベントの表示色を変えるのはやや -->
-          <div :class="$style.content">
-            <h3 style="font-weight: 700" :class="$style.text">{{ props.event.name }}</h3>
-            <h5 style="font-weight: 500" :class="$style.text">{{ props.event.location }}</h5>
-          </div>
+          <h3 class="font-weight-bold white text-break">{{ props.event.name }}</h3>
+          <h5 class="font-weight-medium white text-break">{{ props.event.location }}</h5>
         </v-card>
       </template>
 
@@ -51,37 +48,9 @@ onMounted(async () => {
           :event="event"
           @close="isActive.value = false"
           @refresh="emit('refresh')"
-          style="height: 100%; overflow: hidden"
           v-model:participants="participants"
         />
       </template>
     </v-dialog>
   </div>
 </template>
-
-<style module>
-.container {
-  padding: 4px;
-  color: var(--color-exwhite);
-}
-
-.card {
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  margin: 0px;
-  cursor: pointer; /* ボタンのようにクリック可能に */
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-
-.text {
-  color: var(--color-exwhite);
-  overflow-wrap: break-word;
-}
-</style>

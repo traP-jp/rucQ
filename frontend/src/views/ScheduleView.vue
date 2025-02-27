@@ -60,16 +60,28 @@ onMounted(async () => {
       <div
         v-for="(eventGroup, j) in dayGroup.eventGroups"
         :key="j"
-        :style="`display: grid; grid-template-columns: 42px repeat(${Math.max(eventGroup.columns, 1)}, 1fr);`"
+        :style="{
+          display: 'grid',
+          gridTemplateColumns: `42px repeat(${Math.max(eventGroup.columns, 1)}, 1fr)`,
+        }"
       >
         <div
           v-for="(space, k) in eventGroup.spaces"
           :key="k"
-          :style="`grid-row: ${k + 1}; grid-column: 1; min-height: ${space.minHeight === 'wide' ? 24 : 12}px;`"
+          :style="{
+            gridRow: k + 1,
+            gridColumn: 1,
+            minHeight: `${space.minHeight === 'wide' ? 24 : 12}px`,
+          }"
         >
           <div
             v-if="space.stamp !== 'none'"
-            :style="`height: 100%; display: flex; align-items: ${space.stamp}; padding-right: 4px;`"
+            :style="{
+              height: '100%',
+              display: 'flex',
+              alignItems: space.stamp,
+              paddingRight: '4px',
+            }"
           >
             <div
               style="
@@ -83,7 +95,7 @@ onMounted(async () => {
             >
               <h5
                 v-if="space.time.getTime() !== currentTime.getTime()"
-                :style="`font-weight: 900; width: fit-content; font-family: 'Roboto'`"
+                style="font-weight: 900; width: fit-content; font-family: Roboto"
               >
                 {{ getTimeStringNoPad(space.time) }}
               </h5>
@@ -110,29 +122,42 @@ onMounted(async () => {
         <div
           v-for="(space, k) in eventGroup.spaces"
           :key="k"
-          :style="`grid-row: ${k + 1}; grid-column: 2 / ${eventGroup.columns + 2};`"
+          :style="{
+            gridRow: k + 1,
+            gridColumn: `2 / ${eventGroup.columns + 2}`,
+          }"
         >
           <hr
             v-if="space.line"
-            :style="
-              'border: 0px; margin-top: -0.5px; ' +
-              (space.time.getTime() === currentTime.getTime()
-                ? `border-top: 2px solid var(--color-red);`
-                : `border-top: 1px dashed var(--color-line);`)
-            "
+            :style="{
+              border: '0px',
+              marginTop: '-0.5px',
+              borderTop:
+                space.time.getTime() === currentTime.getTime()
+                  ? '2px solid var(--color-red)'
+                  : '1px dashed var(--color-line)',
+            }"
           />
         </div>
         <EventBlock
           v-for="(event, k) in eventGroup.events"
           :key="k"
           :event="event.content"
-          :style="`grid-row: ${event.startRow + 1} / ${event.endRow + 1}; grid-column: ${event.column + 2}`"
+          :style="{
+            gridRow: `${event.startRow + 1} / ${event.endRow + 1}`,
+            gridColumn: event.column + 2,
+          }"
           @refresh="refresh"
         />
         <div
           v-for="(moment, k) in eventGroup.moments"
           :key="k"
-          :style="`grid-row: ${moment.startRow + 1}; grid-column: ${moment.column + 2}; display: flex; align-items: center;`"
+          :style="{
+            gridRow: moment.startRow + 1,
+            gridColumn: moment.column + 2,
+            display: 'flex',
+            alignItems: 'center',
+          }"
         >
           <v-dialog max-width="800">
             <template v-slot:activator="{ props: activatorProps }">
