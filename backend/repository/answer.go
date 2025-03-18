@@ -38,3 +38,16 @@ func (r *Repository) UpdateAnswer(answer *model.Answer) error {
 
 	return nil
 }
+
+func (r *Repository) GetAnswersByID(id uint) ([]model.Answer, error) {
+	var answers []model.Answer
+
+	if err := r.db.
+		Where("question_id = ?", id).
+		Find(&answers).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return answers, nil
+}
