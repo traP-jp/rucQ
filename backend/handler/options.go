@@ -55,5 +55,69 @@ func (s *Server) PostOption(e echo.Context, params PostOptionParams) error {
 }
 
 func (s *Server) PutOption(e echo.Context, optionID OptionId, params PutOptionParams) error {
-	return nil
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	var req PutOptionJSONRequestBody
+
+	if err := e.Bind(&req); err != nil {
+		e.Logger().Errorf("failed to bind request body: %v", err)
+
+		return echo.NewHTTPError(http.StatusBadRequest, "Bad request")
+	}
+
+	var updatedOption model.Option
+
+	if err := copier.Copy(&updatedOption, &req); err != nil {
+		e.Logger().Errorf("failed to copy request body: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if err := s.repo.UpdateOption(uint(optionID), &updatedOption); err != nil {
+		e.Logger().Errorf("failed to update option: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	var res Option
+
+	if err := copier.Copy(&res, &updatedOption); err != nil {
+		e.Logger().Errorf("failed to copy response body: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.JSON(http.StatusOK, res)
+}
+
+func (s *Server) DeleteOption(e echo.Context, optionID OptionId, params DeleteOptionParams) error {
+	user, err := s.repo.GetOrCreateUser(*params.XForwardedUser)
+
+	if err != nil {
+		e.Logger().Errorf("failed to get or create user: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if !user.IsStaff {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	if err := s.repo.DeleteOption(uint(optionID)); err != nil {
+		e.Logger().Errorf("failed to delete option: %v", err)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return e.NoContent(http.StatusNoContent)
 }
